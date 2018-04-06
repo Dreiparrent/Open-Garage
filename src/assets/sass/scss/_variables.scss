@@ -1,0 +1,19 @@
+// Theme Colors
+$theme-colors: (
+  primary: #911c5e,//#009DA0
+  success: #009DA0,
+  info: #1CBCD8,
+  warning: #FF8D60,
+  danger: #FF586B,
+  secondary: #292670,
+  light: #f8f9fa,
+  dark: #343a40
+);
+// Body
+$body-bg:       #f5f7fa;
+
+// Fonts
+$font-family-sans-serif: "Montserrat", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-family-content: "Rubik", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+$font-size-root: 16px;
