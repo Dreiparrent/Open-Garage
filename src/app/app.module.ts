@@ -11,14 +11,17 @@ import { AuthGuard } from './shared/auth/auth-guard.service';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './layouts/home/home.component'; 
+import { SearchComponent } from './layouts/search/search.component';
+import { LoginComponent } from './layouts/login/login.component';
 
 import * as $ from 'jquery';
-
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    SearchComponent,
+    LoginComponent
   ],
   imports: [
     BrowserAnimationsModule,

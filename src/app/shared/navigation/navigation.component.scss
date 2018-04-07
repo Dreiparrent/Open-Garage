@@ -1,13 +1,25 @@
 @import "../../../assets/sass/scss/variables";
 $nav-width: 40vw;
+#nav-button {
+    position: fixed;
+    right: 20px;
+    z-index: 100;
+}
 #nav-overlay {
-    background: black;
+    background: #0d0309;
     opacity: 0.5;
+    z-index: 100;
 }
 #nav-popup {
     position: fixed;
     width: $nav-width;
     right: -$nav-width;
     height: 100vh;
-    background: map-get($map: $theme-colors, $key: primary);
+    z-index: 110;
+    //background: map-get($map: $theme-colors, $key: primary);
+}
+
+.mat-button {
+    font-size: 14pt;
+    line-height: 48px;
 }

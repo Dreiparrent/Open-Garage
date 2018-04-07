@@ -3,24 +3,37 @@ import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
 
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { IconGlobe, IconRadio } from "angular-feather";
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NavigationComponent } from './navigation/navigation.component';
+import { ProfileCardComponent } from './cards/profile-card/profile-card.component';
+
+const ftIcons = [
+    IconGlobe,
+    IconRadio
+]
 
 @NgModule({
     exports: [
         CommonModule,
         NgbModule,
-        NavigationComponent
+        NavigationComponent,
+        ftIcons,
+        ProfileCardComponent
     ],
     imports: [
         RouterModule,
         CommonModule,
         NgbModule,
-        MatIconModule
+        MatIconModule,
+        ftIcons,
+        MatButtonModule
     ],
     declarations: [
-        NavigationComponent
+        NavigationComponent,
+        ProfileCardComponent
     ]
 })
 export class SharedModule { }

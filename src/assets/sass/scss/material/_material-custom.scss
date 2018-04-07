@@ -1,0 +1,6 @@
+@import '~@angular/material/theming';
+@import "style";
+@include mat-core();
+.home-search input {
+    color: white;
+}
