@@ -1,10 +1,14 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from "@angular/common";
-import { RouterModule } from "@angular/router";
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { IconGlobe, IconRadio } from "angular-feather";
+import { MatCardModule } from '@angular/material/card';
+import { IconGlobe, IconRadio } from 'angular-feather';
+import { CommunityService } from './community/community.service';
+import { CommunityGuardService } from './community/community-guard.service';
+
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -13,7 +17,7 @@ import { ProfileCardComponent } from './cards/profile-card/profile-card.componen
 const ftIcons = [
     IconGlobe,
     IconRadio
-]
+];
 
 @NgModule({
     exports: [
@@ -28,12 +32,14 @@ const ftIcons = [
         CommonModule,
         NgbModule,
         MatIconModule,
-        ftIcons,
-        MatButtonModule
+        MatButtonModule,
+        MatCardModule,
+        ftIcons
     ],
     declarations: [
         NavigationComponent,
         ProfileCardComponent
-    ]
+    ],
+    providers: [CommunityService, CommunityGuardService]
 })
 export class SharedModule { }

@@ -10,11 +10,11 @@
       true,
       "check-space"
     ],
-    "curly": true,
+    "curly": [true, "as-needed"],
     "deprecation": {
       "severity": "warn"
     },
-    "eofline": true,
+    "eofline": false,
     "forin": true,
     "import-blacklist": [
       true,

@@ -13,9 +13,9 @@ export class NavigationComponent implements OnInit {
     @ViewChild('popup') private popupElem: ElementRef;
     private popup: any;
     private overlay: any;
-    
-    //public vars
-    public isHidden: boolean = true;
+
+    // public vars
+    public isHidden = true;
     public isOpen = false;
 
     constructor() { }
@@ -39,8 +39,8 @@ export class NavigationComponent implements OnInit {
     }
 
     public closeNav(): boolean {
-        TweenMax.to($('section'), 0.5, { filter: 'blur(0)' });        
-        TweenMax.to($(this.popup), 0.3, { right: -40 + 'vw', ease: Power2.easeIn });
+        TweenMax.to($('section'), 0.5, { filter: 'blur(0)' });
+        TweenMax.to($(this.popup), 0.3, { right: -30 + 'vw', ease: Power2.easeIn });
         TweenMax.to(this.overlay, 0.3, { autoAlpha: 0, ease: Power2.easeIn, onComplete: () => {
             this.isHidden = true;
         } });

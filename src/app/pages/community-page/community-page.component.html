@@ -1,0 +1,79 @@
+<section class="jumbotron text-center bg-dark text-white">
+    <form class="row justify-content-center community-search">
+        <mat-form-field class="col-md-11 text-white dark-theme">
+            <input matInput placeholder="Search">
+        </mat-form-field>
+    </form>
+    <div hidden>
+
+    </div>
+</section>
+<section class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-11">
+            <div class="row">
+                <div class="col-8">
+                    <h2>{{ community.name }}</h2>
+                </div>
+                <div class="col-4 text-right align-center">
+                    <mat-slide-toggle color="primary">Show Web</mat-slide-toggle>
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-10 pb-2">
+            <div class="card w-100">
+                <div class="card-body">
+                    <h5 class="card-title">Community Skills</h5>
+                    <p class="card-text">
+                        A skills slider goes here
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-10 pb-2">
+            <div class="card w-100">
+                <div class="card-body row">
+                    <h5 class="card-title col-8">Community Members</h5>
+                    <div *ngIf="hasTops" class="col-4 text-right">
+                        <div>
+                            <mat-slide-toggle color="primary" placement="bottom" triggers="mouseenter:mouseleave" 
+                                ngbPopover="This feature allows you to see the connections made by a user within
+                                this community." container="body" popoverTitle="Show Webs on Click">Show Webs</mat-slide-toggle>
+                        </div>
+                    </div>
+                    <div class="card-body row col-12 mx-auto">
+                        <ng-container *ngIf="hasMembers">
+                            <div *ngFor="let profile of topMembers" class="col-12 col-md-6 col-lg-5 col-xl-3">
+                                <app-profile-card [name]="profile.name" [location]="profile.location" [connections]="profile.connections" [imgUrl]="profile.imgUrl"></app-profile-card>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <!-- TODO: change the equals below to a greaterthan -->
+                    <button *ngIf="communityMembers.length == topMembers.length" mat-button>View More</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-10 pb-2">
+            <div class="card w-100">
+                <div class="card-body row">
+                    <h5 class="card-title col-12">Message Board</h5>
+                    <div class="card-body row col-12">
+                        <ng-container *ngIf="!hasMessages; else elseTemplate">
+                            <p class="col-12">
+                                No messages
+                            </p>
+                        </ng-container>
+                        <ng-template #elseTemplate>
+                            <button mat-button>View More</button>
+                        </ng-template>
+                    </div>
+                    <!-- TODO: make this a message bar activated with joined community -->
+                    <button mat-raised-button>Message input placeholder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

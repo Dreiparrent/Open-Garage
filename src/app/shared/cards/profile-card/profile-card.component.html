@@ -1,30 +1,32 @@
-<div class="card">
-    <div class="card-body">
+<mat-card>
+    <mat-card-title>
         <div class="row text-center">
             <div class="col-6 mx-auto">
-                <img class="rounded-circle img-fluid" src="/assets/img/photos/baxter.jpg">
+                <img class="rounded-circle img-fluid" [src]="imgUrl">
             </div>
         </div>
+    </mat-card-title>
+    <mat-card-content>
         <div class="row text-center">
             <div class="col-8 mx-auto">
                 <h3>{{name}}</h3>
             </div>
         </div>
-    </div>
-    <div class="card-footer">
-        <div class="row text-center">
+    </mat-card-content>
+    <mat-card-footer>
+        <div class="row text-center mb-2">
             <div class="col-6">
-                <a placement="bottom" ngbTooltip="Location">
-                    <i-globe class="align-bottom"></i-globe>
+                <a>
+                    <i-globe placement="bottom" ngbTooltip="Location" class="align-bottom cursor-pointer"></i-globe>
                     <span>{{location}}</span>
                 </a>
             </div>
             <div class="col-6">
-                <a placement="bottom" ngbTooltip="Connections">
-                    <i-radio class="align-bottom"></i-radio>
+                <a>
+                    <i-radio placement="bottom" ngbTooltip="Connections" class="align-bottom cursor-pointer"></i-radio>
                     <span class="h-100 align-text-top">{{connections}}</span>
                 </a>
             </div>
         </div>
-    </div>
-</div>
+    </mat-card-footer>
+</mat-card>

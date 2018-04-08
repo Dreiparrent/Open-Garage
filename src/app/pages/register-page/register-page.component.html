@@ -1,0 +1,62 @@
+<mat-card>
+    <mat-card-title>Register</mat-card-title>
+    <mat-card-content class="main-content">
+        <form class="icons-tab-steps wizard-circle" #f="ngForm" #steep appWizardForm>
+            <h6>Step 1</h6>
+            <fieldset>
+                <div class="row">
+                    <mat-form-field class="col-md-12">
+                        <input matInput type="email" placeholder="Email" name="email">
+                    </mat-form-field>
+                    <mat-form-field class="col-md-12">
+                        <input matInput type="password" placeholder="Password" name="pass1">
+                    </mat-form-field>
+                    <mat-form-field class="col-md-12">
+                        <input matInput type="password" placeholder="Password" name="pass2">
+                    </mat-form-field>
+                </div>
+            </fieldset>
+            <h6>Step 2</h6>
+            <fieldset>
+                <div class="row">
+                    <mat-form-field class="col-md-12">
+                        <input matInput type="text" placeholder="Name" name="name">
+                    </mat-form-field>
+                    <mat-form-field class="col-md-12">
+                        <input matInput type="text" placeholder="Location" name="location">
+                    </mat-form-field>
+                </div>
+            </fieldset>
+            <h6>Step 3</h6>
+            <fieldset>
+                <div class="row">
+                    <mat-form-field class="col-md-12">
+                        <textarea placement="bottom" [ngbPopover]="popovers[0]" popoverTitle="Skills/Knowledge" container="body" triggers="mouseenter:mouseleave"
+                            matInput placeholder="Skills/Knowledge" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
+                    </mat-form-field>
+                    <mat-form-field class="col-md-12">
+                        <textarea placement="bottom" [ngbPopover]="popovers[1]" popoverTitle="Passions" container="body" triggers="mouseenter:mouseleave"
+                            matInput placeholder="Passions" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
+                    </mat-form-field>
+                    <mat-form-field class="col-md-12">
+                        <mat-select placement="bottom" [ngbPopover]="popovers[2]" popoverTitle="Accepted from of payment" container="body" triggers="mouseenter:mouseleave"
+                            placeholder="Accepted form of payment" multiple>
+                            <mat-option *ngFor="let payment of payments" [value]="payment">
+                                {{ payment }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </fieldset>
+            <h6>Step 4</h6>
+            <fieldset>
+                <div class="row">
+                    <mat-form-field class="col-md-12">
+                        <textarea placement="bottom" [ngbPopover]="popovers[3]" popoverTitle="Tell us a bit about yourself" container="body" triggers="mouseenter:mouseleave"
+                            matInput placeholder="Tell us about you" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
+                    </mat-form-field>
+                </div>
+            </fieldset>
+        </form>
+    </mat-card-content>
+</mat-card>

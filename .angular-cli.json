@@ -20,7 +20,8 @@
       "prefix": "app",
       "styles": [
         "assets/sass/app.scss",
-        "styles.scss"
+        "styles.scss",
+        "assets/css/wizard.css"
       ],
       "scripts": [
           "../node_modules/jquery/dist/jquery.min.js"
