@@ -1,10 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { IconGlobe, IconRadio } from 'angular-feather';
 import { CommunityService } from './community/community.service';
 import { CommunityGuardService } from './community/community-guard.service';
@@ -12,7 +8,11 @@ import { CommunityGuardService } from './community/community-guard.service';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NavigationComponent } from './navigation/navigation.component';
+import { NavigationService } from './navigation/navigation-service';
+import { NavButtonComponent } from './navigation/nav-button/nav-button.component';
 import { ProfileCardComponent } from './cards/profile-card/profile-card.component';
+
+import { MaterialImports } from './imports/material-imports.module';
 
 const ftIcons = [
     IconGlobe,
@@ -25,21 +25,25 @@ const ftIcons = [
         NgbModule,
         NavigationComponent,
         ftIcons,
-        ProfileCardComponent
+        ProfileCardComponent,
+        NavButtonComponent
     ],
     imports: [
         RouterModule,
         CommonModule,
         NgbModule,
-        MatIconModule,
-        MatButtonModule,
-        MatCardModule,
-        ftIcons
+        ftIcons,
+        MaterialImports
     ],
     declarations: [
         NavigationComponent,
-        ProfileCardComponent
+        ProfileCardComponent,
+        NavButtonComponent
     ],
-    providers: [CommunityService, CommunityGuardService]
+    providers: [
+        CommunityService,
+        CommunityGuardService,
+        NavigationService
+    ]
 })
 export class SharedModule { }

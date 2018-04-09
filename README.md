@@ -10,7 +10,12 @@ Files in this repository may be downloaded and run on test/development servers b
 
 ## Rights
 
-All files related to this resposity are copyright protected and owned by Andrei Parrent with intentions to be transferred to OpenGarage, LLC upon completion. No content of this project can be reproduced without the express written consent of either Andrei Parrent or OpenGarage, LLC for any purpose other than stated in the usage section.
+All files related to this resposity not otherwise owned by third parties are copyright protected and owned by Andrei Parrent with intentions to be transferred to OpenGarage, LLC upon completion. No content of this project can be reproduced without the express written consent of either Andrei Parrent or OpenGarage, LLC for any purpose other than stated in the usage section.
+
+## Third Parties
+
+This project uses third party modules such as ng-bootstrap and angular material which are free to use.
+The developer, Andrei Parrent, has included the GreenSock (GSAP) javascript plugin with rights to use under the developer's own "Business Green" license. Any files owned by Green Sock may not be used, or shared (and will not work) by anyone other than the developer and the client whose usage is covered by the developer's license.
 
 ## Development server
 

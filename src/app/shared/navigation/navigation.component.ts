@@ -1,50 +1,100 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input, EventEmitter } from '@angular/core';
 import * as $ from 'jquery';
+import { NavigationService } from './navigation-service';
+import { MatSidenav } from '@angular/material/sidenav';
+import { AuthService } from '../auth/auth.service';
+import { ICommunity } from '../community/community-interfaces';
+import { CommunityService } from '../community/community.service';
+import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-nav',
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss']
 })
-export class NavigationComponent implements OnInit {
+export class NavigationComponent implements OnInit, OnDestroy {
 
-    @ViewChild('overlay') private overlayElem: ElementRef;
-    @ViewChild('popup') private popupElem: ElementRef;
-    private popup: any;
-    private overlay: any;
+    @Input('sidenav') sidenav: MatSidenav;
+    @ViewChild('testToggle') testToggle: MatSlideToggle;
+    // openChange: EventEmitter<boolean>;
+    isAuth: boolean;
+    navLinks: INavLinks[];
+    communityLinks: ICommunity[];
 
-    // public vars
-    public isHidden = true;
-    public isOpen = false;
-
-    constructor() { }
+    constructor(private navService: NavigationService, private authService: AuthService, private comService: CommunityService) {
+        this.navService.listen().subscribe((m: any) => {
+            console.log('toggled', m);
+        });
+    }
 
     ngOnInit() {
-        this.popup = this.popupElem.nativeElement;
-        this.overlay = this.overlayElem.nativeElement;
-        $.getScript('/assets/js/gsap/TweenMax.min.js');
+        this.sidenav.position = 'end'; // remove to make start
+        this.sidenav.mode = 'over'; // over | push | slide
+        this.sidenav.fixedInViewport = true;
+        this.sidenav.openedChange.subscribe((m: boolean) => {
+            this.navService.toggle(m);
+        });
+        // closedStart | onPositionChanged | openedStart
+
+        this.isAuth = this.authService.isAuthenticated();
+        this.navLinks = (this.isAuth) ? authLinks : noAuthLinks;
+        if (this.isAuth)
+            this.communityLinks = this.comService.getCommunities('testID');
+
+        // TODO: Remove this
+        this.navLinks = noAuthLinks;
+        /*
+        this.testToggle.change.subscribe((m: MatSlideToggleChange) => {
+            this.toggleLogin(m);
+        });
+        */
+        $('.testclass').focusout();
     }
 
-    onClick() {
-        this.isOpen = (this.isOpen) ? this.closeNav() : this.openNav();
+    toggleLogin(m: MatSlideToggleChange) {
+        if (m.checked) {
+            this.isAuth = true;
+            this.communityLinks = this.comService.getCommunities('testID');
+            this.navLinks = authLinks;
+        } else {
+            this.isAuth = false;
+            this.communityLinks = [];
+            this.navLinks = noAuthLinks;
+        }
+    }
+    trackByIndex(index: number, value: number) {
+        return index;
     }
 
-    public openNav(): boolean {
-        this.isHidden = false;
-        TweenMax.to($('section'), 0.5, {filter: 'blur(1px)'});
-        TweenMax.to(this.popup, 0.3, { right: 0, ease: Power2.easeOut });
-        TweenMax.to(this.overlay, 0.3, { autoAlpha: 0.6, ease: Power2.easeOut });
-        return true;
+    ngOnDestroy(): void {
+        this.sidenav.openedChange.unsubscribe();
     }
-
-    public closeNav(): boolean {
-        TweenMax.to($('section'), 0.5, { filter: 'blur(0)' });
-        TweenMax.to($(this.popup), 0.3, { right: -30 + 'vw', ease: Power2.easeIn });
-        TweenMax.to(this.overlay, 0.3, { autoAlpha: 0, ease: Power2.easeIn, onComplete: () => {
-            this.isHidden = true;
-        } });
-        return false;
-    }
-
 }
+interface INavLinks {
+    display: string;
+    link: string;
+}
+const noAuthLinks: INavLinks[] = [
+    {
+        display: 'Home',
+        link: '/home'
+    },
+    {
+        display: 'Login',
+        link: '/login'
+    },
+    {
+        display: 'Register',
+        link: '/register'
+    },
+    {
+        display: 'Search',
+        link: '/search'
+    }
+];
+const authLinks: INavLinks[] = [
+    {
+        display: 'Search',
+        link: '/search'
+    }
+];

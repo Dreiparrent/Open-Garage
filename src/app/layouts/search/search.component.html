@@ -1,4 +1,9 @@
-<app-nav></app-nav>
-<div class="container-fluid full-height-vh">
-    <router-outlet></router-outlet>
-</div>
+<mat-sidenav-container>
+    <mat-sidenav #sidenav>
+        <app-nav [sidenav]="sidenav"></app-nav>
+    </mat-sidenav>
+    <mat-sidenav-content class="container-fluid full-height-vh">
+        <app-nav-button (navClick)="sidenav.toggle()"></app-nav-button>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>

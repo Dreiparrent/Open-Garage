@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
-import { ICommunity, IProfile } from './community-interfaces';
+import { ICommunity, ICommunityData, IProfile } from './community-interfaces';
 
 @Injectable()
 export class CommunityService {
 
     constructor() { }
-    getCommunity(communityID: string) {
+    // TODO: use community links
+    getCommunities(uid: string) {
+        return communities;
+    }
+    getCommunityData(communityID: string) {
         const parsed = parseInt(communityID, 10);
         if (isNaN(parsed))
-            return communities[Communities[communityID]];
-        return communities[parsed];
+            return detailCommunities[Communities[communityID]];
+        return detailCommunities[parsed];
     }
 }
+// Names
 const baxter: IProfile = {
     name: 'Baxter Cochennet',
     location: 'Denver',
@@ -24,11 +29,47 @@ const me: IProfile = {
     connections: 9,
     imgUrl: '/assets/img/photos/andrei.jpg'
 };
-const test: ICommunity = {
+// Test Communities
+const testData: ICommunityData = {
     name: 'Test Community',
     skills: 'no skills',
     members: [baxter, me],
-    messages: ''
+    messages: '',
+    link: 'test'
 };
+const test: ICommunity = {
+    name: testData.name,
+    desc: '',
+    link: testData.link
+};
+/*
+const test2Data: ICommunityData = {
+    name: 'Test Community',
+    skills: 'no skills',
+    members: [baxter, me],
+    messages: '',
+    link: 'test'
+};
+const test2: ICommunity = {
+    name: testData.name,
+    desc: '',
+    link: testData.link
+};
+
+const test3Data: ICommunityData = {
+    name: 'Test Community',
+    skills: 'no skills',
+    members: [baxter, me],
+    messages: '',
+    link: 'test'
+};
+const test3: ICommunity = {
+    name: testData.name,
+    desc: '',
+    link: testData.link
+};
+*/
+// Helpers
 enum Communities { test }
 const communities: ICommunity[] = [ test ];
+const detailCommunities: ICommunityData[] = [ testData ];

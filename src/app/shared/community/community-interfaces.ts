@@ -4,9 +4,15 @@ export interface IProfile {
     connections: number;
     imgUrl?: string;
 }
-export interface ICommunity {
+export interface ICommunityData {
     name: string;
     skills: any;
     members: IProfile[];
     messages: any;
+    link: string;
+}
+export interface ICommunity {
+    name: string;
+    desc: string;
+    link: string;
 }

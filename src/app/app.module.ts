@@ -17,6 +17,8 @@ import { LoginComponent } from './layouts/login/login.component';
 import { RegisterComponent } from './layouts/register/register.component';
 import { CommunityComponent } from './layouts/community/community.component';
 
+import { MaterialImports } from './shared/imports/material-imports.module';
+
 import * as $ from 'jquery';
 
 @NgModule({
@@ -32,7 +34,8 @@ import * as $ from 'jquery';
     BrowserAnimationsModule,
     AppRoutingModule,
     SharedModule,
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    MaterialImports
   ],
   providers: [
       AuthService,

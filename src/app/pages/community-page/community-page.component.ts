@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommunityService } from '../../shared/community/community.service';
 import { ActivatedRoute } from '@angular/router';
-import { ICommunity, IProfile } from '../../shared/community/community-interfaces';
+import { ICommunityData, IProfile } from '../../shared/community/community-interfaces';
 
 
 @Component({
@@ -10,7 +10,7 @@ import { ICommunity, IProfile } from '../../shared/community/community-interface
     styleUrls: ['./community-page.component.scss']
 })
 export class CommunityPageComponent implements OnInit {
-    community: ICommunity;
+    community: ICommunityData;
     hasMembers = false;
     hasTops = false;
     hasMessages = false;
@@ -22,7 +22,7 @@ export class CommunityPageComponent implements OnInit {
     constructor(private comService: CommunityService, private route: ActivatedRoute) { }
 
     ngOnInit() {
-        this.community = this.comService.getCommunity(this.route.snapshot.params['id']);
+        this.community = this.comService.getCommunityData(this.route.snapshot.params['id']);
         if (this.community.members.length > 0)
             this.sortMembers();
         if (this.community.messages.length > 0)

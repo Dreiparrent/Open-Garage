@@ -3,12 +3,6 @@
 //Nav Width!
 $nav-width: 30vw;
 
-
-#nav-button {
-    position: fixed;
-    right: 20px;
-    z-index: 100;
-}
 #nav-overlay {
     background: #0d0309;
     opacity: 0.5;
@@ -27,4 +21,26 @@ $nav-width: 30vw;
 .mat-button {
     font-size: 14pt;
     line-height: 48px;
+}
+.nav-button {
+    width: 50vw;
+}
+
+@media screen and (min-width: 576px) {
+
+}
+@media screen and (min-width: 768px) {
+    .nav-button {
+        width: 40vw;
+    }
+}
+@media screen and (min-width: 992px) {
+    .nav-button {
+        width: 30vw;
+    }
+}
+@media screen and (min-width: 1200px) {
+    .nav-button {
+        width: 20vw;
+    }
 }
