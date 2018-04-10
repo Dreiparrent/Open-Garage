@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { IconGlobe, IconRadio } from 'angular-feather';
-import { CommunityService } from './community/community.service';
 import { CommunityGuardService } from './community/community-guard.service';
 
 
@@ -41,9 +40,7 @@ const ftIcons = [
         NavButtonComponent
     ],
     providers: [
-        CommunityService,
-        CommunityGuardService,
-        NavigationService
+        CommunityGuardService
     ]
 })
 export class SharedModule { }

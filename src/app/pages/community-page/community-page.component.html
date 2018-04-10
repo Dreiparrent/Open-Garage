@@ -1,19 +1,10 @@
-<section class="jumbotron text-center bg-dark text-white">
-    <form class="row justify-content-center community-search">
-        <mat-form-field class="col-md-11 text-white dark-theme">
-            <input matInput placeholder="Search">
-        </mat-form-field>
-    </form>
-    <div hidden>
-
-    </div>
-</section>
+<app-community-jumbotron></app-community-jumbotron>
 <section class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-11">
+        <div class="col-12 col-md-11">
             <div class="row">
                 <div class="col-8">
-                    <h2>{{ community.name }}</h2>
+                    <h2>{{ communityData.name }}</h2>
                 </div>
                 <div class="col-4 text-right align-center">
                     <mat-slide-toggle color="primary">Show Web</mat-slide-toggle>
@@ -23,7 +14,7 @@
         </div>
     </div>
     <div class="row justify-content-center">
-        <div class="col-10 pb-2">
+        <div class="col-11 col-md-10 pb-2">
             <div class="card w-100">
                 <div class="card-body">
                     <h5 class="card-title">Community Skills</h5>
@@ -33,30 +24,37 @@
                 </div>
             </div>
         </div>
-        <div class="col-10 pb-2">
+        <div class="col-11 col-md-10 pb-2">
             <div class="card w-100">
                 <div class="card-body row">
                     <h5 class="card-title col-8">Community Members</h5>
-                    <div *ngIf="hasTops" class="col-4 text-right">
+                    <div *ngIf="showWebs && hasTops" class="col-4 text-right">
                         <div>
                             <mat-slide-toggle color="primary" placement="bottom" triggers="mouseenter:mouseleave" 
                                 ngbPopover="This feature allows you to see the connections made by a user within
                                 this community." container="body" popoverTitle="Show Webs on Click">Show Webs</mat-slide-toggle>
                         </div>
                     </div>
-                    <div class="card-body row col-12 mx-auto">
-                        <ng-container *ngIf="hasMembers">
-                            <div *ngFor="let profile of topMembers" class="col-12 col-md-6 col-lg-5 col-xl-3">
+                    <div class="card-body row col-12 mx-auto" [class.p-0]="cardNumber == 3">                      
+                        <ng-container *ngIf="hasMembers; else noMemberTemplate">
+                            <div *ngFor="let profile of topMembers" class="col-12 col-md-6 col-lg-4 col-xl-3 py-1">
                                 <app-profile-card [name]="profile.name" [location]="profile.location" [connections]="profile.connections" [imgUrl]="profile.imgUrl"></app-profile-card>
                             </div>
                         </ng-container>
+                        <ng-template #noMemberTemplate>
+                            <div class="w-100 h-100 d-flex align-content-center justify-content-center">
+                                <p>No members are a part of this community</p>
+                            </div>
+                        </ng-template>
                     </div>
-                    <!-- TODO: change the equals below to a greaterthan -->
-                    <button *ngIf="communityMembers.length == topMembers.length" mat-button>View More</button>
+                    <!-- TODO:
+                    <button *ngIf="communityMembers.length > topMembers.length" (click)="toggleComNav()" mat-button>View More</button>
+                    -->
+                    <button (click)="toggleComNav()" mat-button>View More</button>
                 </div>
             </div>
         </div>
-        <div class="col-10 pb-2">
+        <div class="col-11 col-md-10 pb-2">
             <div class="card w-100">
                 <div class="card-body row">
                     <h5 class="card-title col-12">Message Board</h5>

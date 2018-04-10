@@ -1,32 +1,24 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { CommunityPagesRoutingModule } from './community-pages-routing.module';
 import { CommunityPageComponent } from './community-page.component';
-
 import { SharedModule } from '../../shared/shared.module';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { CommunityService } from '../../shared/community/community.service';
-
+import { LayoutModule } from '@angular/cdk/layout';
+import { MaterialImports } from '../../shared/imports/material-imports.module';
+import { CommunityJumbotronComponent } from './community-jumbotron/community-jumbotron.component';
 
 @NgModule({
     imports: [
         CommonModule,
         CommunityPagesRoutingModule,
         SharedModule,
-        MatButtonModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatSlideToggleModule
+        LayoutModule,
+        MaterialImports
     ],
     declarations: [
-        CommunityPageComponent
+        CommunityPageComponent,
+        CommunityJumbotronComponent
     ],
-    providers: [
-        CommunityService
-    ]
+    providers: [ ]
 })
 export class CommunityPagesModule { }

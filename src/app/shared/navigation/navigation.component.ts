@@ -6,6 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { ICommunity } from '../community/community-interfaces';
 import { CommunityService } from '../community/community.service';
 import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-nav',
@@ -15,21 +16,27 @@ import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-to
 export class NavigationComponent implements OnInit, OnDestroy {
 
     @Input('sidenav') sidenav: MatSidenav;
+    @Input('comnav') comnav: MatSidenav;
     @ViewChild('testToggle') testToggle: MatSlideToggle;
     // openChange: EventEmitter<boolean>;
     isAuth: boolean;
     navLinks: INavLinks[];
     communityLinks: ICommunity[];
+    navSubscribe: Subscription;
+    comSubscribe: Subscription;
 
     constructor(private navService: NavigationService, private authService: AuthService, private comService: CommunityService) {
-        this.navService.listen().subscribe((m: any) => {
+        this.navSubscribe = this.navService.listen().subscribe((m: boolean) => {
             console.log('toggled', m);
+        });
+        this.comSubscribe = navService.comSenderListen().subscribe((m: boolean) => {
+            this.comnav.toggle();
         });
     }
 
     ngOnInit() {
         this.sidenav.position = 'end'; // remove to make start
-        this.sidenav.mode = 'over'; // over | push | slide
+        this.sidenav.mode = 'over'; // over | push | side
         this.sidenav.fixedInViewport = true;
         this.sidenav.openedChange.subscribe((m: boolean) => {
             this.navService.toggle(m);
@@ -48,7 +55,11 @@ export class NavigationComponent implements OnInit, OnDestroy {
             this.toggleLogin(m);
         });
         */
-        $('.testclass').focusout();
+
+        if (this.comnav !== undefined)
+            this.comnav.openedChange.subscribe((m: boolean) => {
+                this.navService.toggleCommunity(m);
+            });
     }
 
     toggleLogin(m: MatSlideToggleChange) {
@@ -68,6 +79,9 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.sidenav.openedChange.unsubscribe();
+        this.navSubscribe.unsubscribe();
+        if (this.comnav !== undefined)
+            this.comnav.openedChange.unsubscribe();
     }
 }
 interface INavLinks {

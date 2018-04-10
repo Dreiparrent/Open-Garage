@@ -1,5 +1,4 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { NavigationService } from '../navigation-service';
 
 @Component({
     selector: 'app-nav-button',
@@ -10,10 +9,9 @@ export class NavButtonComponent {
 
     @Output() navClick = new EventEmitter();
 
-    constructor(private navService: NavigationService) { }
+    constructor() { }
 
     toggleNav() {
         this.navClick.emit('click');
     }
-
 }
