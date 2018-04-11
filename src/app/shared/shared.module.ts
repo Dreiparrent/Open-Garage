@@ -12,6 +12,7 @@ import { NavButtonComponent } from './navigation/nav-button/nav-button.component
 import { ProfileCardComponent } from './cards/profile-card/profile-card.component';
 
 import { MaterialImports } from './imports/material-imports.module';
+import { SkillsSliderComponent } from './skills-slider/skills-slider.component';
 
 const ftIcons = [
     IconGlobe,
@@ -25,7 +26,8 @@ const ftIcons = [
         NavigationComponent,
         ftIcons,
         ProfileCardComponent,
-        NavButtonComponent
+        NavButtonComponent,
+        SkillsSliderComponent
     ],
     imports: [
         RouterModule,
@@ -37,7 +39,8 @@ const ftIcons = [
     declarations: [
         NavigationComponent,
         ProfileCardComponent,
-        NavButtonComponent
+        NavButtonComponent,
+        SkillsSliderComponent
     ],
     providers: [
         CommunityGuardService

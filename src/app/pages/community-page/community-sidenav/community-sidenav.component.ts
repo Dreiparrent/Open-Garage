@@ -21,16 +21,21 @@ export class CommunitySidenavComponent implements OnInit, OnDestroy {
     constructor(private comService: CommunityService) { }
 
     ngOnInit() {
-        this.comSub = this.comService.members.subscribe((members: IProfile[]) => {
-            this.members = members;
-        });
+        this.comSub = this.comService.currentMembers.subscribe(members => this.sortMembers(members));
         this.smallSub = this.comService.isSmall().subscribe((isSmall: boolean) => {
             this.comnav.mode = isSmall ? 'push' : 'side';
             this.isSmall = isSmall;
         });
-        // console.log(this.comService.currnetCommunity.getValue());
-        // this.members = this.comService.members;
-        // console.log(this.members);
+    }
+
+    sortMembers(members: IProfile[]): void {
+        this.members = members.slice().sort((profile1, profile2) => {
+            if (profile1.name > profile2.name)
+                return 1;
+            if (profile1.name < profile2.name)
+                return -1;
+            return 0;
+        });
     }
 
     toggleNav() {
@@ -39,6 +44,7 @@ export class CommunitySidenavComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.comSub.unsubscribe();
+        this.smallSub.unsubscribe();
     }
 
 }

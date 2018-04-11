@@ -1,0 +1,17 @@
+<h5 class="card-title" id="skillsTitle" (click)="skillsClick()">Community Skills</h5>
+<div (click)="skillsClick()">
+    <div ng-if="skillsArray" class="w-100 d-flex text-center cursor-pointer" appMatchHeight="matchClass">
+        <div *ngFor="let skill; of topSkills; let i=index" [ngStyle]="{'width': getStyle(skill)}">
+            <div class="tex-white matchClass" style="min-height:30px;">
+                <p [hidden]="!hideSkills" class="text-white align-middle h-100" [style.background-color]="colors[i]">{{ skill }}</p>
+                <p [hidden]="hideSkills" class="text-white align-middle m-0 h-100" [style.background-color]="colors3[i]">{{ getSkill(skill) }}</p>
+            </div>
+            <!--
+
+                <div [hidden]="!hideSkills" style="height: 5px" [style.background-color]="colors2[i]">
+                    <div [hidden]="hideSkills" style="height: 5px" [style.background-color]="colors[i]">
+                    </div>
+            -->
+        </div>
+    </div>
+</div>

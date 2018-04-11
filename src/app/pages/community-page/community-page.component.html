@@ -14,13 +14,20 @@
         </div>
     </div>
     <div class="row justify-content-center">
-        <div class="col-11 col-md-10 pb-2">
+        <div class="col-11 col-md-10 pb-3">
+            <div class="card w-100">
+                <div class="card-body p-0">
+                    <app-skills-slider></app-skills-slider>
+                </div>
+            </div>
+        </div>
+        <div class="col-11 col-md-10 pb-3">
             <div class="card w-100">
                 <div class="card-body">
-                    <h5 class="card-title">Community Skills</h5>
-                    <p class="card-text">
-                        A skills slider goes here
-                    </p>
+                    <div class="d-flex align-content-center justify-content-center" style="height: 100px">
+                            <h5 class="card-title">&lt;Card to balance Community Skills&gt;</h5>
+                    </div>
+                    <p>Skills subject to change</p>
                 </div>
             </div>
         </div>
@@ -28,7 +35,7 @@
             <div class="card w-100">
                 <div class="card-body row">
                     <h5 class="card-title col-8">Community Members</h5>
-                    <div *ngIf="showWebs && hasTops" class="col-4 text-right">
+                    <div *ngIf="cardNumber > 4 && hasTops" class="col-4 text-right">
                         <div>
                             <mat-slide-toggle color="primary" placement="bottom" triggers="mouseenter:mouseleave" 
                                 ngbPopover="This feature allows you to see the connections made by a user within

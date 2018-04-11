@@ -22,7 +22,6 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
     // Community Data
     communityData: ICommunityData;
     hasMembers = false;
-    showWebs = false;
     hasTops = false;
     hasMessages = false;
     // Memebr holders
@@ -65,13 +64,6 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
         this.hasMembers = true;
         if (this.topMembers[0].connections > 0)
             this.hasTops = true;
-        this.communityMembers.sort((profile1, profile2) => {
-            if (profile1.name > profile2.name)
-                return 1;
-            if (profile1.name < profile2.name)
-                return -1;
-            return 0;
-        });
     }
 
     getMessages() {

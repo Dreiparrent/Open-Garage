@@ -1,0 +1,4 @@
+@import "../_variables.scss";
+.gradient-#{gradVal} {
+    background-color: map-get($map: $primary-gradient, $key: gradVal);
+}

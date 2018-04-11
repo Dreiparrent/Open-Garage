@@ -2,9 +2,7 @@
     <h3 matSubheader>Community Members</h3>
     <mat-list-item *ngFor="let profile of members">
         <h3 matLine> {{profile.name}} </h3>
-        <p matLine>
-            {{profile.about}}
-        </p>
+        <p matLine style="max-width: 20vw;"> {{profile.about}} </p>
     </mat-list-item>
     <mat-divider *ngIf="!isSmall"></mat-divider>
 </mat-list>
