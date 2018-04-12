@@ -6,6 +6,8 @@ import { SharedModule } from '../../shared/shared.module';
 import { LayoutModule } from '@angular/cdk/layout';
 import { MaterialImports } from '../../shared/imports/material-imports.module';
 import { CommunityJumbotronComponent } from './community-jumbotron/community-jumbotron.component';
+import { CommunityCardComponent } from './community-card/community-card.component';
+import { CommunityMembersComponent } from './community-members/community-members.component';
 
 @NgModule({
     imports: [
@@ -17,7 +19,9 @@ import { CommunityJumbotronComponent } from './community-jumbotron/community-jum
     ],
     declarations: [
         CommunityPageComponent,
-        CommunityJumbotronComponent
+        CommunityJumbotronComponent,
+        CommunityCardComponent,
+        CommunityMembersComponent
     ],
     providers: [ ]
 })

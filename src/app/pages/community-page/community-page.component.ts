@@ -13,95 +13,38 @@ import { NavigationService } from '../../shared/navigation/navigation-service';
 })
 export class CommunityPageComponent implements OnInit, OnDestroy {
 
-    // Observerer
-    private _queryListener: () => void;
-    mobileQuery: MediaQueryList;
-    medQuery: MediaQueryList;
-    largeQuery: MediaQueryList;
-    cardNumber = 0;
-    // Community Data
-    communityData: ICommunityData;
-    hasMembers = false;
-    hasTops = false;
     hasMessages = false;
-    // Memebr holders
-    communityMembers: IProfile[] = [];
-    tmpTop: IProfile[] = [];
-    topMembers: IProfile[] = [];
 
+    // new
+    nameSub: Subscription;
+    webSub: Subscription;
+    communityName: string;
+    showWebs = false;
     tmpCom: boolean;
 
-    constructor(private comService: CommunityService, private route: ActivatedRoute,
-        private navService: NavigationService, private changeDetectorRef: ChangeDetectorRef,
-        private media: MediaMatcher) {
-        this.createObservers();
-    }
-
-    toggleComNav() {
-        console.log('click');
-        this.navService.communitySender();
+    constructor(private comService: CommunityService, private route: ActivatedRoute) {
     }
 
     ngOnInit() {
-        this.comService.currentCommunity = this.route.snapshot.params['id'];
-        this.communityData = this.comService.getCommunityData();
-        if (this.communityData.members.length > 0)
-            this.sortMembers();
+        this.nameSub = this.comService.init(this.route.snapshot.params['id']).subscribe(name => {
+            this.communityName = name;
+        });
+        this.webSub = this.comService.listenShowWeb().subscribe(showWebs => {
+            this.showWebs = showWebs;
+        });
+        this.showWebs = this.comService.showWeb;
+        /*
         if (this.communityData.messages.length > 0)
             this.getMessages();
-    }
-
-    sortMembers() {
-        this.communityMembers = this.communityData.members.slice().sort((profile1, profile2) => {
-            if (profile1.connections < profile2.connections)
-                return 1;
-            if (profile1.connections > profile2.connections)
-                return -1;
-            return 0;
-        });
-        this.tmpTop = this.communityMembers.slice(0, 8);
-        this.sortTopMembers();
-        this.hasMembers = true;
-        if (this.topMembers[0].connections > 0)
-            this.hasTops = true;
+        */
     }
 
     getMessages() {
         this.hasMessages = true;
     }
 
-    /* ** Observers and sorting ** */
-    createObservers() {
-        this.mobileQuery = this.media.matchMedia('(max-width: 600px)');
-        this._queryListener = () => {
-            this.changeDetectorRef.detectChanges();
-            this.sortMembers();
-        };
-        this.medQuery = this.media.matchMedia('(min-width: 600px) and (max-width: 1024px)');
-        this.largeQuery = this.media.matchMedia('(min-width: 1024px)');
-        this.mobileQuery.addListener(this._queryListener);
-        this.medQuery.addListener(this._queryListener);
-        this.largeQuery.addListener(this._queryListener);
-    }
-
-    sortTopMembers() {
-        this.cardNumber = this.getCardNumber();
-        this.topMembers = this.tmpTop.slice(0, this.cardNumber);
-        this.comService.makeSmall(this.cardNumber < 7);
-    }
-
-    getCardNumber(): number {
-        if (this.mobileQuery.matches)
-            return 3;
-        if (this.medQuery.matches)
-            return 6;
-        if (this.largeQuery.matches)
-            return 8;
-    }
-
     ngOnDestroy(): void {
-        this.mobileQuery.removeListener(this._queryListener);
-        this.medQuery.removeListener(this._queryListener);
-        this.largeQuery.removeListener(this._queryListener);
+        this.nameSub.unsubscribe();
+        this.webSub.unsubscribe();
     }
 }

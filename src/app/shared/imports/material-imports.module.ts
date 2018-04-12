@@ -10,6 +10,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
+import 'hammerjs';
+
 @NgModule({
     imports: [
         MatSidenavModule,
@@ -33,7 +35,8 @@ import { MatInputModule } from '@angular/material/input';
         MatExpansionModule,
         MatSlideToggleModule,
         MatFormFieldModule,
-        MatInputModule
+        MatInputModule,
+        
     ]
 })
 

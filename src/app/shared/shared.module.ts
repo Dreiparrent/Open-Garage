@@ -13,6 +13,7 @@ import { ProfileCardComponent } from './cards/profile-card/profile-card.componen
 
 import { MaterialImports } from './imports/material-imports.module';
 import { SkillsSliderComponent } from './skills-slider/skills-slider.component';
+import { CommunityPathMatcher } from './routes/community-path-matcher';
 
 const ftIcons = [
     IconGlobe,
@@ -43,7 +44,8 @@ const ftIcons = [
         SkillsSliderComponent
     ],
     providers: [
-        CommunityGuardService
+        CommunityGuardService,
+        CommunityPathMatcher
     ]
 })
 export class SharedModule { }

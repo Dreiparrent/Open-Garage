@@ -4,7 +4,7 @@
         <div class="col-12 col-md-11">
             <div class="row">
                 <div class="col-8">
-                    <h2>{{ communityData.name }}</h2>
+                    <h2>{{ communityName }}</h2>
                 </div>
                 <div class="col-4 text-right align-center">
                     <mat-slide-toggle color="primary">Show Web</mat-slide-toggle>
@@ -14,71 +14,45 @@
         </div>
     </div>
     <div class="row justify-content-center">
-        <div class="col-11 col-md-10 pb-3">
-            <div class="card w-100">
-                <div class="card-body p-0">
-                    <app-skills-slider></app-skills-slider>
+        <app-community-card [slider]="true">
+            <app-skills-slider></app-skills-slider>
+        </app-community-card>
+        <app-community-card>
+            <div class="d-flex align-content-center justify-content-center w-100">
+                <div>
+                    <h5 class="card-title">&lt;Card to balance Community Skills&gt;</h5>
+                    <p class="text-center">(Skills subject to change)</p>
+                    <p class="text-center mb-1">Possible ideas:</p>
+                    <p class="text-center mb-0">Top skills/all skills</p>
+                    <p class="text-center mb-1">Passions</p>
                 </div>
             </div>
-        </div>
-        <div class="col-11 col-md-10 pb-3">
-            <div class="card w-100">
-                <div class="card-body">
-                    <div class="d-flex align-content-center justify-content-center" style="height: 100px">
-                            <h5 class="card-title">&lt;Card to balance Community Skills&gt;</h5>
-                    </div>
-                    <p>Skills subject to change</p>
+        </app-community-card>
+        <app-community-card>
+            <h5 class="card-title col-8">Community Members</h5>
+            <div [hidden]="!showWebs" class="col-4 text-right">
+                <div>
+                    <mat-slide-toggle #webToggle color="primary" placement="bottom" triggers="mouseenter:mouseleave" 
+                        ngbPopover="This feature allows you to see the connections made by a user within this community." 
+                        container="body" popoverTitle="Show Webs on Click" (click)="members.activateWebs(webToggle.checked)">Show Webs</mat-slide-toggle>
                 </div>
             </div>
-        </div>
-        <div class="col-11 col-md-10 pb-2">
-            <div class="card w-100">
-                <div class="card-body row">
-                    <h5 class="card-title col-8">Community Members</h5>
-                    <div *ngIf="cardNumber > 4 && hasTops" class="col-4 text-right">
-                        <div>
-                            <mat-slide-toggle color="primary" placement="bottom" triggers="mouseenter:mouseleave" 
-                                ngbPopover="This feature allows you to see the connections made by a user within
-                                this community." container="body" popoverTitle="Show Webs on Click">Show Webs</mat-slide-toggle>
-                        </div>
-                    </div>
-                    <div class="card-body row col-12 mx-auto" [class.p-0]="cardNumber == 3">                      
-                        <ng-container *ngIf="hasMembers; else noMemberTemplate">
-                            <div *ngFor="let profile of topMembers" class="col-12 col-md-6 col-lg-4 col-xl-3 py-1">
-                                <app-profile-card [name]="profile.name" [location]="profile.location" [connections]="profile.connections" [imgUrl]="profile.imgUrl"></app-profile-card>
-                            </div>
-                        </ng-container>
-                        <ng-template #noMemberTemplate>
-                            <div class="w-100 h-100 d-flex align-content-center justify-content-center">
-                                <p>No members are a part of this community</p>
-                            </div>
-                        </ng-template>
-                    </div>
-                    <!-- TODO:
-                    <button *ngIf="communityMembers.length > topMembers.length" (click)="toggleComNav()" mat-button>View More</button>
-                    -->
-                    <button (click)="toggleComNav()" mat-button>View More</button>
-                </div>
+            <app-community-members #members></app-community-members>
+        </app-community-card>
+        <app-community-card>
+            <h5 class="card-title col-12">Message Board</h5>
+            <div class="card-body row col-12">
+                <ng-container *ngIf="!hasMessages; else elseTemplate">
+                    <p class="col-12">
+                        No messages
+                    </p>
+                </ng-container>
+                <ng-template #elseTemplate>
+                    <button mat-button>View More</button>
+                </ng-template>
             </div>
-        </div>
-        <div class="col-11 col-md-10 pb-2">
-            <div class="card w-100">
-                <div class="card-body row">
-                    <h5 class="card-title col-12">Message Board</h5>
-                    <div class="card-body row col-12">
-                        <ng-container *ngIf="!hasMessages; else elseTemplate">
-                            <p class="col-12">
-                                No messages
-                            </p>
-                        </ng-container>
-                        <ng-template #elseTemplate>
-                            <button mat-button>View More</button>
-                        </ng-template>
-                    </div>
-                    <!-- TODO: make this a message bar activated with joined community -->
-                    <button mat-raised-button>Message input placeholder</button>
-                </div>
-            </div>
-        </div>
+            <!-- TODO: make this a message bar activated with joined community -->
+            <button mat-raised-button>Message input placeholder</button>
+        </app-community-card>
     </div>
 </section>

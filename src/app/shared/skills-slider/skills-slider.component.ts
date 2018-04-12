@@ -29,7 +29,7 @@ export class SkillsSliderComponent implements OnInit {
     constructor(private comService: CommunityService) { }
 
     ngOnInit() {
-        this.comService.currentMembers.subscribe(members => this.sortSkills(members));
+        this.comService.members.subscribe(members => this.sortSkills(members));
     }
 
     sortSkills(members: IProfile[]) {

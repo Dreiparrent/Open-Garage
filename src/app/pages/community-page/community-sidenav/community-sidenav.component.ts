@@ -21,7 +21,7 @@ export class CommunitySidenavComponent implements OnInit, OnDestroy {
     constructor(private comService: CommunityService) { }
 
     ngOnInit() {
-        this.comSub = this.comService.currentMembers.subscribe(members => this.sortMembers(members));
+        this.comSub = this.comService.members.subscribe(members => this.sortMembers(members));
         this.smallSub = this.comService.isSmall().subscribe((isSmall: boolean) => {
             this.comnav.mode = isSmall ? 'push' : 'side';
             this.isSmall = isSmall;

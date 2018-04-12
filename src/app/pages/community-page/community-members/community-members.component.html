@@ -1,0 +1,16 @@
+<div class="card-body row col-12 mx-auto" [class.p-0]="cardNumber == 3">
+    <ng-container *ngIf="hasMembers; else noMemberTemplate">
+        <div *ngFor="let profile of topMembers" class="col-12 col-md-6 col-lg-4 col-xl-3 py-1">
+            <app-profile-card [name]="profile.name" [location]="profile.location" [connections]="profile.connections" [imgUrl]="profile.imgUrl"></app-profile-card>
+        </div>
+    </ng-container>
+    <ng-template #noMemberTemplate>
+        <div class="w-100 h-100 d-flex align-content-center justify-content-center">
+            <p>No members are a part of this community</p>
+        </div>
+    </ng-template>
+</div>
+<!-- TODO:
+            <button *ngIf="communityMembers.length > topMembers.length" (click)="toggleComNav()" mat-button>View More</button>
+            -->
+<button (click)="toggleComNav()" mat-button>View More</button>

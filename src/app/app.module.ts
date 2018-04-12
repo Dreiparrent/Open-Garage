@@ -23,6 +23,7 @@ import { NavigationService } from './shared/navigation/navigation-service';
 import { MaterialImports } from './shared/imports/material-imports.module';
 
 import * as $ from 'jquery';
+import { CommunitiesComponent } from './layouts/communities/communities.component';
 
 @NgModule({
     declarations: [
@@ -32,7 +33,8 @@ import * as $ from 'jquery';
         LoginComponent,
         RegisterComponent,
         CommunityComponent,
-        CommunitySidenavComponent
+        CommunitySidenavComponent,
+        CommunitiesComponent
     ],
     imports: [
         BrowserAnimationsModule,

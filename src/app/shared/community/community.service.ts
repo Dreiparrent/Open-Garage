@@ -9,56 +9,83 @@ export class CommunityService {
     private _navSmall = new Subject<boolean>();
     private _communityID = new BehaviorSubject('');
 
-    private _currentMessages = new Subject<IMessage[]>();
-    private _currentMembers = new BehaviorSubject<IProfile[]>([]);
-    private _currentSkills = new BehaviorSubject<ISkills[]>([]);
+    private _communityData = new BehaviorSubject<ICommunityData>(blankData);
+    private _communityName = new BehaviorSubject('');
+    private _skills = new BehaviorSubject<ISkills[]>([]);
+    private _showWeb = new Subject<boolean>();
+    private _members = new BehaviorSubject<IProfile[]>([]);
+    private _messages = new Subject<IMessage[]>();
+
     constructor() { }
-    // TODO: use community links
     getCommunities(uid: string) {
         return communities;
     }
 
-    makeSmall(isSmall: boolean) {
-        this._navSmall.next(isSmall);
+    init(id: string): BehaviorSubject<string> {
+        this.communityID = id;
+        return this._communityName;
     }
-    isSmall(): Observable<boolean> {
-        return this._navSmall.asObservable();
+    set communityID(id: string) {
+        this._communityID.next(id);
+        this.community = this.getCommunityData(id);
+    }
+    get communityID(): string {
+        return this._communityID.getValue();
     }
 
-    getCommunityData(communityID?: string) {
-        const currentID = communityID ? communityID : this._communityID.getValue();
+    set community(community: ICommunityData) {
+        this._communityData.next(community);
+        this._communityName.next(community.name);
+        this._members.next(community.members);
+        this._messages.next(community.messages);
+    }
+    get community(): ICommunityData {
+        return this._communityData.getValue();
+    }
+
+
+    // Community variables
+    get name(): string {
+        return this._communityName.getValue();
+    }
+    get members(): BehaviorSubject<IProfile[]> {
+        return this._members;
+    }
+    get messages(): Observable<IMessage[]> {
+        return this._messages;
+    }
+    listenShowWeb(): Observable<boolean> {
+        return this._showWeb.asObservable();
+    }
+    set showWeb(show: boolean) {
+        this._showWeb.next(show);
+    }
+    set skills(skills: ISkills[]) {
+        this._skills.next(skills);
+    }
+    get skills(): ISkills[] {
+        return this._skills.getValue();
+    }
+
+    // Firebase
+    getCommunity(id?: string): boolean {
+        // TODO: Replace this with link finder
+        return !!detailCommunities[Communities[id]];
+    }
+    getCommunityData(id?: string) {
+        const currentID = id ? id : this._communityID.getValue();
         const parsed = parseInt(currentID, 10);
         if (isNaN(parsed))
             return detailCommunities[Communities[currentID]];
         return detailCommunities[parsed];
     }
-    get communityID(): BehaviorSubject<string> {
-        return this._communityID;
-    }
-    set currentCommunity(id: string) {
-        this._communityID.next(id);
-        this._currentMembers.next(detailCommunities[Communities[id]].members);
-        this._currentMessages.next(detailCommunities[Communities[id]].messages);
-    }
-    get currentCommunity(): string {
-        return this._communityID.getValue();
-    }
 
-    get currentMembers(): BehaviorSubject<IProfile[]> {
-        return this._currentMembers;
+    // Helpers
+    makeSmall(isSmall: boolean) {
+        this._navSmall.next(isSmall);
     }
-    get currentMessages(): Observable<IMessage[]> {
-        return this._currentMessages;
-    }
-
-    get currentSkills(): BehaviorSubject<ISkills[]> {
-        return this._currentSkills;
-    }
-    get skills(): ISkills[] {
-        return this._currentSkills.getValue();
-    }
-    set skills(currentSkills: ISkills[]) {
-        this._currentSkills.next(currentSkills);
+    isSmall(): Observable<boolean> {
+        return this._navSmall.asObservable();
     }
 }
 // Names
@@ -81,6 +108,12 @@ const me: IProfile = {
     location: 'Denver',
     connections: 9,
     imgUrl: '/assets/img/photos/andrei.jpg'
+};
+const blankData: ICommunityData = {
+    name: '',
+    members: [],
+    messages: [],
+    link: ''
 };
 // Test Communities
 const testData: ICommunityData = {
