@@ -1,18 +1,43 @@
 <mat-card>
     <mat-card-title>Register</mat-card-title>
     <mat-card-content class="main-content">
-        <form class="icons-tab-steps wizard-circle" #f="ngForm" #steep appWizardForm>
+        <form class="icons-tab-steps wizard-circle" #f="ngForm" appWizardForm [formGroup]="formGroup" (ngSubmit)="submitRegister(formGroup.value)">
             <h6>Step 1</h6>
             <fieldset>
                 <div class="row">
                     <mat-form-field class="col-md-12">
-                        <input matInput type="email" placeholder="Email" name="email">
+                        <input matInput type="email" placeholder="Email" [formControl]="email" formControlName="email" [errorStateMatcher]="matcher">
+                        <mat-error *ngIf="email.hasError('email') && !email.hasError('required')">
+                            Please enter a valid email address
+                        </mat-error>
+                        <mat-error *ngIf="email.hasError('required')">
+                            Email is <strong>required</strong>
+                        </mat-error>
                     </mat-form-field>
                     <mat-form-field class="col-md-12">
-                        <input matInput type="password" placeholder="Password" name="pass1">
+                        <input matInput type="password" placeholder="Password" [formControl]="pass1" formControlName="pass1" [errorStateMatcher]="matcher">
+                        <mat-error *ngIf="pass1.hasError('minlength') && !pass1.hasError('required')">
+                            Please should be at least 6 characters
+                        </mat-error>
+                        <mat-error *ngIf="pass1.hasError('passMatch') && !pass1.hasError('required')">
+                            Please enter <strong>matching</strong> passwords
+                        </mat-error>
+                        <mat-error *ngIf="pass1.hasError('required')">
+                            Password is <strong>required</strong>
+                        </mat-error>
                     </mat-form-field>
                     <mat-form-field class="col-md-12">
-                        <input matInput type="password" placeholder="Password" name="pass2">
+                        <input matInput type="password" placeholder="Password" [formControl]="pass2" formControlName="pass2" [errorStateMatcher]="matcher">
+                        <mat-error *ngIf="pass2.hasError('minlength') && !pass2.hasError('required')">
+                            Please should be at least 6 characters
+                        </mat-error>
+                        <mat-error *ngIf="pass2.hasError('passMatch') && !pass2.hasError('required')">
+                            Please enter <strong>matching</strong> passwords
+                        </mat-error>
+                        <mat-error *ngIf="pass2.hasError('required')">
+                            Password is
+                            <strong>required</strong>
+                        </mat-error>
                     </mat-form-field>
                 </div>
             </fieldset>
@@ -20,10 +45,16 @@
             <fieldset>
                 <div class="row">
                     <mat-form-field class="col-md-12">
-                        <input matInput type="text" placeholder="Name" name="name">
+                        <input matInput type="text" placeholder="Name" [formControl]="name" formControlName="name" [errorStateMatcher]="matcher">
+                        <mat-error *ngIf="name.hasError('required')">
+                            Name is <strong>required</strong>
+                        </mat-error>
                     </mat-form-field>
                     <mat-form-field class="col-md-12">
-                        <input matInput type="text" placeholder="Location" name="location">
+                        <input matInput type="text" placeholder="Location" [formControl]="location" formControlName="location" [errorStateMatcher]="matcher">
+                        <mat-error *ngIf="location.hasError('required')">
+                            Location is <strong>required</strong>
+                        </mat-error>
                     </mat-form-field>
                 </div>
             </fieldset>
@@ -31,15 +62,15 @@
             <fieldset>
                 <div class="row">
                     <mat-form-field class="col-md-12">
-                        <textarea placement="bottom" [ngbPopover]="popovers[0]" popoverTitle="Skills/Knowledge" container="body" triggers="mouseenter:mouseleave"
+                        <textarea placement="bottom" [ngbPopover]="popovers.skills" popoverTitle="Skills/Knowledge" container="body" triggers="mouseenter:mouseleave"
                             matInput placeholder="Skills/Knowledge" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
                     </mat-form-field>
                     <mat-form-field class="col-md-12">
-                        <textarea placement="bottom" [ngbPopover]="popovers[1]" popoverTitle="Passions" container="body" triggers="mouseenter:mouseleave"
+                        <textarea placement="bottom" [ngbPopover]="popovers.passions" popoverTitle="Passions" container="body" triggers="mouseenter:mouseleave"
                             matInput placeholder="Passions" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
                     </mat-form-field>
                     <mat-form-field class="col-md-12">
-                        <mat-select placement="bottom" [ngbPopover]="popovers[2]" popoverTitle="Accepted from of payment" container="body" triggers="mouseenter:mouseleave"
+                        <mat-select placement="bottom" [ngbPopover]="popovers.payment" popoverTitle="Accepted from of payment" container="body" triggers="mouseenter:mouseleave"
                             placeholder="Accepted form of payment" multiple>
                             <mat-option *ngFor="let payment of payments" [value]="payment">
                                 {{ payment }}
@@ -52,7 +83,7 @@
             <fieldset>
                 <div class="row">
                     <mat-form-field class="col-md-12">
-                        <textarea placement="bottom" [ngbPopover]="popovers[3]" popoverTitle="Tell us a bit about yourself" container="body" triggers="mouseenter:mouseleave"
+                        <textarea placement="bottom" [ngbPopover]="popovers['about']" popoverTitle="Tell us a bit about yourself" container="body" triggers="mouseenter:mouseleave"
                             matInput placeholder="Tell us about you" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
                     </mat-form-field>
                 </div>

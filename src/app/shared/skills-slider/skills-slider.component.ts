@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommunityService } from '../community/community.service';
-import { IProfile, ISkills } from '../community/community-interfaces';
+import { IProfile, ICommunitySkills } from '../community/community-interfaces';
 import { IPerfLoggingPrefs } from 'selenium-webdriver/chrome';
 
 @Component({
@@ -15,10 +15,8 @@ import { IPerfLoggingPrefs } from 'selenium-webdriver/chrome';
         }`
     ]
 })
-export class SkillsSliderComponent implements OnInit {
+export class SkillsSliderComponent {
 
-    private _currentSkills: ISkills[];
-    communitySkills: string[];
     topSkills: string[];
     skillsArray;
     colors = ['#911C5E', '#821D61', '#731F63', '#642066', '#562268', '#47236B', '#38256D', '#292670'];
@@ -26,45 +24,24 @@ export class SkillsSliderComponent implements OnInit {
     colors3 = ['#c88eaf', '#b2608e', '#a23e76', '#911c5e', '#891956', '#7e144c', '#741142', '#620931'];
     colors4 = ['#620931', '#741142', '#7e144c', '#891956', '#911c5e', '#a23e76', '#b2608e', '#c88eaf'];
     hideSkills = true;
-    constructor(private comService: CommunityService) { }
+    constructor() { }
 
-    ngOnInit() {
-        this.comService.members.subscribe(members => this.sortSkills(members));
-    }
-
-    sortSkills(members: IProfile[]) {
-        this._currentSkills = [];
-        this.communitySkills = [];
-        members.forEach((member: IProfile) => {
-            this._currentSkills.push({ [member.name]: member.skills });
-            this.communitySkills = this.communitySkills.concat(member.skills);
-        });
-        this.comService.skills = this._currentSkills;
-        const freqArray = this.getTopSkills();
-        this.countTopSkills(freqArray);
-    }
-    getTopSkills(): {} {
-        const freqArray = {};
-        const frequency = {};
-        this.communitySkills.forEach(skill => {
-            freqArray[skill] = 0;
-            frequency[skill] = 0;
-        });
-        const uniques = this.communitySkills.filter((skill) => {
-            freqArray[skill]++;
-            return ++frequency[skill] === 1;
-        });
-
+    sortSkills(skills: ISkills) {
+        const uniques = [];
+        // tslint:disable-next-line:curly
+        for (const skill in skills) {
+            if (skills.hasOwnProperty(skill))
+                uniques.push(skill);
+        }
+        this.topSkills = [];
         this.topSkills = uniques.sort((a, b) => {
-            return frequency[b] - frequency[a];
+            return skills[b] - skills[a];
         }).slice(0, 6);
-        return freqArray;
+        this.countTopSkills(skills);
     }
 
     countTopSkills(frequencyList: {}) {
         const freqArray = {};
-        // const freqNumbers: number[] = Object.values(frequencyList);
-        // const totalSkills = freqNumbers.reduce((a, b) => a + b);
         let totalSkills = 0;
         this.topSkills.forEach(skill => {
             totalSkills += frequencyList[skill];
@@ -74,7 +51,6 @@ export class SkillsSliderComponent implements OnInit {
             freqArray[skill] = width;
         });
         this.skillsArray = freqArray;
-        console.log(this.skillsArray);
     }
     getStyle(skill: string) {
         return this.skillsArray[skill] + '%';
@@ -86,4 +62,7 @@ export class SkillsSliderComponent implements OnInit {
     skillsClick() {
         this.hideSkills = !this.hideSkills;
     }
+}
+interface ISkills {
+    [index: string]: number;
 }

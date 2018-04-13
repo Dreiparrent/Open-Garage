@@ -10,14 +10,15 @@ export interface IProfile {
 export interface IMessage {
     name: string;
 }
-export interface ISkills {
-    [name: string]: string[];
+export interface ICommunitySkills {
+    [skill: string]: IProfile[];
 }
 export interface ICommunityData {
     name: string;
     members: IProfile[];
     messages: IMessage[];
     link: string;
+    skills?: ICommunitySkills[];
 }
 export interface ICommunity {
     name: string;

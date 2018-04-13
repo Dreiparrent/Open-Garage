@@ -17,7 +17,6 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
 
     // new
     nameSub: Subscription;
-    webSub: Subscription;
     communityName: string;
     showWebs = false;
     tmpCom: boolean;
@@ -29,14 +28,6 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
         this.nameSub = this.comService.init(this.route.snapshot.params['id']).subscribe(name => {
             this.communityName = name;
         });
-        this.webSub = this.comService.listenShowWeb().subscribe(showWebs => {
-            this.showWebs = showWebs;
-        });
-        this.showWebs = this.comService.showWeb;
-        /*
-        if (this.communityData.messages.length > 0)
-            this.getMessages();
-        */
     }
 
     getMessages() {
@@ -45,6 +36,8 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.nameSub.unsubscribe();
-        this.webSub.unsubscribe();
+    }
+    toggleShowWebs(show: boolean) {
+        this.showWebs = show;
     }
 }

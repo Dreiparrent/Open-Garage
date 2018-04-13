@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ICommunity, ICommunityData, IProfile, IMessage, ISkills } from './community-interfaces';
+import { ICommunity, ICommunityData, IProfile, IMessage, ICommunitySkills } from './community-interfaces';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
@@ -11,7 +11,7 @@ export class CommunityService {
 
     private _communityData = new BehaviorSubject<ICommunityData>(blankData);
     private _communityName = new BehaviorSubject('');
-    private _skills = new BehaviorSubject<ISkills[]>([]);
+    private _skills = new BehaviorSubject<ICommunitySkills[]>([]);
     private _showWeb = new Subject<boolean>();
     private _members = new BehaviorSubject<IProfile[]>([]);
     private _messages = new Subject<IMessage[]>();
@@ -54,16 +54,16 @@ export class CommunityService {
     get messages(): Observable<IMessage[]> {
         return this._messages;
     }
-    listenShowWeb(): Observable<boolean> {
-        return this._showWeb.asObservable();
-    }
     set showWeb(show: boolean) {
         this._showWeb.next(show);
     }
-    set skills(skills: ISkills[]) {
+    set skills(skills: ICommunitySkills[]) {
         this._skills.next(skills);
+        const data = this._communityData.getValue();
+        data.skills = skills;
+        this._communityData.next(data);
     }
-    get skills(): ISkills[] {
+    get skills(): ICommunitySkills[] {
         return this._skills.getValue();
     }
 

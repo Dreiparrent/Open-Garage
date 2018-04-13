@@ -13,16 +13,17 @@ import { SharedModule } from '../../shared/shared.module';
 
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RegisterPagesRoutingModule,
-    MatCardModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    SharedModule
-  ],
-  declarations: [RegisterPageComponent]
+    imports: [
+        CommonModule,
+        RegisterPagesRoutingModule,
+        MatCardModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        SharedModule
+    ],
+    declarations: [RegisterPageComponent]
 })
 export class RegisterPagesModule { }

@@ -15,18 +15,11 @@
     </div>
     <div class="row justify-content-center">
         <app-community-card [slider]="true">
-            <app-skills-slider></app-skills-slider>
+            <app-skills-slider #skillsSlider></app-skills-slider>
         </app-community-card>
         <app-community-card>
-            <div class="d-flex align-content-center justify-content-center w-100">
-                <div>
-                    <h5 class="card-title">&lt;Card to balance Community Skills&gt;</h5>
-                    <p class="text-center">(Skills subject to change)</p>
-                    <p class="text-center mb-1">Possible ideas:</p>
-                    <p class="text-center mb-0">Top skills/all skills</p>
-                    <p class="text-center mb-1">Passions</p>
-                </div>
-            </div>
+            <h5 class="card-title col-12">Community Skills</h5>
+            <app-community-skills (communitySkills)="skillsSlider.sortSkills($event)"></app-community-skills>
         </app-community-card>
         <app-community-card>
             <h5 class="card-title col-8">Community Members</h5>
@@ -34,10 +27,12 @@
                 <div>
                     <mat-slide-toggle #webToggle color="primary" placement="bottom" triggers="mouseenter:mouseleave" 
                         ngbPopover="This feature allows you to see the connections made by a user within this community." 
-                        container="body" popoverTitle="Show Webs on Click" (click)="members.activateWebs(webToggle.checked)">Show Webs</mat-slide-toggle>
+                        container="body" popoverTitle="Show Webs on Click" (click)="members.activateWebs(webToggle.checked)">
+                        Show Webs
+                    </mat-slide-toggle>
                 </div>
             </div>
-            <app-community-members #members></app-community-members>
+            <app-community-members #members (showWebs)="toggleShowWebs($event)"></app-community-members>
         </app-community-card>
         <app-community-card>
             <h5 class="card-title col-12">Message Board</h5>

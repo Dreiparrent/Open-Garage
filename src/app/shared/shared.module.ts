@@ -14,6 +14,7 @@ import { ProfileCardComponent } from './cards/profile-card/profile-card.componen
 import { MaterialImports } from './imports/material-imports.module';
 import { SkillsSliderComponent } from './skills-slider/skills-slider.component';
 import { CommunityPathMatcher } from './routes/community-path-matcher';
+import { SkillsCardComponent } from './cards/skills-card/skills-card.component';
 
 const ftIcons = [
     IconGlobe,
@@ -28,7 +29,8 @@ const ftIcons = [
         ftIcons,
         ProfileCardComponent,
         NavButtonComponent,
-        SkillsSliderComponent
+        SkillsSliderComponent,
+        SkillsCardComponent
     ],
     imports: [
         RouterModule,
@@ -41,7 +43,8 @@ const ftIcons = [
         NavigationComponent,
         ProfileCardComponent,
         NavButtonComponent,
-        SkillsSliderComponent
+        SkillsSliderComponent,
+        SkillsCardComponent
     ],
     providers: [
         CommunityGuardService,

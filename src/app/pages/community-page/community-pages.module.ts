@@ -8,6 +8,7 @@ import { MaterialImports } from '../../shared/imports/material-imports.module';
 import { CommunityJumbotronComponent } from './community-jumbotron/community-jumbotron.component';
 import { CommunityCardComponent } from './community-card/community-card.component';
 import { CommunityMembersComponent } from './community-members/community-members.component';
+import { CommunitySkillsComponent } from './community-skills/community-skills.component';
 
 @NgModule({
     imports: [
@@ -21,7 +22,8 @@ import { CommunityMembersComponent } from './community-members/community-members
         CommunityPageComponent,
         CommunityJumbotronComponent,
         CommunityCardComponent,
-        CommunityMembersComponent
+        CommunityMembersComponent,
+        CommunitySkillsComponent
     ],
     providers: [ ]
 })

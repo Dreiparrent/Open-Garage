@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input, Output, EventEmitter } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
 import { IProfile } from '../../../shared/community/community-interfaces';
 import { MediaMatcher } from '@angular/cdk/layout';
@@ -11,6 +11,8 @@ import { Subscription } from 'rxjs/Subscription';
     styleUrls: ['./community-members.component.scss']
 })
 export class CommunityMembersComponent implements OnInit, OnDestroy {
+
+    @Output() showWebs = new EventEmitter<boolean>();
 
     // Observerer
     private _queryListener: () => void;
@@ -74,7 +76,10 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
         if (this.topMembers[0].connections > 0)
             this.hasTops = true;
         if (this.topMembers.length > 3)
-            this.comService.showWeb = this.hasTops;
+            this.showWebs.emit(this.hasTops);
+        else
+            this.showWebs.emit(false);
+            // this.comService.showWeb = this.hasTops;
     }
 
     sortTopMembers(tmpTop: IProfile[]) {
