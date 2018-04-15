@@ -26,15 +26,15 @@ export class NavigationComponent implements OnInit, OnDestroy {
     comSubscribe: Subscription;
 
     constructor(private navService: NavigationService, private authService: AuthService, private comService: CommunityService) {
-        this.navSubscribe = this.navService.listen().subscribe((m: boolean) => {
-            console.log('toggled', m);
-        });
-        this.comSubscribe = navService.comSenderListen().subscribe((m: boolean) => {
-            this.comnav.toggle();
-        });
     }
 
     ngOnInit() {
+        this.navSubscribe = this.navService.listen().subscribe((m: boolean) => {
+            console.log('toggled', m);
+        });
+        this.comSubscribe = this.navService.comSenderListen().subscribe((m: boolean) => {
+            this.comnav.toggle();
+        });
         this.sidenav.position = 'end'; // remove to make start
         this.sidenav.mode = 'over'; // over | push | side
         this.sidenav.fixedInViewport = true;

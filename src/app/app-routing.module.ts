@@ -5,6 +5,7 @@ import { SearchComponent } from './layouts/search/search.component';
 import { LoginComponent } from './layouts/login/login.component';
 import { RegisterComponent } from './layouts/register/register.component';
 import { CommunityComponent } from './layouts/community/community.component';
+import { CommunitiesComponent } from './layouts/communities/communities.component';
 
 import { AuthGuard } from './shared/auth/auth-guard.service';
 
@@ -13,7 +14,6 @@ import { SEARCH_ROUTES } from './shared/routes/search.routes';
 import { LOGIN_ROUTES } from './shared/routes/login.routes';
 import { REGISTER_ROUTES } from './shared/routes/register.routes';
 import { COMMUNITY_ROUTES } from './shared/routes/community.routes';
-import { CommunitiesComponent } from './layouts/communities/communities.component';
 import { COMMUNITIES_ROUTES } from './shared/routes/communities.routes';
 
 const appRoutes: Routes = [

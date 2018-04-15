@@ -5,25 +5,22 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RegisterPagesRoutingModule } from './register-pages-routing.module';
 import { RegisterPageComponent } from './register-page.component';
 
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { SharedModule } from '../../shared/shared.module';
+import { MaterialImports } from '../../shared/imports/material-imports.module';
+import { RegisterService } from './register.service';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler/src/core';
 
 
 @NgModule({
     imports: [
         CommonModule,
         RegisterPagesRoutingModule,
-        MatCardModule,
         FormsModule,
         ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        SharedModule
+        SharedModule,
+        MaterialImports
     ],
-    declarations: [RegisterPageComponent]
+    declarations: [RegisterPageComponent],
+    providers: [RegisterService]
 })
 export class RegisterPagesModule { }

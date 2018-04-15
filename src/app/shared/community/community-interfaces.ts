@@ -25,3 +25,11 @@ export interface ICommunity {
     desc: string;
     link: string;
 }
+export enum Payments {
+    'Nothing, happy to help',
+    'Pizza',
+    'Tacos',
+    'Beer (must be 21)',
+    'Wine (must be 21)',
+    'Cash'
+}

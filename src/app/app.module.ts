@@ -24,6 +24,7 @@ import { MaterialImports } from './shared/imports/material-imports.module';
 
 import * as $ from 'jquery';
 import { CommunitiesComponent } from './layouts/communities/communities.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler/src/core';
 
 @NgModule({
     declarations: [

@@ -1,15 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { CommunityService } from '../../community/community.service';
+import { ICommunitySkills, IProfile } from '../../community/community-interfaces';
 
 @Component({
-  selector: 'app-skills-card',
-  templateUrl: './skills-card.component.html',
-  styleUrls: ['./skills-card.component.scss']
+    selector: 'app-skills-card',
+    templateUrl: './skills-card.component.html',
+    styleUrls: ['./skills-card.component.scss']
 })
 export class SkillsCardComponent implements OnInit {
 
-  constructor() { }
+    @Input('skill') skill: string;
+    @Input('profiles') profiles: IProfile[];
 
-  ngOnInit() {
-  }
+    constructor() { }
+
+    ngOnInit() {
+        // console.log(this.skill, this.profiles);
+    }
 
 }

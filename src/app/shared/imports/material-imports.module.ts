@@ -9,6 +9,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
 
 import 'hammerjs';
 
@@ -23,7 +25,9 @@ import 'hammerjs';
         MatExpansionModule,
         MatSlideToggleModule,
         MatFormFieldModule,
-        MatInputModule
+        MatInputModule,
+        MatChipsModule,
+        MatSelectModule
     ],
     exports: [
         MatSidenavModule,
@@ -36,7 +40,8 @@ import 'hammerjs';
         MatSlideToggleModule,
         MatFormFieldModule,
         MatInputModule,
-        
+        MatChipsModule,
+        MatSelectModule
     ]
 })
 

@@ -7,6 +7,7 @@ export class MatchHeightDirective implements AfterViewChecked {
     // class name to match height
     @Input()
     appMatchHeight: string;
+    @Input() selectParent: boolean | string;
 
     constructor(private el: ElementRef) {
     }
@@ -16,7 +17,11 @@ export class MatchHeightDirective implements AfterViewChecked {
         this.matchHeights(this.el.nativeElement, this.appMatchHeight );
     }
 
-    matchHeights(parent: HTMLElement, className: string) {
+    matchHeights(nativeParent: HTMLElement, className: string) {
+        const parent = (className !== 'item') ? nativeParent : nativeParent.getElementsByClassName('ngxcarousel')[0]
+            .getElementsByClassName('ngxcarousel-inner')[0]
+            .getElementsByClassName('ngxcarousel-items')[0];
+
         // match height logic here
 
         if (!parent) return;

@@ -8,7 +8,7 @@ export class NavigationService {
     private _communityPre = new Subject<boolean>();
     private _communityOpen = new Subject<boolean>();
 
-    listen(): Observable<any> {
+    listen(): Observable<boolean> {
         return this._isOpen.asObservable();
     }
     toggle(isOpen: boolean) {

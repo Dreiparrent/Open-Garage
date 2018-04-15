@@ -1,2 +1,20 @@
-<!-- <app-skills-card></app-skills-card> -->
-<p>Skills cards here</p>
+<div class="card-body p-0">
+    <ngx-carousel [inputs]="carousel" (carouselLoad)="myfunc($event)" class="w-100" appMatchHeight="ngxcarousel" selectParent="true">
+        <!--
+        <ng-container *ngFor="let skill of insertSkills; let i=index">
+                <ngx-item NgxCarouselItem class="bannerStyle">
+                    <app-skills-card [skill]="skill" [profiles]="skills[skill]" class="item"></app-skills-card>
+                </ngx-item>
+            </ng-container>
+        -->
+        <ngx-item class="bannerStyle" *ngFor="let skill of insertSkills; let i=index" NgxCarouselItem>
+            <app-skills-card [skill]="skill" [profiles]="skills[skill]" class="item"></app-skills-card>
+        </ngx-item>
+        <button mat-icon-button NgxCarouselPrev class="float-left">
+            <mat-icon aria-label="Scroll skills left">navigate_before</mat-icon>
+        </button>
+        <button mat-icon-button NgxCarouselNext class="float-right">
+            <mat-icon aria-label="Scroll skills right">navigate_next</mat-icon>
+        </button>
+    </ngx-carousel>
+</div>

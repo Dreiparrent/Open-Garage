@@ -9,6 +9,7 @@ import { CommunityJumbotronComponent } from './community-jumbotron/community-jum
 import { CommunityCardComponent } from './community-card/community-card.component';
 import { CommunityMembersComponent } from './community-members/community-members.component';
 import { CommunitySkillsComponent } from './community-skills/community-skills.component';
+import { NgxCarouselModule } from 'ngx-carousel';
 
 @NgModule({
     imports: [
@@ -16,7 +17,8 @@ import { CommunitySkillsComponent } from './community-skills/community-skills.co
         CommunityPagesRoutingModule,
         SharedModule,
         LayoutModule,
-        MaterialImports
+        MaterialImports,
+        NgxCarouselModule
     ],
     declarations: [
         CommunityPageComponent,
@@ -25,6 +27,6 @@ import { CommunitySkillsComponent } from './community-skills/community-skills.co
         CommunityMembersComponent,
         CommunitySkillsComponent
     ],
-    providers: [ ]
+    providers: []
 })
 export class CommunityPagesModule { }

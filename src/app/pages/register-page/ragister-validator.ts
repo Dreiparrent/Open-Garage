@@ -1,5 +1,6 @@
 import { FormControl, FormGroupDirective, NgForm, AbstractControl } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
+import { MatChipList } from '@angular/material';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
     static matchPassword(fieldName: string) {
@@ -10,7 +11,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
             if (!control.parent)
                 return null;
 
-            if (!pass1) {
+            if (!pass2) {
                 pass2 = control;
                 pass1 = control.parent.get(fieldName) as FormControl;
 
