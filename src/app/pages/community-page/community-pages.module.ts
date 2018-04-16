@@ -10,6 +10,8 @@ import { CommunityCardComponent } from './community-card/community-card.componen
 import { CommunityMembersComponent } from './community-members/community-members.component';
 import { CommunitySkillsComponent } from './community-skills/community-skills.component';
 import { NgxCarouselModule } from 'ngx-carousel';
+import { CarouselHeightDirective } from '../../shared/directives/carousel-height.directive';
+import { MatchHeightDirective } from '../../shared/directives/match-height.directive';
 
 @NgModule({
     imports: [
@@ -25,7 +27,9 @@ import { NgxCarouselModule } from 'ngx-carousel';
         CommunityJumbotronComponent,
         CommunityCardComponent,
         CommunityMembersComponent,
-        CommunitySkillsComponent
+        CommunitySkillsComponent,
+        CarouselHeightDirective,
+        MatchHeightDirective
     ],
     providers: []
 })

@@ -1,7 +1,7 @@
-import { Component, OnInit, Output, EventEmitter, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
 import { ICommunitySkills, IProfile } from '../../../shared/community/community-interfaces';
-import { NgxCarousel } from 'ngx-carousel';
+import { NgxCarousel, NgxCarouselStore } from 'ngx-carousel';
 
 @Component({
     selector: 'app-community-skills',
@@ -16,7 +16,7 @@ import { NgxCarousel } from 'ngx-carousel';
         }
     `]
 })
-export class CommunitySkillsComponent implements OnInit, AfterViewInit {
+export class CommunitySkillsComponent implements OnInit {
 
     insertSkills: string[];
     carousel: NgxCarousel;
@@ -42,10 +42,6 @@ export class CommunitySkillsComponent implements OnInit, AfterViewInit {
         this.comService.members.subscribe(members => this.sortSkills(members));
     }
 
-    ngAfterViewInit() {
-        // $('.item').css('height', '100%');
-    }
-
     sortSkills(members: IProfile[]) {
         console.log('sort');
         const comSkills: number[] = [];
@@ -67,11 +63,11 @@ export class CommunitySkillsComponent implements OnInit, AfterViewInit {
         this.insertSkills = inSkills.sort();
     }
 
-    public myfunc(event: Event) {
-        console.log(event);
+    public cLoad(event: Event) {
+        // console.log('test');
+        // console.log(event);
         // carouselLoad will trigger this funnction when your load value reaches
         // it is helps to load the data by parts to increase the performance of the app
         // must use feature to all carousel
     }
-
 }

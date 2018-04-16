@@ -6,7 +6,10 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { IProfile } from '../../../shared/community/community-interfaces';
 import { Component, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
-@Component({ selector: 'app-skills-card', template: ''})
+@Component({
+    selector: 'app-skills-card', template: `
+    <h4>{{skill}}</h4><ul><li *ngFor="let profile of profiles">{{profile.name}}</li></ul>
+`})
 class StubSkillCardComponent {
     @Input('skill') skill;
     @Input('profiles') profiles;
@@ -15,11 +18,17 @@ class StubSkillCardComponent {
 describe('CommunitySkillsComponent', () => {
     let component: CommunitySkillsComponent;
     let fixture: ComponentFixture<CommunitySkillsComponent>;
+    let element: HTMLElement;
+    const testMembers: IProfile[] = [
+        <IProfile>{ name: 'test 1', skills: ['s1', 's2', 's3'] },
+        <IProfile>{ name: 'test 2', skills: ['s1', 's2', 's3'] },
+        <IProfile>{ name: 'test 3', skills: ['s1', 's2', 's3'] },
+    ];
 
     beforeEach(async(() => {
         const mockComService = {
             get members() {
-                return new BehaviorSubject<IProfile[]>([]);
+                return new BehaviorSubject<IProfile[]>(testMembers);
             }
         };
         TestBed.configureTestingModule({
@@ -35,10 +44,26 @@ describe('CommunitySkillsComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(CommunitySkillsComponent);
         component = fixture.componentInstance;
+        element = fixture.nativeElement;
         fixture.detectChanges();
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    describe('Card Bindings', () => {
+        it('should have 3 cards', () => {
+            expect(element.getElementsByTagName('app-skills-card').length).toEqual(3);
+        });
+        it('should bind correct card skills', () => {
+            expect(element.getElementsByTagName('app-skills-card')[0].children[0].textContent).toEqual('s1');
+        });
+        it('should bind correct card profiles', () => {
+            expect(element.getElementsByTagName('app-skills-card')[0].children[1].childElementCount).toEqual(3);
+            expect(element.getElementsByTagName('app-skills-card')[0].children[1].children[0].textContent).toEqual('test 1');
+            expect(element.getElementsByTagName('app-skills-card')[0].children[1].children[1].textContent).toEqual('test 2');
+            expect(element.getElementsByTagName('app-skills-card')[0].children[1].children[2].textContent).toEqual('test 3');
+        });
     });
 });

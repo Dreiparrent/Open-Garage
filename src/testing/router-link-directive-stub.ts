@@ -1,5 +1,4 @@
-/*
-import { Directive, Input } from '@angular/core';
+import { Directive, Input, NgModule } from '@angular/core';
 @Directive({
     // tslint:disable-next-line:directive-selector
     selector: '[routerLink]',
@@ -16,4 +15,9 @@ export class RouterLinkDirectiveStub {
         this.navigatedTo = this.linkParams;
     }
 }
-*/
+@NgModule({
+    declarations: [
+        RouterLinkDirectiveStub,
+    ]
+})
+export class StubRouterLinkModule {}
