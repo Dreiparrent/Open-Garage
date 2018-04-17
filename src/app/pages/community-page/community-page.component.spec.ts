@@ -4,8 +4,7 @@ import { CommunityPageComponent } from './community-page.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommunityService } from '../../shared/community/community.service';
 import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs/observable/of';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { of, BehaviorSubject } from 'rxjs';
 
 describe('CommunityPageComponent', () => {
     let component: CommunityPageComponent;

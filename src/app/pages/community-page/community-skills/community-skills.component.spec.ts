@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CommunitySkillsComponent } from './community-skills.component';
 import { CommunityService } from '../../../shared/community/community.service';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 import { IProfile } from '../../../shared/community/community-interfaces';
 import { Component, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 

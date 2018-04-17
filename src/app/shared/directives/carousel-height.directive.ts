@@ -17,24 +17,14 @@ export class CarouselHeightDirective implements AfterViewChecked {
     }
 
     matchHeights(carousel: HTMLElement, className: string) {
-        // carousel.style.height = '500px';
-        // const children = carousel.firstChild
-        // const idk = carousel.getElementsByClassName
-        // $(carousel).css('background-color', 'red');
-        //    getElementsByClassName('ngxcarousel')[0];
-
-        // const carouselDiv = carousel.getElementsByClassName(className)[0];
         const carouselDiv = carousel.getElementsByClassName(className)[0];
         const cItems = carouselDiv.firstElementChild.firstElementChild.childNodes as NodeListOf<Element>;
-
-        // console.log(cItems);
 
         const preChildren = [];
         const children = [];
         Array.from(cItems).forEach((x: HTMLElement) => {
-            if (x.childNodes[1])
-                // console.log(x.childNodes[1].firstChild);
-                children.push(x.childNodes[1].firstChild);
+            if (x.childNodes[0])
+                children.push(x.childNodes[0].firstChild);
         });
 
         Array.from(children).forEach((x: HTMLElement) => {

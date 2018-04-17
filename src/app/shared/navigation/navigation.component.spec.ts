@@ -7,8 +7,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, Component, EventEmitter } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AppRoutingModule } from '../../app-routing.module';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs/observable/of';
-import { Observable } from 'rxjs/Observable';
+import { of, Observable } from 'rxjs';
 import { NavigationService } from './navigation-service';
 import { AuthService } from '../auth/auth.service';
 import { CommunityService } from '../community/community.service';
@@ -55,6 +54,11 @@ describe('NavigationComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(NavigationComponent);
         component = fixture.componentInstance;
+        /*
+        const mockSide = jasmine.createSpyObj('MatSidenav', ['openChange', 'toggle']);
+        mockSide.openChange.and.returnValue(new EventEmitter<boolean>(false));
+        mockSide.tpggle.and.returnValue(new Promise<void>(() => { }));
+        /*
         const mockSide = <MatSidenav>{
             get openedChange() {
                 return new EventEmitter<boolean>(false);
@@ -63,6 +67,7 @@ describe('NavigationComponent', () => {
         };
         component.sidenav = mockSide;
         component.comnav = mockSide;
+        */
         fixture.detectChanges();
     });
 

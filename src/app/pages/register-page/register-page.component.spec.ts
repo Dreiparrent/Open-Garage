@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RegisterPageComponent } from './register-page.component';
 import { FormBuilder, ReactiveFormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs/';
 import { CUSTOM_ELEMENTS_SCHEMA, forwardRef } from '@angular/core';
 import { RegisterService, IRegister } from './register.service';
 import { MatInputModule, MatChipsModule, MatSelectModule } from '@angular/material';

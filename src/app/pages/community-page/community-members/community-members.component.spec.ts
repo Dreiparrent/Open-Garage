@@ -6,7 +6,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, Component, Input, DebugElement } from '@angular
 import { NavigationService } from '../../../shared/navigation/navigation-service';
 import { CommunityService } from '../../../shared/community/community.service';
 import { MediaMatcher } from '@angular/cdk/layout';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 import { By } from '@angular/platform-browser';
 
 @Component({

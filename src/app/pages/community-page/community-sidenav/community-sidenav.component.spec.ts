@@ -3,9 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommunitySidenavComponent } from './community-sidenav.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject, of } from 'rxjs';
 import { IProfile } from '../../../shared/community/community-interfaces';
-import { of } from 'rxjs/observable/of';
 
 describe('CommunitySidenavComponent', () => {
     let component: CommunitySidenavComponent;

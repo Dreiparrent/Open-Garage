@@ -25,6 +25,9 @@ import { MaterialImports } from './shared/imports/material-imports.module';
 import * as $ from 'jquery';
 import { CommunitiesComponent } from './layouts/communities/communities.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler/src/core';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+import { SwUpdateService } from './sw-update.service';
 
 @NgModule({
     declarations: [
@@ -42,13 +45,15 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler/src/core';
         AppRoutingModule,
         SharedModule,
         NgbModule.forRoot(),
-        MaterialImports
+        MaterialImports,
+        ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
     ],
     providers: [
         AuthService,
         AuthGuard,
         NavigationService,
-        CommunityService
+        CommunityService,
+        SwUpdateService
     ],
     bootstrap: [AppComponent]
 })
