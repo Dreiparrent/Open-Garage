@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ICommunity, ICommunityData, IProfile, IMessage, ICommunitySkills } from './community-interfaces';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject, Subject, Observable } from 'rxjs';
 
 @Injectable()
 export class CommunityService {

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, EventEmitter, Input } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
 import { IProfile } from '../../../shared/community/community-interfaces';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({

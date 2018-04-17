@@ -3,7 +3,7 @@ import { CommunityService } from '../../../shared/community/community.service';
 import { IProfile } from '../../../shared/community/community-interfaces';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { NavigationService } from '../../../shared/navigation/navigation-service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-community-members',

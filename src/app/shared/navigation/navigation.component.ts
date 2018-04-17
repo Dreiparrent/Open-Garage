@@ -6,7 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { ICommunity } from '../community/community-interfaces';
 import { CommunityService } from '../community/community.service';
 import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-nav',

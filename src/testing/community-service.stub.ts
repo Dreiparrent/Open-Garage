@@ -1,8 +1,5 @@
 import { ICommunity, ICommunityData, IProfile, IMessage, ICommunitySkills } from '../app/shared/community/community-interfaces';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { BehaviorSubject, Subject, Observable, of } from 'rxjs';
 
 export class CommunityServiceStub {
     getCommunities(uid: string): ICommunity[] {

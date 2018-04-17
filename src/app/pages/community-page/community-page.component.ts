@@ -3,7 +3,7 @@ import { BreakpointObserver, Breakpoints, BreakpointState, MediaMatcher } from '
 import { CommunityService } from '../../shared/community/community.service';
 import { ActivatedRoute } from '@angular/router';
 import { ICommunityData, IProfile } from '../../shared/community/community-interfaces';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { NavigationService } from '../../shared/navigation/navigation-service';
 
 @Component({
