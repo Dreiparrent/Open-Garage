@@ -17,9 +17,13 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
 
     // new
     nameSub: Subscription;
+    membersSub: Subscription;
+    skillsSub: Subscription;
     communityName: string;
     showWebs = false;
     tmpCom: boolean;
+    searchMembers = false;
+    searchSkills = false;
 
     constructor(private comService: CommunityService, private route: ActivatedRoute) {
     }
@@ -28,16 +32,21 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
         this.nameSub = this.comService.init(this.route.snapshot.params['id']).subscribe(name => {
             this.communityName = name;
         });
+        this.membersSub = this.comService.searchMembers.subscribe(m => this.searchMembers = (m.length > 0));
+        this.skillsSub = this.comService.searchSkills.subscribe(s => this.searchSkills = (s.length > 0));
     }
 
     getMessages() {
         this.hasMessages = true;
     }
 
-    ngOnDestroy(): void {
-        this.nameSub.unsubscribe();
-    }
     toggleShowWebs(show: boolean) {
         this.showWebs = show;
+    }
+
+    ngOnDestroy(): void {
+        this.nameSub.unsubscribe();
+        this.membersSub.unsubscribe();
+        this.skillsSub.unsubscribe();
     }
 }

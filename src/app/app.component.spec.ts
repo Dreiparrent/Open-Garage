@@ -1,14 +1,18 @@
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed, async, ComponentFixture, inject } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Injectable } from '@angular/core';
+import { SwUpdateService } from './sw-update.service';
 
 describe('AppComponent', () => {
-    // const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
-    // const heroServiceSpy = jasmine.createSpyObj('HeroService', ['getHeroes']);
+    let mockSw;
     beforeEach(async(() => {
+        mockSw = jasmine.createSpyObj('SwUpdate', ['open']);
         TestBed.configureTestingModule({
             declarations: [
                 AppComponent
+            ],
+            providers: [
+                { provide: SwUpdateService, useValue: mockSw }
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA]
         }).compileComponents();

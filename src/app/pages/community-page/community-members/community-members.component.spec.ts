@@ -6,7 +6,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, Component, Input, DebugElement } from '@angular
 import { NavigationService } from '../../../shared/navigation/navigation-service';
 import { CommunityService } from '../../../shared/community/community.service';
 import { MediaMatcher } from '@angular/cdk/layout';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { By } from '@angular/platform-browser';
 
 @Component({
@@ -22,6 +22,8 @@ describe('CommunityMembersComponent', () => {
     let fixture: ComponentFixture<CommunityMembersComponent>;
     let firstCard: DebugElement;
     let element: HTMLElement;
+    let mockComService;
+    let _searchMembers;
 
     const testMembersArray: IProfile[] = [
         <IProfile>{
@@ -46,11 +48,18 @@ describe('CommunityMembersComponent', () => {
 
     beforeEach(async(() => {
         const mockNavService = {};
-        const mockComService = {
+        _searchMembers = new Subject<string[]>();
+        mockComService = {
             get members() {
                 return new BehaviorSubject<IProfile[]>(testMembersArray);
             },
             set members(mems) {
+            },
+            get searchMembers() {
+                return _searchMembers;
+            },
+            set searchMembers(sm) {
+                _searchMembers.next(sm);
             },
             makeSmall: (isSmall: boolean) => {}
         };
@@ -124,6 +133,15 @@ describe('CommunityMembersComponent', () => {
             component.sortMembers();
             fixture.detectChanges();
             expect(element.getElementsByTagName('app-profile-card').length).toEqual(3);
+        });
+        it('should have 1 search member', () => {
+            mockComService.searchMembers = ['test 4'];
+            fixture.detectChanges();
+            expect(element.getElementsByTagName('app-profile-card').length).toEqual(1);
+        });
+        it('shoudl bind seach members', () => {
+            // TODO:
+            expect(true).toEqual(false);
         });
     });
 });

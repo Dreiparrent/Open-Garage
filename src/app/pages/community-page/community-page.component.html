@@ -18,11 +18,11 @@
             <app-skills-slider #skillsSlider></app-skills-slider>
         </app-community-card>
         <app-community-card>
-            <h5 class="card-title col-12">Community Skills</h5>
+            <h5 class="card-title col-12">{{!searchSkills? 'Community Skills' : 'Searched Community Skills' }}</h5>
             <app-community-skills class="w-100" (communitySkills)="skillsSlider.sortSkills($event)"></app-community-skills>
         </app-community-card>
         <app-community-card>
-            <h5 class="card-title col-8">Community Members</h5>
+            <h5 class="card-title col-8">{{!searchMembers? 'Community Members' : 'Searched Community Members'}}</h5>
             <div [hidden]="!showWebs" class="col-4 text-right">
                 <div>
                     <mat-slide-toggle #webToggle color="primary" placement="bottom" triggers="mouseenter:mouseleave" 

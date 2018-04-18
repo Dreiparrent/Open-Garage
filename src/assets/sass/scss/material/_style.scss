@@ -22,3 +22,31 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 .dark-theme {
     @include angular-material-theme($dark-theme);
 }
+
+// Search Theme
+$search-primary: mat-palette($material-primary);
+$search-accent:  mat-palette($material-secondary, A200, A100, A400);
+$search-warn: mat-palette($mat-red);
+
+$search-theme: mat-dark-theme($search-primary, $search-accent, $search-warn);
+
+.search-theme {
+    @include angular-material-theme($search-theme);
+    background-color: transparent !important;
+    .mat-icon {
+        font-size: 16pt;
+    }
+    .feather {
+        vertical-align: middle;
+        margin-right: 16px;
+    }
+    .mat-option {
+        font-size: 10pt;
+        height: 28px;
+        line-height: 28px;
+        padding: 0;
+        .mat-option.text {
+            font-size: 12pt;
+        }
+    }
+}

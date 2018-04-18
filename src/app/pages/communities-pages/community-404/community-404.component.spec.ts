@@ -1,25 +1,27 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Community404Component } from './community-404.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('Community404Component', () => {
-  let component: Community404Component;
-  let fixture: ComponentFixture<Community404Component>;
+    let component: Community404Component;
+    let fixture: ComponentFixture<Community404Component>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ Community404Component ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [Community404Component],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(Community404Component);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(Community404Component);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

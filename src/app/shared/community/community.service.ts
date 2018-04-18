@@ -14,6 +14,9 @@ export class CommunityService {
     private _members = new BehaviorSubject<IProfile[]>([]);
     private _messages = new Subject<IMessage[]>();
 
+    private _searchMembers = new Subject<string[]>();
+    private _searchSkills = new Subject<string[]>();
+
     constructor() { }
     getCommunities(uid: string) {
         return communities;
@@ -63,6 +66,18 @@ export class CommunityService {
     }
     get skills(): ICommunitySkills[] {
         return this._skills.getValue();
+    }
+
+    // Search parameters
+    get searchMembers(): Observable<string[]> {
+        return this._searchMembers;
+    }
+    updateSearch(members: string[], skills: string[]) {
+        this._searchMembers.next(members);
+        this._searchSkills.next(skills);
+    }
+    get searchSkills(): Observable<string[]> {
+        return this._searchSkills;
     }
 
     // Firebase

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material';
 import { UpdateAvailableEvent } from '@angular/service-worker/src/low_level';
+import { interval } from 'rxjs';
 
 @Injectable()
 export class SwUpdateService {

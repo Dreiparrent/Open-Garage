@@ -21,11 +21,13 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     largeQuery: MediaQueryList;
     cardNumber = 0;
     membersSub: Subscription;
+    searchSub: Subscription;
     // Community Data
     hasMembers = false;
     hasTops = false;
     hasMessages = false;
     // Memebr holders
+    tmpMembers: IProfile[] = [];
     communityMembers: IProfile[] = [];
     topMembers: IProfile[] = [];
 
@@ -36,9 +38,13 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.membersSub = this.comService.members.subscribe(members => {
+            this.tmpMembers = members.slice();
             this.communityMembers = members.slice();
             if (members.length > 0)
                 this.sortMembers();
+        });
+        this.searchSub = this.comService.searchMembers.subscribe(members => {
+            this.searchMembers(members);
         });
     }
 
@@ -73,6 +79,7 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
         });
         this.sortTopMembers(this.communityMembers.slice(0, 8));
         this.hasMembers = true;
+        // TODO: sort out when no connections exist;
         if (this.topMembers[0].connections > 0)
             this.hasTops = true;
         if (this.topMembers.length > 3)
@@ -84,6 +91,8 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
 
     sortTopMembers(tmpTop: IProfile[]) {
         this.cardNumber = this.getCardNumber();
+        if (tmpTop.length <= this.cardNumber)
+            this.cardNumber = tmpTop.length;
         this.topMembers = tmpTop.slice(0, this.cardNumber);
         this.comService.makeSmall(this.cardNumber < 7);
     }
@@ -95,10 +104,25 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
         if (this.largeQuery.matches)
             return 8;
     }
+
+    searchMembers(members: string[]) {
+        if (members.length > 0) {
+            this.communityMembers = [];
+            members.forEach(member => {
+                this.communityMembers = this.communityMembers.concat(this.tmpMembers.filter(m => m.name === member));
+            });
+            this.sortMembers();
+        } else {
+            this.communityMembers = this.tmpMembers;
+            this.sortMembers();
+        }
+    }
+
     ngOnDestroy(): void {
         this.mobileQuery.removeListener(this._queryListener);
         this.medQuery.removeListener(this._queryListener);
         this.largeQuery.removeListener(this._queryListener);
         this.membersSub.unsubscribe();
+        this.searchSub.unsubscribe();
     }
 }

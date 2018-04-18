@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CommunityComponent } from './community.component';
 import { StubSideNav, StubNavButton, StubComNav, ROComponent, StubSN, StubSNContent, StubSNContainer } from '../../../testing/layout.stub';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 
 describe('CommunityComponent', () => {
@@ -20,6 +21,7 @@ describe('CommunityComponent', () => {
                 StubSNContent,
                 StubSNContainer
             ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA]
         })
             .compileComponents();
     }));

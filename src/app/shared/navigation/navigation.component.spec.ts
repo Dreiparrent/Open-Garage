@@ -12,7 +12,7 @@ import { NavigationService } from './navigation-service';
 import { AuthService } from '../auth/auth.service';
 import { CommunityService } from '../community/community.service';
 import { CommunityServiceStub } from '../../../testing/community-service.stub';
-import { MatSidenav } from '@angular/material';
+import { MatSidenav, MatDrawerToggleResult } from '@angular/material';
 
 // tslint:disable-next-line:component-selector
 @Component({ selector: 'router-outlet', template: '' })
@@ -54,20 +54,14 @@ describe('NavigationComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(NavigationComponent);
         component = fixture.componentInstance;
-        /*
-        const mockSide = jasmine.createSpyObj('MatSidenav', ['openChange', 'toggle']);
-        mockSide.openChange.and.returnValue(new EventEmitter<boolean>(false));
-        mockSide.tpggle.and.returnValue(new Promise<void>(() => { }));
-        /*
         const mockSide = <MatSidenav>{
             get openedChange() {
                 return new EventEmitter<boolean>(false);
             },
-            toggle: () => new Promise<void>(() => { })
+            toggle: () => new Promise<MatDrawerToggleResult>(() => { })
         };
         component.sidenav = mockSide;
         component.comnav = mockSide;
-        */
         fixture.detectChanges();
     });
 

@@ -14,6 +14,12 @@ describe('CommunityPageComponent', () => {
         init: (id) => {
             const componentName = (id === 'test') ? 'Test Name' : 'Invalid router snap id';
             return new BehaviorSubject<string>(componentName);
+        },
+        get searchMembers() {
+            return of(['']);
+        },
+        get searchSkills() {
+            return of(['']);
         }
     };
     const mockRouter = jasmine.createSpyObj('Router', ['members']);
