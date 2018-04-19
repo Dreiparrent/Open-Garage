@@ -140,8 +140,10 @@ describe('CommunityMembersComponent', () => {
             expect(element.getElementsByTagName('app-profile-card').length).toEqual(1);
         });
         it('shoudl bind seach members', () => {
-            // TODO:
-            expect(true).toEqual(false);
+            mockComService.searchMembers = ['test 4'];
+            fixture.detectChanges();
+            expect(element.getElementsByTagName('app-profile-card')[0].children[0].textContent).toEqual('test 4');
+            expect(element.getElementsByTagName('app-profile-card')[0].children[1].textContent).toEqual('26');
         });
     });
 });

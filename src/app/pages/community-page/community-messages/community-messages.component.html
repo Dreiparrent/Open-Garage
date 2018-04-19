@@ -1,0 +1,23 @@
+<div class="card-body px-4">
+    <mat-list class="row d-flex">
+        <mat-list-item class="col-12 ml-auto" *ngFor="let message of messages">
+            <h6 matLine class="my-0 row-fluid d-flex">
+                <ng-container *ngIf="message.sender !== ownName; then thenTemplate; else elseTemplate"></ng-container>
+                <ng-template #thenTemplate>
+                    <!--mb-2-->
+                    <span *ngIf="message.sender !== ownName" class="col-8 col-md-9 col-lg-10 text-right">{{ message.message }}</span>
+                    <!--my-2-->
+                    <small class="display-block col-4 col-md-3 col-lg-2 text-left cursor-pointer" style="padding-top: 3px" (click)="nameClick(message.sender)">
+                        {{ message.sender }}
+                    </small>
+                </ng-template>
+                <ng-template #elseTemplate>
+                    <small class="display-block col-1 text-right" style="padding-top: 3px">You</small>
+                    <span class="col-11 text-left text-left">{{ message.message }}</span>
+                </ng-template>                
+            </h6>
+            <div matLine *ngIf="false"></div>
+            <mat-divider></mat-divider>
+        </mat-list-item>
+    </mat-list>    
+</div>

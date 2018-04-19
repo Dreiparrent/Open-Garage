@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
 import { ICommunitySkills, IProfile } from '../../../shared/community/community-interfaces';
 import { NgxCarousel, NgxCarouselStore } from 'ngx-carousel';
@@ -27,6 +27,7 @@ export class CommunitySkillsComponent implements OnInit, OnDestroy {
     skills: ICommunitySkills[] = [];
     membersSub: Subscription;
     searchSub: Subscription;
+    @ViewChild('carouselElem') carouselElem: CarouselElement;
 
     constructor(private comService: CommunityService) { }
 
@@ -79,6 +80,7 @@ export class CommunitySkillsComponent implements OnInit, OnDestroy {
                 this.skills[skill] = this.tmpSkills[skill];
                 this.insertSkills.push(skill);
             });
+            this.carouselElem.moveTo(0);
         } else {
             this.skills = this.tmpSkills;
             this.insertSkills = this.tmpInsert;

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommunityService } from '../../community/community.service';
 import { ICommunitySkills, IProfile } from '../../community/community-interfaces';
 
@@ -7,15 +7,18 @@ import { ICommunitySkills, IProfile } from '../../community/community-interfaces
     templateUrl: './skills-card.component.html',
     styleUrls: ['./skills-card.component.scss']
 })
-export class SkillsCardComponent implements OnInit {
+export class SkillsCardComponent {
 
     @Input('skill') skill: string;
     @Input('profiles') profiles: IProfile[];
 
-    constructor() { }
+    constructor(private comService: CommunityService) { }
 
-    ngOnInit() {
-        // console.log(this.skill, this.profiles);
+    cardClick() {
+        this.comService.updateSearch(this.profiles.map(p => p.name), [this.skill]);
+    }
+    nameClick(profile) {
+        this.comService.updateSearch([profile], []);
     }
 
 }

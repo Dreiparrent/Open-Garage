@@ -58,5 +58,7 @@ interface StepsSettings {
         previous?: string;
         loading?: string;
     }
-
+}
+interface CarouselElement {
+    moveTo: (n: number) => void;
 }

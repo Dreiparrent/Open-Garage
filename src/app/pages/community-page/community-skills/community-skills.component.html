@@ -1,5 +1,5 @@
 <div class="card-body p-0">
-    <ngx-carousel [inputs]="carousel" (carouselLoad)="cLoad($event)" class="w-100"  appCarouselHeight="ngxcarousel">
+    <ngx-carousel [inputs]="carousel" (carouselLoad)="cLoad($event)" class="w-100" #carouselElem appCarouselHeight="ngxcarousel">
         <ngx-item class="bannerStyle" *ngFor="let skill of insertSkills; let i=index" NgxCarouselItem>
             <app-skills-card [skill]="skill" [profiles]="skills[skill]" class="item"></app-skills-card>
         </ngx-item>

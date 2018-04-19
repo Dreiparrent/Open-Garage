@@ -2,14 +2,15 @@
     <mat-card-title>
         <div class="row text-center">
             <div class="col-11 mx-auto">
-                <h4> {{ skill }} </h4>
+                <h4 (click)="cardClick()" class="cursor-pointer"> {{ skill }} </h4>
             </div>
         </div>
     </mat-card-title>
     <mat-card-content>
         <div class="row text-center">
             <mat-list role="list" class="d-flex row" dense appMatchHeight="matchClass">
-                <mat-list-item role="listitem" *ngFor="let profile of profiles" style="height: auto;" class="matchClass col-12 d-flex justify-content-center text-center">
+                <mat-list-item role="listitem" *ngFor="let profile of profiles" style="height: auto;" (click)="nameClick(profile.name)"
+                    class="matchClass col-12 d-flex justify-content-center text-center cursor-pointer">
                     {{ profile.name }}
                 </mat-list-item>
             </mat-list>

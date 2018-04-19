@@ -80,8 +80,13 @@ describe('CommunitySkillsComponent', () => {
             expect(element.getElementsByTagName('app-skills-card').length).toEqual(1);
         });
         it('should bind search member', () => {
-            // TODO:
-            expect(true).toEqual(false);
+            // component.carouselElem.moveTo(0);
+            // fixture.detectChanges(); // Is Defined?
+            spyOn(component.carouselElem, 'moveTo');
+            mockComService.searchSkills = ['special'];
+            fixture.detectChanges();
+            expect(element.getElementsByTagName('app-skills-card')[0].children[0].textContent).toEqual('special');
+            expect(element.getElementsByTagName('app-skills-card')[0].children[1].children[0].textContent).toEqual('test 3');
         });
     });
 });

@@ -13,7 +13,7 @@ import { NavigationService } from '../../shared/navigation/navigation-service';
 })
 export class CommunityPageComponent implements OnInit, OnDestroy {
 
-    hasMessages = false;
+    hasMessages = true;
 
     // new
     nameSub: Subscription;
@@ -42,6 +42,10 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
 
     toggleShowWebs(show: boolean) {
         this.showWebs = show;
+    }
+
+    clearSearch() {
+        this.comService.updateSearch([], []);
     }
 
     ngOnDestroy(): void {

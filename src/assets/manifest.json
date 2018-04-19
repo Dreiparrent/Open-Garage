@@ -1,7 +1,7 @@
 {
   "name": "Open Garage",
   "short_name": "OpenGarage",
-  "theme_color": "#1976d2",
+  "theme_color": "#620931",
   "background_color": "#fafafa",
   "display": "browser",
   "Scope": "/",
