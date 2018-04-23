@@ -25,12 +25,32 @@
                                 "glob": "favicon.ico",
                                 "input": "src",
                                 "output": "/"
+                            },
+                            {
+                                "glob": "apple-touch-icon.png",
+                                "input": "src",
+                                "output": "/"
+                            },
+                            {
+                                "glob": "apple-touch-icon-precomposed.png",
+                                "input": "src",
+                                "output": "/"
                             }
                         ],
                         "styles": [
                             "src/styles.scss",
-                            "src/assets/sass/app.scss",
-                            "src/assets/css/wizard.css"
+                            {
+                                "input": "src/assets/sass/app.scss",
+                                "lazy": true
+                            },
+                            {
+                                "input": "src/assets/css/wizard.css",
+                                "lazy": true
+                            },
+                            {
+                                "input": "node_modules/snazzy-info-window/dist/snazzy-info-window.scss",
+                                "lazy": true
+                            }
                         ],
                         "scripts": [
                             "node_modules/jquery/dist/jquery.min.js",
