@@ -1,3 +1,14 @@
-<p>
-  Communities Page
-</p>
+
+
+<div style="height: 100%; width: 100%; position: relative;">
+    <agm-map #mainMap [latitude]="lat" [longitude]="lng" (mapReady)="mapsReady($event)"
+    [ngStyle]="{'height': height}">
+    <agm-marker *ngFor="let pin of pins" [latitude]="pin.lat" [longitude]="pin.lng" [iconUrl]="comIcon">
+        <agm-snazzy-info-window [closeWhenOthersOpen]="true">
+            <ng-template>
+                {{ pin.name }}
+            </ng-template>
+        </agm-snazzy-info-window>
+    </agm-marker>
+</agm-map>
+</div>

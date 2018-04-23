@@ -29,6 +29,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SwUpdateService } from './sw-update.service';
 
+import { AgmCoreModule } from '@agm/core';
+import { AgmSnazzyInfoWindowModule } from '@agm/snazzy-info-window';
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -46,7 +49,11 @@ import { SwUpdateService } from './sw-update.service';
         SharedModule,
         NgbModule.forRoot(),
         MaterialImports,
-        ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
+        ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
+        AgmCoreModule.forRoot({
+            apiKey: 'AIzaSyARGMZgt5yZG663ImbWcvs3Qu0-kSRS-o8'
+        }),
+        AgmSnazzyInfoWindowModule
     ],
     providers: [
         AuthService,

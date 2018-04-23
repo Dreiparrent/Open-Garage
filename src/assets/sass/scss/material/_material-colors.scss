@@ -1,3 +1,4 @@
+/*
 $material-primary: (
     50 : #f2e4ec,
     100 : #debbcf,
@@ -13,6 +14,39 @@ $material-primary: (
     A200 : #ff629f,
     A400 : #ff2f80,
     A700 : #ff1571,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+*/
+$material-primary: (
+    50 : #f2e3ec,
+    100 : #deb9cf,
+    200 : #c88aaf,
+    300 : #b25b8e,
+    400 : #a23e76,
+    500 : #91155e,
+    600 : #790c4d,
+    700 : #6a1147,
+    800 : #660b41,
+    900 : #57103a,
+    A100 : #ff93bf,
+    A200 : #ff60a1,
+    A400 : #ff1a7f,
+    A700 : #e60062,
     contrast: (
         50 : #000000,
         100 : #000000,

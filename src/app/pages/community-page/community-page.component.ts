@@ -15,6 +15,9 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
 
     hasMessages = true;
 
+    // TODO: remove or update this
+    hovered = false;
+
     // new
     nameSub: Subscription;
     membersSub: Subscription;

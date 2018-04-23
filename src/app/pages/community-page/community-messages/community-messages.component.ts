@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
+import { IProfile } from '../../../shared/community/community-interfaces';
 
 @Component({
     selector: 'app-community-messages',
@@ -9,6 +10,17 @@ import { CommunityService } from '../../../shared/community/community.service';
 export class CommunityMessagesComponent implements OnInit {
 
     ownName = 'Random Person';
+    hoverNumber = -1;
+
+    searchProfile: IProfile = {
+        name: '',
+        location: '',
+        connections: 0,
+        imgUrl: '',
+        about: '',
+        skills: [],
+        passions: []
+    };
 
     messages: IMessageDisplay[] = [
         {
@@ -36,6 +48,17 @@ export class CommunityMessagesComponent implements OnInit {
 
     nameClick(name: string) {
         this.comService.updateSearch([name], []);
+    }
+
+    mouseOver(i: number, name?: string) {
+        this.hoverNumber = i;
+        // TODO: fix this to use actual profile data if chosen
+        if (name)
+            this.searchProfile = this.comService.members.getValue().find(p => p.name === name);
+        // $(this.profileElem.children[i]).addClass('text-primary');
+    }
+    mouseOut(i: number) {
+        this.hoverNumber = -1;
     }
 
 }

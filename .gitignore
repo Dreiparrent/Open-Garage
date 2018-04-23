@@ -2,9 +2,11 @@
 
 # compiled output
 /dist
+/dist-old
 /dist-server
 /tmp
 /out-tsc
+/stats.json
 
 # dependencies
 /node_modules

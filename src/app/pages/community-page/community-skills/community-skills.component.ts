@@ -15,6 +15,12 @@ import { Subscription } from 'rxjs';
             text-align: center;
             line-height: 300px;
         }
+        .ngxcarouselPoint li {
+            backgrount-color: #620931 !important;
+        }
+        .ngxcarouselPoint li.active {
+            background-color: #911c5e !important;
+        }
     `]
 })
 export class CommunitySkillsComponent implements OnInit, OnDestroy {

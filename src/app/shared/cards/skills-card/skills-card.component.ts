@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { CommunityService } from '../../community/community.service';
 import { ICommunitySkills, IProfile } from '../../community/community-interfaces';
 
@@ -11,6 +11,7 @@ export class SkillsCardComponent {
 
     @Input('skill') skill: string;
     @Input('profiles') profiles: IProfile[];
+    hoverNumber = -1;
 
     constructor(private comService: CommunityService) { }
 
@@ -19,6 +20,13 @@ export class SkillsCardComponent {
     }
     nameClick(profile) {
         this.comService.updateSearch([profile], []);
+    }
+
+    mouseOver(i: number) {
+        this.hoverNumber = i;
+    }
+    mouseOut(i: number) {
+        this.hoverNumber = -1;
     }
 
 }

@@ -24,10 +24,16 @@
             <app-community-skills class="w-100" (communitySkills)="skillsSlider.sortSkills($event)"></app-community-skills>
         </app-community-card>
         <app-community-card>
+            <h5 class="card-text col-8">
+                <span *ngIf="searchMembers" (click)="clearSearch()" (mouseover)="hovered=true" (mouseout)="hovered=flase" class="cursor-pointer">{{hovered? 'Clear Search?' : 'Searched '}}</span>
+            {{ (hovered && searchMembers) ? '' : 'Community Members' }}</h5>
             <!--TODO: add has members qualifier-->
+            <!--
             <h5 class="card-title col-8">
                 <span *ngIf="searchMembers" (click)="clearSearch()" matTooltip="Clear search?" matTooltipPosition="left" class="cursor-pointer">Searched </span>
-                Community Members</h5>
+                Community Members
+            </h5>
+            -->
             <div [hidden]="!showWebs" class="col-4 text-right">
                 <div>
                     <mat-slide-toggle #webToggle color="primary" placement="bottom" triggers="mouseenter:mouseleave" 
