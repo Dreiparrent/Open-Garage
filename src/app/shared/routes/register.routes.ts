@@ -5,6 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 export const REGISTER_ROUTES: Routes = [
     {
         path: 'register',
-        loadChildren: './pages/register-page/register-pages.module#RegisterPagesModule'
+        loadChildren: '../../pages/register-page/register-pages.module#RegisterPagesModule'
+        // loadChildren: './pages/register-page/register-pages.module#RegisterPagesModule'
     }
 ];

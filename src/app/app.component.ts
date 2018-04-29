@@ -22,7 +22,11 @@ export class AppComponent implements OnInit {
         const style = head.getElementsByTagName('style')[0];
 
         head.insertBefore(link, style);
+<<<<<<< HEAD
+        /*
+=======
 
+>>>>>>> a318778de48355fce8f0c7dbc2119aae429c540a
         if (environment.production) {
             const link2 = document.createElement('link');
             // link2.href =
@@ -31,11 +35,21 @@ export class AppComponent implements OnInit {
             link2.type = 'text/css';
             head.insertBefore(link2, style);
         }
+<<<<<<< HEAD
+        */
+    }
+    /*
+=======
     }
 
+>>>>>>> a318778de48355fce8f0c7dbc2119aae429c540a
     loadScript(scriptUrl: string) {
         const script = document.createElement('script');
         script.src = scriptUrl;
         document.body.appendChild(script);
     }
+<<<<<<< HEAD
+    */
+=======
+>>>>>>> a318778de48355fce8f0c7dbc2119aae429c540a
 }

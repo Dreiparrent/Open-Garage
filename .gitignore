@@ -6,6 +6,7 @@
 /dist-server
 /tmp
 /out-tsc
+/statsgraph
 /stats.json
 
 # dependencies

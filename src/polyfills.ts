@@ -38,7 +38,7 @@
 // import 'classlist.js';  // Run `npm install --save classlist.js`.
 
 /** IE10 and IE11 requires the following for the Reflect API. */
-// import 'core-js/es6/reflect';
+import 'core-js/es6/reflect';
 
 
 /** Evergreen browsers require these. **/
@@ -60,7 +60,22 @@ import 'core-js/es7/reflect';
 import 'zone.js/dist/zone';  // Included with Angular CLI.
 
 
-
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+ /*
+// tslint:disable-next-line:curly
+if (process.env.ENV === 'production') {
+    // require('core-js/es6/reflect');
+    // require('core-js/es7/reflect');
+    // Production
+    // require('zone.js/dist/zone');
+    // require('zone.js');
+} else {
+    console.log('THIS IS NOT PROD', process.env.ENV);
+    // Development and test
+    Error['stackTraceLimit'] = Infinity;
+    require('zone.js/dist/long-stack-trace-zone');
+}
+*/
