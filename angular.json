@@ -31,6 +31,10 @@
                             "src/styles.scss",
                             "src/assets/sass/app.scss",
                             {
+                                "input": "src/assets/css/bootstrap.min.css",
+                                "lazy": true
+                            },
+                            {
                                 "input": "src/assets/css/wizard.css",
                                 "lazy": true
                             },
