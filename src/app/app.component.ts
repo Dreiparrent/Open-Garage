@@ -13,13 +13,23 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
+        /*
         const head = document.getElementsByTagName('head')[0];
-
+        const style = head.getElementsByTagName('style')[0];
+        if (environment.production) {
+            const link2 = document.createElement('link');
+            // link2.href =
+            link2.href = 'styles.*.css';
+            link2.rel = 'stylesheet';
+            link2.type = 'text/css';
+            head.insertBefore(link2, style);
+        }
+        */
+        /*
         const link = document.createElement('link');
         link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
         link.rel = 'stylesheet';
         link.type = 'text/css';
-        const style = head.getElementsByTagName('style')[0];
 
         head.insertBefore(link, style);
 
@@ -31,6 +41,7 @@ export class AppComponent implements OnInit {
             link2.type = 'text/css';
             head.insertBefore(link2, style);
         }
+        */
     }
 
     loadScript(scriptUrl: string) {

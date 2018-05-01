@@ -37,7 +37,7 @@
             <div [hidden]="!showWebs" class="col-4 text-right">
                 <div>
                     <mat-slide-toggle #webToggle color="primary" placement="bottom" triggers="mouseenter:mouseleave" 
-                        ngbPopover="This feature allows you to see the connections made by a user within this community." 
+                        popover="This feature allows you to see the connections made by a user within this community." 
                         container="body" popoverTitle="Show Webs on Click" (click)="members.activateWebs(webToggle.checked)">
                         Show Webs
                     </mat-slide-toggle>

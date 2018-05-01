@@ -10,19 +10,19 @@
                     <!--mb-2-->
                     <span *ngIf="message.sender !== ownName" class="col-8 col-md-9 col-lg-10 text-right">{{ message.message }}</span>
                     <!--my-2-->
-                    <small  placement="top" triggers="mouseenter:mouseleave" [ngbPopover]="profileContainer" container="body"
+                    <!--
+                    <small  placement="top" triggers="mouseenter:mouseleave" [popover]="profileContainer" container="body"
                         class="display-block col-4 col-md-3 col-lg-2 text-left cursor-pointer" style="padding-top: 3px" 
                         [ngClass]="{ 'text-primary' : i === hoverNumber }"
                         (mouseover)="mouseOver(i, message.sender)" (mouseout)="mouseOut(i)" (click)="nameClick(message.sender)">
                         {{ message.sender }}
                     </small>
-                    <!--
+                    -->
                     <small class="display-block col-4 col-md-3 col-lg-2 text-left cursor-pointer" style="padding-top: 3px" 
                         [ngClass]="{ 'text-primary' : i === hoverNumber }"
                         (mouseover)="mouseOver(i, message.sender)" (mouseout)="mouseOut(i)" (click)="nameClick(message.sender)">
                         {{ message.sender }}
                     </small>
-                     -->
                 </ng-template>
                 <ng-template #elseTemplate>
                     <small class="display-block col-1 text-right" style="padding-top: 3px">You</small>

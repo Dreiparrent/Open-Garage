@@ -17,13 +17,15 @@
         <div class="row text-center mb-2">
             <div class="col-6">
                 <a>
-                    <i-globe placement="bottom" ngbTooltip="Location" class="align-bottom cursor-pointer"></i-globe>
+                    <mat-icon placement="bottom" tooltip="Location" class="align-middle">my_location</mat-icon>
+                    <!--<i-globe placement="bottom" ngbTooltip="Location" class="align-bottom cursor-pointer"></i-globe>-->
                     <span>{{location}}</span>
                 </a>
             </div>
             <div class="col-6">
                 <a>
-                    <i-radio placement="bottom" ngbTooltip="Connections" class="align-bottom cursor-pointer"></i-radio>
+                    <mat-icon placement="bottom" tooltip="Connections" class="align-middle">wifi_tethering</mat-icon>
+                   <!-- <i-radio placement="bottom" ngbTooltip="Connections" class="align-bottom cursor-pointer"></i-radio>-->
                     <span class="h-100 align-text-top">{{connections}}</span>
                 </a>
             </div>

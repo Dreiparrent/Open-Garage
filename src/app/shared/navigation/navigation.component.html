@@ -6,6 +6,9 @@
                 [routerLink]="nav.link" routerLinkActive="mat-list-item-focus"> {{ nav.display }} </a>
             <mat-divider *ngIf="isAuth"></mat-divider>
             <h3 matSubheader *ngIf="isAuth">Your Communities</h3>
+            <a mat-list-item class="cursor-pointer" routerLink="/community" routerLinkActive="mat-list-item-focus">
+                Communities
+            </a>
             <a mat-list-item class="cursor-pointer" *ngFor="let com of communityLinks"
                 [routerLink]="['/community',com.link]" routerLinkActive="mat-list-item-focus"> {{ com.name }} </a>
         </mat-nav-list>

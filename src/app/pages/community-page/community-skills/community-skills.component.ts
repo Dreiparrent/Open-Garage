@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 @Component({
     selector: 'app-community-skills',
     templateUrl: './community-skills.component.html',
-    styleUrls: ['./community-skills.component.scss'],
+    // styleUrls: ['./community-skills.component.scss'],
     styles: [`
         .bannerStyle {
             background-color: #ccc;
@@ -33,7 +33,7 @@ export class CommunitySkillsComponent implements OnInit, OnDestroy {
     skills: ICommunitySkills[] = [];
     membersSub: Subscription;
     searchSub: Subscription;
-    @ViewChild('carouselElem') carouselElem: CarouselElement;
+    @ViewChild('carouselElem') carouselElem: any; // CarouselElement
 
     constructor(private comService: CommunityService) { }
 

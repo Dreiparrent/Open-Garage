@@ -69,7 +69,7 @@
             <fieldset>
                 <div class="row">
                     <mat-form-field class="col-md-12" hintLabel="Separate with comma or semicolon">
-                        <mat-chip-list #skillsList [errorStateMatcher]="matcher" placement="bottom" [ngbPopover]="popovers.skills" popoverTitle="Skills/Knowledge" container="body" triggers="mouseenter:mouseleave">
+                        <mat-chip-list #skillsList [errorStateMatcher]="matcher" placement="bottom" [popover]="popovers.skills" popoverTitle="Skills/Knowledge" container="body" triggers="mouseenter:mouseleave">
                             <mat-chip *ngFor="let skill of inputSkills" [selectable]="true" [removable]="true" (remove)="removeChip(skill, 0)">
                                 {{ skill }}
                                 <mat-icon matChipRemove>cancel</mat-icon>
@@ -82,7 +82,7 @@
                         </mat-chip-list>
                     </mat-form-field>
                     <mat-form-field class="col-md-12" hintLabel="Separate with comma or semicolon">
-                        <mat-chip-list #passionsList [errorStateMatcher]="matcher" placement="bottom" [ngbPopover]="popovers.passions"
+                        <mat-chip-list #passionsList [errorStateMatcher]="matcher" placement="bottom" [popover]="popovers.passions"
                             popoverTitle="Passions" container="body" triggers="mouseenter:mouseleave">
                             <mat-chip *ngFor="let passion of inputPassions" [selectable]="true" [removable]="true" (remove)="removeChip(passion, 1)">
                                 {{ passion }}
@@ -96,7 +96,7 @@
                         </mat-chip-list>
                     </mat-form-field>
                     <mat-form-field class="col-md-12">
-                        <mat-select placement="bottom" formControlName="payment" [ngbPopover]="popovers.payment" popoverTitle="Accepted from of payment" container="body" triggers="mouseenter:mouseleave"
+                        <mat-select placement="bottom" formControlName="payment" [popover]="popovers.payment" popoverTitle="Accepted from of payment" container="body" triggers="mouseenter:mouseleave"
                             placeholder="Accepted form of payment" [errorStateMatcher]="matcher" multiple>
                             <mat-option *ngFor="let payment of payments" [value]="payment">
                                 {{ payment }}
@@ -112,7 +112,7 @@
             <fieldset>
                 <div class="row">
                     <mat-form-field class="col-md-12">
-                        <textarea placement="bottom" [ngbPopover]="popovers['about']" popoverTitle="Tell us a bit about yourself" container="body" triggers="mouseenter:mouseleave"
+                        <textarea placement="bottom" [popover]="popovers['about']" popoverTitle="Tell us a bit about yourself" container="body" triggers="mouseenter:mouseleave"
                             matInput formControlName="about" [errorStateMatcher]="matcher" placeholder="Tell us about you" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
                             <mat-error *ngIf="getError('about', 'required')">
                                 About is <strong>required</strong>

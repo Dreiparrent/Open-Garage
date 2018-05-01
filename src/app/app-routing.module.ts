@@ -1,11 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
-import { HomeComponent } from './layouts/home/home.component';
-import { SearchComponent } from './layouts/search/search.component';
 import { LoginComponent } from './layouts/login/login.component';
 import { RegisterComponent } from './layouts/register/register.component';
-import { CommunityComponent } from './layouts/community/community.component';
-import { CommunitiesComponent } from './layouts/communities/communities.component';
+import { MainComponent } from './layouts/main/main.component';
 
 import { AuthGuard } from './shared/auth/auth-guard.service';
 
@@ -22,12 +19,12 @@ const appRoutes: Routes = [
         redirectTo: 'home',
         pathMatch: 'full',
     },
-    { path: '', component: HomeComponent, data: { title: 'Home' }, children: HOME_ROUTES},
-    { path: '', component: SearchComponent, data: { title: 'Search' }, children: SEARCH_ROUTES, canActivate: [AuthGuard] },
-    { path: '', component: LoginComponent, data: { title: 'Login' }, children: LOGIN_ROUTES },
-    { path: '', component: RegisterComponent, data: { title: 'Login' }, children: REGISTER_ROUTES },
-    { path: '', component: CommunityComponent, data: { title: 'Community' }, children: COMMUNITY_ROUTES },
-    { path: '', component: CommunitiesComponent, data: {title: 'Communities'}, children: COMMUNITIES_ROUTES }
+    { path: '', component: MainComponent, data: { title: 'Home', side: false }, children: HOME_ROUTES},
+    { path: '', component: MainComponent, data: { title: 'Search', side: false }, children: SEARCH_ROUTES, canActivate: [AuthGuard] },
+    { path: '', component: LoginComponent, data: { title: 'Login', side: false }, children: LOGIN_ROUTES },
+    { path: '', component: RegisterComponent, data: { title: 'Login', side: false }, children: REGISTER_ROUTES },
+    { path: '', component: MainComponent, data: { title: 'Community', side: true }, children: COMMUNITY_ROUTES },
+    { path: '', component: MainComponent, data: { title: 'Communities', side: false}, children: COMMUNITIES_ROUTES }
 ];
 
 @NgModule({

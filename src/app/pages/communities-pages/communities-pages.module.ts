@@ -13,7 +13,9 @@ import { AgmSnazzyInfoWindowModule } from '@agm/snazzy-info-window';
         CommonModule,
         CommunitiesPagesRoutingModule,
         MaterialImports,
-        AgmCoreModule,
+        AgmCoreModule.forRoot({
+            apiKey: 'AIzaSyARGMZgt5yZG663ImbWcvs3Qu0-kSRS-o8'
+        }),
         AgmSnazzyInfoWindowModule
     ],
     declarations: [
