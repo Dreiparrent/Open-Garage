@@ -3,6 +3,7 @@ import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
 import { LoginComponent } from './layouts/login/login.component';
 import { RegisterComponent } from './layouts/register/register.component';
 import { MainComponent } from './layouts/main/main.component';
+import { CommunitiesComponent } from './layouts/communities/communities.component';
 
 import { AuthGuard } from './shared/auth/auth-guard.service';
 
@@ -24,7 +25,7 @@ const appRoutes: Routes = [
     { path: '', component: LoginComponent, data: { title: 'Login', side: false }, children: LOGIN_ROUTES },
     { path: '', component: RegisterComponent, data: { title: 'Login', side: false }, children: REGISTER_ROUTES },
     { path: '', component: MainComponent, data: { title: 'Community', side: true }, children: COMMUNITY_ROUTES },
-    { path: '', component: MainComponent, data: { title: 'Communities', side: false}, children: COMMUNITIES_ROUTES }
+    { path: '', component: CommunitiesComponent, data: { title: 'Communities', side: false}, children: COMMUNITIES_ROUTES }
 ];
 
 @NgModule({

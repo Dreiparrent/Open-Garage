@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 export class NavigationComponent implements OnInit, OnDestroy {
 
     @Input('sidenav') sidenav: MatSidenav;
-    @Input('comnav') comnav: MatSidenav;
+    @Input('extnav') extnav: MatSidenav;
     @ViewChild('testToggle') testToggle: MatSlideToggle;
     // openChange: EventEmitter<boolean>;
     isAuth: boolean;
@@ -33,7 +33,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
             console.log('toggled', m);
         });
         this.comSubscribe = this.navService.comSenderListen().subscribe((m: boolean) => {
-            this.comnav.toggle();
+            this.extnav.toggle();
         });
         this.sidenav.position = 'end'; // remove to make start
         this.sidenav.mode = 'over'; // over | push | side
@@ -56,8 +56,8 @@ export class NavigationComponent implements OnInit, OnDestroy {
         });
         */
 
-        if (this.comnav !== undefined)
-            this.comnav.openedChange.subscribe((m: boolean) => {
+        if (this.extnav !== undefined)
+            this.extnav.openedChange.subscribe((m: boolean) => {
                 this.navService.toggleCommunity(m);
             });
     }
@@ -80,8 +80,8 @@ export class NavigationComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.sidenav.openedChange.unsubscribe();
         this.navSubscribe.unsubscribe();
-        if (this.comnav !== undefined)
-            this.comnav.openedChange.unsubscribe();
+        if (this.extnav !== undefined)
+            this.extnav.openedChange.unsubscribe();
     }
 }
 interface INavLinks {

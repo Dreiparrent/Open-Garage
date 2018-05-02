@@ -61,7 +61,7 @@ describe('NavigationComponent', () => {
             toggle: () => new Promise<MatDrawerToggleResult>(() => { })
         };
         component.sidenav = mockSide;
-        component.comnav = mockSide;
+        component.extnav = mockSide;
         fixture.detectChanges();
     });
 

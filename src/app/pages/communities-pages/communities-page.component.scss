@@ -1,0 +1,20 @@
+section {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+aside {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: transparent;
+}
+
+@media screen and (max-width: 600px) {
+    aside {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        background: transparent;
+    }
+}

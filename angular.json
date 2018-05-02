@@ -17,15 +17,41 @@
                         "polyfills": "src/polyfills.ts",
                         "assets": [
                             {
-                                "glob": "**/*",
+                                "glob": "favicon.ico",
+                                "input": "src",
+                                "output": "/"
+                            },
+                            {
+                                "glob": "apple-touch-icon-precomposed.png",
+                                "input": "src",
+                                "output": "/"
+                            },
+                            {
+                                "glob": "apple-touch-icon.png",
+                                "input": "src",
+                                "output": "/"
+                            },
+                            {
+                                "glob": "manifest.json",
                                 "input": "src/assets",
                                 "output": "/assets"
                             },
                             {
-                                "glob": "favicon.ico",
-                                "input": "src",
-                                "output": "/"
+                                "glob": "icons/*",
+                                "input": "src/assets",
+                                "output": "/assets"
+                            },
+                            {
+                                "glob": "img/**/*",
+                                "input": "src/assets",
+                                "output": "/assets"
+                            },
+                            {
+                                "glob": "js/*",
+                                "input": "src/assets",
+                                "output": "/assets"
                             }
+                            
                         ],
                         "styles": [
                             "src/styles.scss",

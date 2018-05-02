@@ -25,6 +25,7 @@ import * as $ from 'jquery';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SwUpdateService } from './sw-update.service';
+import { CommunitiesComponent } from './layouts/communities/communities.component';
 
 @NgModule({
     declarations: [
@@ -33,6 +34,7 @@ import { SwUpdateService } from './sw-update.service';
         LoginComponent,
         RegisterComponent,
         CommunitySidenavComponent,
+        CommunitiesComponent,
     ],
     imports: [
         BrowserAnimationsModule,
