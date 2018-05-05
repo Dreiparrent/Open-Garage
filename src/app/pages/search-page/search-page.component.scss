@@ -1,0 +1,20 @@
+#search {
+    height: 40vh;
+}
+.comCard {
+    margin-left: 15px !important;
+}
+
+@media screen and (min-width: "768px") {
+    #search {
+        height: 100vh;
+    }
+    #results {
+        height: 100vh;
+        overflow-y: scroll;
+        // overflow-y: hidden;
+    }
+    .comCard {
+        margin-left: 0 !important;
+    }
+}

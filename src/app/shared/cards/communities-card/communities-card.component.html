@@ -1,0 +1,44 @@
+<mat-card class="pt-0">
+    <picture>
+        <source [srcset]="community.img.webp">
+        <source [srcset]="community.img.jpf">
+        <img id="card-img" mat-card-image [src]="community.img.else" alt="home background">
+    </picture>
+    <mat-card-title>
+        <!--
+        <div class="row text-center">
+            <div class="col-6 mx-auto">
+                <img class="rounded-circle img-fluid" [src]="imgUrl" role="figure" alt="profile photo">
+            </div>
+        </div>
+        -->
+        <div class="row text-center">
+            <div class="col-11 mx-auto">
+                <h3>{{ community.name }}</h3>
+            </div>
+        </div>
+    </mat-card-title>
+    <mat-card-content>
+        <div class="row text-center">
+            <div class="col-11 mx-auto">
+                <p>{{ community.desc }}</p>
+            </div>
+        </div>
+    </mat-card-content>
+    <mat-card-footer>
+        <div class="row text-center mb-2">
+            <div class="col-6">
+                <a>
+                    <mat-icon placement="bottom" tooltip="Location" class="align-middle cursor-pointer">my_location</mat-icon>
+                    <span> {{ community.location }}</span>
+                </a>
+            </div>
+            <div class="col-6">
+                <a>
+                    <mat-icon placement="bottom" tooltip="Members" class="align-middle cursor-pointer">people</mat-icon>
+                    <span class="h-100 align-text-top"> {{ community.members }}</span>
+                </a>
+            </div>
+        </div>
+    </mat-card-footer>
+</mat-card>

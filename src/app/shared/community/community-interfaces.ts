@@ -20,9 +20,22 @@ export interface ICommunityData {
     link: string;
     skills?: ICommunitySkills[];
 }
+export interface INavigation {
+    lat: number;
+    lng: number;
+}
 export interface ICommunity {
     name: string;
     desc: string;
+    img: {
+        jpf: string;
+        webp: string;
+        else: string;
+    };
+    location: string;
+    nav: INavigation;
+    hyp: number;
+    members: number;
     link: string;
 }
 export enum Payments {

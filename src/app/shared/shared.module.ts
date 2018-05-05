@@ -15,6 +15,7 @@ import { MaterialImports } from './imports/material-imports.module';
 import { SkillsSliderComponent } from './skills-slider/skills-slider.component';
 import { CommunityPathMatcher } from './routes/community-path-matcher';
 import { SkillsCardComponent } from './cards/skills-card/skills-card.component';
+import { CommunitiesCardComponent } from './cards/communities-card/communities-card.component';
 
 @NgModule({
     exports: [
@@ -25,7 +26,8 @@ import { SkillsCardComponent } from './cards/skills-card/skills-card.component';
         SkillsSliderComponent,
         SkillsCardComponent,
         TooltipModule,
-        PopoverModule
+        PopoverModule,
+        CommunitiesCardComponent
     ],
     imports: [
         RouterModule,
@@ -40,7 +42,8 @@ import { SkillsCardComponent } from './cards/skills-card/skills-card.component';
         ProfileCardComponent,
         NavButtonComponent,
         SkillsSliderComponent,
-        SkillsCardComponent
+        SkillsCardComponent,
+        CommunitiesCardComponent
     ],
     providers: [
         CommunityGuardService,

@@ -1,11 +1,14 @@
 <section>
     <agm-map #mainMap [latitude]="navigation.lat" [longitude]="navigation.lng" (mapReady)="mapsReady($event)"
-    [ngStyle]="{'height': height}">
-        <agm-marker *ngFor="let pin of pins" [latitude]="pin.nav.lat" [longitude]="pin.nav.lng"
+    [ngStyle]="{'height': height}" (centerChange)="centerChange($event)" [clickableIcons]="false"><!--backgroundColor-->
+        <agm-marker *ngFor="let pin of pins" [latitude]="pin.com.nav.lat" [longitude]="pin.com.nav.lng"
             [iconUrl]="comIcon" (markerClick)="pinOpen(pin)">
-            <agm-snazzy-info-window [isOpen]="pin.open">
+            <!--<agm-snazzy-info-window [isOpen]="pin.open">-->
+            <agm-snazzy-info-window maxWidth="90vw"
+                [isOpen]="pin.expanded" (beforeOpen)="pin.expanded=true" (afterClose)="pin.expanded = false">
                 <ng-template>
-                    {{ pin.name }}
+                    <h5>{{ pin.com.name }}</h5>
+                    <div [hidden]="mobileQuery.matches">{{ pin.com.desc }}</div>
                 </ng-template>
             </agm-snazzy-info-window>
         </agm-marker>
@@ -14,12 +17,14 @@
         </agm-info-window>
     </agm-map>
 </section>
-<aside class="col-12 col-sm-7 col-md-6 col-lg-5 col-xl-4">
-    <mat-accordion #pannels id="pannels">
-        <mat-expansion-panel *ngFor="let pin of pins" [expanded]="pin.expanded" (opened)="pinOpen(pin, true)">
-            <mat-expansion-panel-header>
+<aside class="col-12 col-sm-7 col-md-6 col-lg-5 col-xl-4 bg-transparent position-absolute p-0">
+    <mat-accordion #pannels id="pannels" [hideToggle]="true" displayMode="default" class="com-theme w-100">
+       <!-- <mat-expansion-panel *ngFor="let pin of pins" [expanded]="pin.expanded" (opened)="pinOpen(pin, true)">-->
+        <mat-expansion-panel *ngFor="let pin of pins | slice:0:maxCards" [hideToggle]="true" 
+            [expanded]="pin.expanded" (opened)="expOpen(pin)" (closed)="pin.expanded=false">
+            <mat-expansion-panel-header [hidden]="pin.expanded">
                 <mat-panel-title>
-                    {{ pin.name }}
+                    <div [hidden]="pin.expanded">{{ pin.com.name }}</div>
                 </mat-panel-title>
                 <!--
                     <mat-panel-description>
@@ -28,7 +33,7 @@
                 -->
             </mat-expansion-panel-header>
             <ng-template matExpansionPanelContent>
-                {{ pin.desc }}
+                <app-communities-card [community]="pin.com"></app-communities-card>
             </ng-template>
         </mat-expansion-panel>
         <!--

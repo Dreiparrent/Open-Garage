@@ -1,17 +1,22 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { MediaMatcher } from '@angular/cdk/layout';
 import 'snazzy-info-window/dist/snazzy-info-window.css';
 import { AgmInfoWindow, AgmMap } from '@agm/core';
-import { GoogleMap } from '@agm/core/services/google-maps-types';
+import { GoogleMap, LatLngLiteral } from '@agm/core/services/google-maps-types';
 import { AgmSnazzyInfoWindow } from '@agm/snazzy-info-window';
 import { NavigationService } from '../../shared/navigation/navigation-service';
 import { MatExpansionPanel, MatAccordion } from '@angular/material';
+import { CommunitiesService } from '../../shared/community/communities.service';
+import { INavigation } from '../../shared/community/community-interfaces';
+import { ICommunity } from '../../shared/community/community-interfaces';
+
 
 @Component({
     selector: 'app-communities-page',
     templateUrl: './communities-page.component.html',
     styleUrls: ['./communities-page.component.scss']
 })
-export class CommunitiesPageComponent implements OnInit {
+export class CommunitiesPageComponent implements OnInit, OnDestroy {
 
     navigation: INavigation = { lat: undefined, lng: undefined };
     errorCords: INavigation = { lat: 39.682380, lng: -104.964384 };
@@ -20,6 +25,13 @@ export class CommunitiesPageComponent implements OnInit {
     hasError = false;
     errorContent: string;
     awaiter = false;
+    communities: ICommunity[];
+    maxCards = 1;
+    hyps: number[];
+
+    mobileQuery: MediaQueryList;
+    private _mobileQueryListener: () => void;
+    expOpen: (pin: IPin) => void;
 
     @ViewChild('mainMap') mainMap: AgmMap;
     @ViewChild('errorWindow') errorWindow: AgmInfoWindow;
@@ -27,21 +39,51 @@ export class CommunitiesPageComponent implements OnInit {
 
     pins: IPin[];
 
-    constructor(private el: ElementRef, private cd: ChangeDetectorRef, private navService: NavigationService) {
-        const w = document.body.clientWidth;
+    constructor(private el: ElementRef,
+        private cd: ChangeDetectorRef,
+        private comsServive: CommunitiesService,
+        private navService: NavigationService,
+        private media: MediaMatcher) {
+        this.mobileQuery = media.matchMedia(('(max-width: 600px)'));
+        this._mobileQueryListener = () => {
+            this.height = window.innerHeight + 'px';
+            if (this.mobileQuery.matches) {
+                this.maxCards = 1;
+                this.expOpen = (pin) => {
+                    pin.expanded = true;
+                    this.navigation = {
+                        lat: pin.com.nav.lat - 0.2 / this.mainMap.zoom,
+                        lng: pin.com.nav.lng
+                    };
+                    if (this.mainMap.zoom < 12) this.navigation.lat -= 3;
+                    this.mainMap.triggerResize(true);
+                };
+                // this.mainMap.zoomChange = true; //TODO: THIS?
+            } else {
+                this.maxCards = 3;
+                this.expOpen = (pin) => {
+                    pin.expanded = true;
+                };
+            }
+            // this.mainMap.zoomControl = !this.mobileQuery.matches;
+            cd.detectChanges();
+        };
+        this.mobileQuery.addListener(this._mobileQueryListener);
     }
 
     ngOnInit() {
-        // this.navService.communitySender();
+        this._mobileQueryListener();
         this.height = window.innerHeight + 'px';
         this.mainMap.streetViewControl = false;
         this.mainMap.zoom = 16;
         // this.errorWindow.open();
         if (navigator.geolocation)
             navigator.geolocation.getCurrentPosition((pos: Position) => {
-                this.navigation = this.coords_to_inavigate(pos.coords);
-                // this.lat = 39.682446;
-                // this.lng = - 104.964523;
+                // this.navigation = this.coords_to_inavigate(pos.coords);
+                this.navigation = {
+                    lat: 39.682446,
+                    lng: -104.964523
+                };
             }, (err: PositionError) => {
                 this.handleLocationError(true, this.errorWindow, { lat: this.mainMap.latitude, lng: this.mainMap.longitude });
             });
@@ -50,27 +92,19 @@ export class CommunitiesPageComponent implements OnInit {
     }
 
     mapsReady($event: GoogleMap) {
+        this.communities = this.comsServive.locationSearch(this.navigation);
         if (!this.hasError) {
             this.pins = [];
-            const servicePins: IPin[] = [
-                {
+            this.hyps = [];
+            // TODO: simplify
+            this.communities.forEach(comm => {
+                this.pins.push({
+                    com: comm,
                     expanded: false,
-                    open: false,
-                    name: 'Univeristy of Denver',
-                    desc: 'The official communtiy of the University of Denver.',
-                    nav: this.navigation
-                },
-                {
-                    expanded: false,
-                    open: false,
-                    name: 'Local PD Community',
-                    desc: 'The community for the Denver Police Department',
-                    nav: {
-                        lat: this.navigation.lat + 0.005,
-                        lng: this.navigation.lng + 0.005
-                    }
-                }];
-            servicePins.forEach(pin => this.pins.push(pin));
+                    open: false
+                });
+                this.hyps.push(comm.hyp);
+            });
         }
             try {
             if (typeof this.navigation.lat !== 'number' && typeof this.navigation.lng !== 'number')
@@ -113,23 +147,38 @@ export class CommunitiesPageComponent implements OnInit {
         this.cd.detectChanges();
     }
 
+    centerChange(cent: LatLngLiteral) {
+        const chyp = Math.sqrt(Math.pow(cent.lat, 2) + Math.pow(cent.lng, 2));
+        const sorted = this.pins.sort((a, b) => {
+            // const ah = a.com.hyp - chyp;
+            // const bh = b.com.hyp - chyp;
+            const ah = Math.pow((a.com.nav.lat - cent.lat), 2) + Math.pow((a.com.nav.lng - cent.lng), 2);
+            const bh = Math.pow((b.com.nav.lat - cent.lat), 2) + Math.pow((b.com.nav.lng - cent.lng), 2);
+            if (ah < bh)
+                return -1;
+            if (ah > bh)
+                return 1;
+            return 0;
+        });
+        this.pins = sorted;
+    }
+
     coords_to_inavigate(coords: Coordinates): INavigation {
         const nav: INavigation = {
             lat: coords.latitude,
             lng: coords.longitude
         };
         return nav;
-}
+    }
+
+    ngOnDestroy(): void {
+        this.mobileQuery.removeListener(this._mobileQueryListener);
+    }
 
 }
-interface INavigation {
-    lat: number;
-    lng: number;
-}
+
 interface IPin {
+    com: ICommunity;
     expanded: boolean;
     open: boolean;
-    name: string;
-    desc: string;
-    nav: INavigation;
 }

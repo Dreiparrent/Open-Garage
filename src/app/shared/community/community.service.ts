@@ -138,6 +138,18 @@ const testData: ICommunityData = {
 const test: ICommunity = {
     name: testData.name,
     desc: '',
+    img: {
+        webp: '../../../assets/img/photos/eclipse.webp',
+        jpf: '../../../assets/img/photos/eclipse.jpf',
+        else: '../../../assets/img/photos/eclipse.jpg'
+    },
+    location: 'Denver',
+    nav: {
+        lat: 39.7392,
+        lng: -104.9903
+    },
+    hyp: 112.2593,
+    members: 8,
     link: testData.link
 };
 /*

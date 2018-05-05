@@ -50,3 +50,9 @@ $search-theme: mat-dark-theme($search-primary, $search-accent, $search-warn);
         }
     }
 }
+
+.com-theme {
+    .mat-expansion-panel-body {
+        padding: 0 !important;
+    }
+}

@@ -1,13 +1,29 @@
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+body {
+    overflow: hidden;
+}
 section {
     height: 100%;
     width: 100%;
     position: relative;
 }
 aside {
-    position: absolute;
-    left: 0;
+    max-height: calc(100vh - 72px);
+    overflow-y: scroll;
+    left: 0; // TODO: make these classes
+    // top: 72px;
     bottom: 0;
-    background: transparent;
+    // right: 0;
+    // bottom: 100px;
+}
+.pinTitle {
+    white-space: nowrap;
+}
+.mat-expansion-panel-body {
+    padding: 0 !important;
 }
 
 @media screen and (max-width: 600px) {

@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { SearchPagesRoutingModule } from './search-pages-routing.module';
 import { SearchPageComponent } from './search-page.component';
+import { CommunitiesService } from '../../shared/community/communities.service';
 
 @NgModule({
     imports: [
@@ -18,6 +19,9 @@ import { SearchPageComponent } from './search-page.component';
     ],
     declarations: [
         SearchPageComponent
+    ],
+    providers: [
+        CommunitiesService
     ]
 })
 export class SearchPagesModule { }
