@@ -11,26 +11,29 @@ section {
     position: relative;
 }
 aside {
-    max-height: calc(100vh - 72px);
-    overflow-y: scroll;
+    // max-height: calc(100vh - 72px);
+    position: absolute;
+    max-height: 100vh;
     left: 0; // TODO: make these classes
-    // top: 72px;
-    bottom: 0;
-    // right: 0;
-    // bottom: 100px;
 }
 .pinTitle {
     white-space: nowrap;
 }
-.mat-expansion-panel-body {
-    padding: 0 !important;
+#pannels { 
+    bottom: 0;
+    left: 0;
+    padding-left: 0;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (min-width: 576px) {
     aside {
-        position: absolute;
-        left: 0;
+        top: 0;
+        margin-left: 6px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    aside {
         bottom: 0;
-        background: transparent;
     }
 }

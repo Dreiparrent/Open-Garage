@@ -9,9 +9,11 @@ import { ICommunity } from '../../community/community-interfaces';
 export class CommunitiesCardComponent implements OnInit {
 
     @Input('community') community: ICommunity;
-    constructor() { }
+    constructor() {
+    }
 
     ngOnInit() {
+        // console.log('new', this.community);
     }
 
 }

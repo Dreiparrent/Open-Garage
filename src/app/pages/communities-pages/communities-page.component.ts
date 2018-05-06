@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { animate, trigger, transition, state, style } from '@angular/animations';
 import { MediaMatcher } from '@angular/cdk/layout';
 import 'snazzy-info-window/dist/snazzy-info-window.css';
 import { AgmInfoWindow, AgmMap } from '@agm/core';
@@ -7,14 +8,28 @@ import { AgmSnazzyInfoWindow } from '@agm/snazzy-info-window';
 import { NavigationService } from '../../shared/navigation/navigation-service';
 import { MatExpansionPanel, MatAccordion } from '@angular/material';
 import { CommunitiesService } from '../../shared/community/communities.service';
-import { INavigation } from '../../shared/community/community-interfaces';
+import { _coords_to_inavigate, INavigation } from '../../shared/community/community-interfaces';
 import { ICommunity } from '../../shared/community/community-interfaces';
 
 
 @Component({
     selector: 'app-communities-page',
     templateUrl: './communities-page.component.html',
-    styleUrls: ['./communities-page.component.scss']
+    styleUrls: ['./communities-page.component.scss'],
+    animations: [
+        trigger('aAccordion', [
+            state('showing', style({ left: '0' })),
+            state('hidden', style({ left: '-100%'})),
+            transition('showing => hidden', animate('250ms ease-out')),
+            transition('hidden => showing', animate('250ms ease-in'))
+        ]),
+        trigger('aArrow', [
+            state('showing', style({ transform: 'rotate(0deg)'})),
+            state('hidden', style({ transform: 'rotate(180deg)' })),
+            transition('shoing => hidden', animate('1.0s 250ms ease-out')),
+            transition('hidden => shoing', animate('1.0s 250ms ease-in'))
+        ])
+    ]
 })
 export class CommunitiesPageComponent implements OnInit, OnDestroy {
 
@@ -29,13 +44,15 @@ export class CommunitiesPageComponent implements OnInit, OnDestroy {
     maxCards = 1;
     hyps: number[];
 
+    aState = 'showing';
+
     mobileQuery: MediaQueryList;
     private _mobileQueryListener: () => void;
     expOpen: (pin: IPin) => void;
 
     @ViewChild('mainMap') mainMap: AgmMap;
     @ViewChild('errorWindow') errorWindow: AgmInfoWindow;
-    @ViewChild('pannels') pannels: any;
+    @ViewChild('pannels') pannels: MatAccordion;
 
     pins: IPin[];
 
@@ -44,42 +61,24 @@ export class CommunitiesPageComponent implements OnInit, OnDestroy {
         private comsServive: CommunitiesService,
         private navService: NavigationService,
         private media: MediaMatcher) {
-        this.mobileQuery = media.matchMedia(('(max-width: 600px)'));
+        this.mobileQuery = media.matchMedia(('(max-width: 576px)'));
         this._mobileQueryListener = () => {
-            this.height = window.innerHeight + 'px';
-            if (this.mobileQuery.matches) {
-                this.maxCards = 1;
-                this.expOpen = (pin) => {
-                    pin.expanded = true;
-                    this.navigation = {
-                        lat: pin.com.nav.lat - 0.2 / this.mainMap.zoom,
-                        lng: pin.com.nav.lng
-                    };
-                    if (this.mainMap.zoom < 12) this.navigation.lat -= 3;
-                    this.mainMap.triggerResize(true);
-                };
-                // this.mainMap.zoomChange = true; //TODO: THIS?
-            } else {
-                this.maxCards = 3;
-                this.expOpen = (pin) => {
-                    pin.expanded = true;
-                };
-            }
-            // this.mainMap.zoomControl = !this.mobileQuery.matches;
-            cd.detectChanges();
+            this.mobileQuierer();
+            this.cd.detectChanges();
         };
         this.mobileQuery.addListener(this._mobileQueryListener);
     }
 
     ngOnInit() {
-        this._mobileQueryListener();
+        this.mobileQuierer();
         this.height = window.innerHeight + 'px';
         this.mainMap.streetViewControl = false;
+        this.mainMap.zoomControl = !this.mobileQuery.matches;
         this.mainMap.zoom = 16;
         // this.errorWindow.open();
         if (navigator.geolocation)
             navigator.geolocation.getCurrentPosition((pos: Position) => {
-                // this.navigation = this.coords_to_inavigate(pos.coords);
+                // this.navigation = _coords_to_inavigate(pos.coords);
                 this.navigation = {
                     lat: 39.682446,
                     lng: -104.964523
@@ -96,7 +95,6 @@ export class CommunitiesPageComponent implements OnInit, OnDestroy {
         if (!this.hasError) {
             this.pins = [];
             this.hyps = [];
-            // TODO: simplify
             this.communities.forEach(comm => {
                 this.pins.push({
                     com: comm,
@@ -114,7 +112,6 @@ export class CommunitiesPageComponent implements OnInit, OnDestroy {
             this.mainMap.longitude = this.errorCords.lng;
             this.handleLocationError(true, this.errorWindow, this.errorCords);
                 console.log(e);
-            // alert('The browser you are connecting from is unable to obtain a secure connection');
         }
         this.mainMap.triggerResize();
     }
@@ -131,7 +128,21 @@ export class CommunitiesPageComponent implements OnInit, OnDestroy {
             'Error: Your browser doesn\'t support geolocation.';
         infoWindow.open();
     }
-    pinOpen(pin: IPin, isPannel: boolean = false) {
+
+    aClick() {
+        console.log('aaa');
+        if (this.aState === 'showing') {
+            this.aState = 'hidden';
+            $('#pannels').css({ 'position': 'fixed' });
+            $('#pannels').addClass(['col-12 col-sm-7 col-md-6 col-lg-5 col-xl-4']);
+        } else {
+            this.aState = 'showing';
+            $('#pannels').css({ 'position': 'static' });
+            $('#pannels').removeClass(['col-12 col-sm-7 col-md-6 col-lg-5 col-xl-4']);
+        }
+    }
+
+    /*pinOpen(pin: IPin, isPannel: boolean = false) {
         const location = this.pins.indexOf(pin);
         if (!this.awaiter)
             if (isPannel) {
@@ -145,11 +156,34 @@ export class CommunitiesPageComponent implements OnInit, OnDestroy {
         this.pins.forEach(p => p.expanded = false);
         this.pins[location].expanded = true;
         this.cd.detectChanges();
+    }*/
+    /* working-ish
+    pinOpen(pin: IPin) {
+        const location = this.pins.indexOf(pin);
+        this.pins.forEach(p => p.expanded = false);
+        this.pins[location].expanded = true;
+        if (!this.pins.slice(0, 2).includes(pin)) {
+            this.navigation = {
+                lat: (this.mainMap.zoom < 15) ? pin.com.nav.lat : this.navigation.lat,
+                lng: pin.com.nav.lng
+            };
+            this.mainMap.triggerResize(true);
+        }
+    }
+    */
+    openChange(event: boolean, pin: IPin) {
+        // console.log(event);
+        // pin.expanded = event;
+        console.log(event);
+        // this.cd.detach();
+        pin.expanded = event;
+        // this.cd.detectChanges();
+        // this.cd.reattach();
     }
 
     centerChange(cent: LatLngLiteral) {
         const chyp = Math.sqrt(Math.pow(cent.lat, 2) + Math.pow(cent.lng, 2));
-        const sorted = this.pins.sort((a, b) => {
+        const sorted = this.pins.slice().sort((a, b) => {
             // const ah = a.com.hyp - chyp;
             // const bh = b.com.hyp - chyp;
             const ah = Math.pow((a.com.nav.lat - cent.lat), 2) + Math.pow((a.com.nav.lng - cent.lng), 2);
@@ -161,20 +195,56 @@ export class CommunitiesPageComponent implements OnInit, OnDestroy {
             return 0;
         });
         this.pins = sorted;
+        // setTimeout(() => { this.pins = sorted; this.cd.detectChanges(); }, 1000);
     }
 
-    coords_to_inavigate(coords: Coordinates): INavigation {
-        const nav: INavigation = {
-            lat: coords.latitude,
-            lng: coords.longitude
-        };
-        return nav;
+    expClose(pin: IPin) {
+        this.cd.detectChanges();
+        pin.expanded = false;
+    }
+
+    mobileQuierer() {
+        this.height = window.innerHeight + 'px';
+        if (this.mobileQuery.matches) {
+            this.maxCards = 1;
+            this.expOpen = (pin) => {
+                /*
+                this.cd.detach();
+                const location = this.pins.indexOf(pin);
+                this.pins.forEach(p => p.expanded = false);
+                this.pins[location].expanded = true;
+                this.cd.reattach();
+                */
+                pin.expanded = true;
+                this.navigation = {
+                    lat: pin.com.nav.lat - 0.2 / this.mainMap.zoom,
+                    lng: pin.com.nav.lng
+                };
+                if (this.mainMap.zoom < 12) this.navigation.lat -= 3;
+                this.mainMap.triggerResize(true);
+            };
+        } else {
+            this.maxCards = 3;
+            this.expOpen = (pin) => {
+                console.log('exp');
+                this.cd.detectChanges();
+                pin.expanded = true;
+                /*
+                const location = this.pins.indexOf(pin);
+                this.pins.forEach(p => p.expanded = false);
+                this.pins[location].expanded = true;
+                */
+            };
+        }
+    }
+
+    searchClick() {
+        console.log('search');
     }
 
     ngOnDestroy(): void {
         this.mobileQuery.removeListener(this._mobileQueryListener);
     }
-
 }
 
 interface IPin {

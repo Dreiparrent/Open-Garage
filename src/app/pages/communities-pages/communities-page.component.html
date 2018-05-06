@@ -2,10 +2,10 @@
     <agm-map #mainMap [latitude]="navigation.lat" [longitude]="navigation.lng" (mapReady)="mapsReady($event)"
     [ngStyle]="{'height': height}" (centerChange)="centerChange($event)" [clickableIcons]="false"><!--backgroundColor-->
         <agm-marker *ngFor="let pin of pins" [latitude]="pin.com.nav.lat" [longitude]="pin.com.nav.lng"
-            [iconUrl]="comIcon" (markerClick)="pinOpen(pin)">
-            <!--<agm-snazzy-info-window [isOpen]="pin.open">-->
-            <agm-snazzy-info-window maxWidth="90vw"
-                [isOpen]="pin.expanded" (beforeOpen)="pin.expanded=true" (afterClose)="pin.expanded = false">
+            [iconUrl]="comIcon" (markerClick)="pin.expanded = true">
+            <!--(markerClick)="pinOpen(pin)"  (isOpenChange)="openChange($event,pin)"-->
+            <agm-snazzy-info-window maxWidth="90vw" [closeWhenOthersOpen]="true"
+                (isOpenChange)="pin.expanded = $event" [isOpen]="pin.expanded">
                 <ng-template>
                     <h5>{{ pin.com.name }}</h5>
                     <div [hidden]="mobileQuery.matches">{{ pin.com.desc }}</div>
@@ -17,11 +17,17 @@
         </agm-info-window>
     </agm-map>
 </section>
-<aside class="col-12 col-sm-7 col-md-6 col-lg-5 col-xl-4 bg-transparent position-absolute p-0">
-    <mat-accordion #pannels id="pannels" [hideToggle]="true" displayMode="default" class="com-theme w-100">
-       <!-- <mat-expansion-panel *ngFor="let pin of pins" [expanded]="pin.expanded" (opened)="pinOpen(pin, true)">-->
+<aside class="col-12 col-sm-7 col-md-6 col-lg-5 col-xl-4 bg-transparent position-absolute com-theme">
+    <mat-card class="comSearch d-flex" [@aAccordion]='aState'>
+        <mat-form-field floatLabel="never" class="float-left">
+            <input matInput placeholder="Search">
+            <mat-icon matSuffix (click)="searchClick()" class="align-bottom cursor-pointer">search</mat-icon>
+        </mat-form-field>
+        <mat-icon [@aArrow]="aState" class="float-right cursor-pointer my-auto" (click)="aClick()">keyboard_arrow_left</mat-icon>
+    </mat-card>
+    <mat-accordion #pannels id="pannels" class="com-theme w-100" [multi]="false">
         <mat-expansion-panel *ngFor="let pin of pins | slice:0:maxCards" [hideToggle]="true" 
-            [expanded]="pin.expanded" (opened)="expOpen(pin)" (closed)="pin.expanded=false">
+            [expanded]="pin.expanded" (opened)="expOpen(pin)" (closed)="expClose(pin)">
             <mat-expansion-panel-header [hidden]="pin.expanded">
                 <mat-panel-title>
                     <div [hidden]="pin.expanded">{{ pin.com.name }}</div>
@@ -36,36 +42,5 @@
                 <app-communities-card [community]="pin.com"></app-communities-card>
             </ng-template>
         </mat-expansion-panel>
-        <!--
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Personal data
-                </mat-panel-title>
-                <mat-panel-description>
-                    Type your name and age
-                </mat-panel-description>
-            </mat-expansion-panel-header>
-    
-            <mat-form-field>
-                <input matInput placeholder="First name">
-            </mat-form-field>
-    
-            <mat-form-field>
-                <input matInput placeholder="Age">
-            </mat-form-field>
-        </mat-expansion-panel>
-        <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Self aware panel
-                </mat-panel-title>
-                <mat-panel-description>
-                    Currently I am {{panelOpenState ? 'open' : 'closed'}}
-                </mat-panel-description>
-            </mat-expansion-panel-header>
-            <p>I'm visible because I am open</p>
-        </mat-expansion-panel>
-         -->
     </mat-accordion>
 </aside>

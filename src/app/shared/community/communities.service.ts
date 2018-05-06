@@ -61,5 +61,39 @@ const testCommunities: ICommunity[] = [
         hyp: 112.2120,
         members: 8,
         link: 'testlink'
+    },
+    {
+        name: 'Neighborhood Community',
+        desc: 'Just a small nieghborhood community',
+        img: {
+            webp: '../../../assets/img/photos/fish.webp',
+            jpf: '../../../assets/img/photos/fish.jpf',
+            else: '../../../assets/img/photos/fish.jpg'
+        },
+        location: 'Denver',
+        nav: {
+            lat: 39.684380,
+            lng: -104.969384
+        },
+        hyp: 112.2120,
+        members: 8,
+        link: 'testlink'
+    },
+    {
+        name: 'One Observatory Park',
+        desc: 'The best appartments for DU students',
+        img: {
+            webp: '../../../assets/img/photos/fish.webp',
+            jpf: '../../../assets/img/photos/fish.jpf',
+            else: '../../../assets/img/photos/fish.jpg'
+        },
+        location: 'Denver',
+        nav: {
+            lat: 39.678210,
+            lng: -104.958884
+        },
+        hyp: 112.2120,
+        members: 8,
+        link: 'testlink'
     }
 ];

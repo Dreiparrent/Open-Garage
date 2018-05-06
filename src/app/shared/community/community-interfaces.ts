@@ -1,3 +1,11 @@
+export function _coords_to_inavigate(coords: Coordinates): INavigation {
+    const nav: INavigation = {
+        lat: coords.latitude,
+        lng: coords.longitude
+    };
+    return nav;
+}
+
 export interface IProfile {
     name: string;
     about: string;
