@@ -5,8 +5,16 @@ import { INavigation } from './community-interfaces';
 @Injectable()
 export class CommunitiesService {
 
-    locationSearch(location: INavigation): ICommunity[] {
-        return testCommunities;
+    locationSearch(hype: number): Promise<ICommunity[]> {
+        const prom = new Promise<ICommunity[]>((resolve, reject) => {
+            setTimeout(() => {
+                if (hype > 9)
+                    resolve(testCommunities);
+                else
+                    reject('Navigation (lng + lat) hypotenuse is less than 10');
+            }, 200);
+        });
+        return prom;
     }
 }
 

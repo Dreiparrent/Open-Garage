@@ -9,6 +9,8 @@ import { AgmCoreModule } from '@agm/core';
 import { AgmSnazzyInfoWindowModule } from '@agm/snazzy-info-window';
 import { CommunitiesService } from '../../shared/community/communities.service';
 import { SharedModule } from '../../shared/shared.module';
+import { CommunitiesMapComponent } from './communities-map/communities-map.component';
+import { CommunitiesSearchComponent } from './communities-search/communities-search.component';
 
 @NgModule({
     imports: [
@@ -23,7 +25,9 @@ import { SharedModule } from '../../shared/shared.module';
     ],
     declarations: [
         CommunitiesPageComponent,
-        Community404Component
+        Community404Component,
+        CommunitiesMapComponent,
+        CommunitiesSearchComponent
     ],
     providers: [
         CommunitiesService

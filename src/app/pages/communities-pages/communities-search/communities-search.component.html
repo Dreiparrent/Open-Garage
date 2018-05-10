@@ -1,0 +1,27 @@
+<mat-card class="comSearch d-flex" [@aAccordion]='aState'>
+    <mat-form-field floatLabel="never" class="float-left">
+        <input matInput placeholder="Search">
+        <mat-icon matSuffix (click)="searchClick()" class="align-bottom cursor-pointer">search</mat-icon>
+    </mat-form-field>
+    <mat-icon [@aArrow]="aState" class="float-right cursor-pointer my-auto" (click)="aClick()">keyboard_arrow_left</mat-icon>
+</mat-card>
+<mat-accordion #pannels id="pannels" class="com-theme w-100" [multi]="false">
+    <mat-expansion-panel *ngFor="let pin of pins; let i=index" [hideToggle]="true" [expanded]="pin.expanded" (opened)="expOpen(pin)" (closed)="expClose(pin)">
+        <mat-expansion-panel-header [hidden]="pin.expanded">
+            <mat-panel-title>
+                <div [hidden]="pin.expanded">{{ pin.com.name }}</div>
+            </mat-panel-title>
+            <!--
+                    <mat-panel-description>
+                        {{ pin.desc }}
+                    </mat-panel-description>
+                -->
+        </mat-expansion-panel-header>
+        <app-communities-card [community]="pin.com"></app-communities-card>
+        <!--
+        <ng-template matExpansionPanelContent>
+            
+        </ng-template>
+        -->
+    </mat-expansion-panel>
+</mat-accordion>

@@ -1,0 +1,16 @@
+<agm-map #mainMap [latitude]="navigation.lat" [longitude]="navigation.lng" (mapReady)="mapsReady($event)" [ngStyle]="{'height': height}"
+    (centerChange)="centerChange($event)" [clickableIcons]="false">
+    <!--backgroundColor-->
+    <agm-marker *ngFor="let pin of pins" [latitude]="pin.com.nav.lat" [longitude]="pin.com.nav.lng" [iconUrl]="comIcon" (markerClick)="markerClick(pin)">
+        <!--(markerClick)="pinOpen(pin)"  (isOpenChange)="openChange($event,pin)"-->
+        <agm-snazzy-info-window maxWidth="90vw" [closeWhenOthersOpen]="false" [panOnOpen]="true" [isOpen]="pin.expanded" (afterClose)="markerClose(pin)">
+            <ng-template>
+                <h5>{{ pin.com.name }}</h5>
+                <div [hidden]="zoom">{{ pin.com.desc }}</div>
+            </ng-template>
+        </agm-snazzy-info-window>
+    </agm-marker>
+    <agm-info-window #errorWindow [hidden]="hasError">
+        {{errorContent}}
+    </agm-info-window>
+</agm-map>
