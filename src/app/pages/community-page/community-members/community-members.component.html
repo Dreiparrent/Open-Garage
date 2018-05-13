@@ -3,6 +3,7 @@
         <div *ngFor="let profile of topMembers" class="col-12 col-md-6 col-lg-4 col-xl-3 py-1">
             <app-profile-card [name]="profile.name" [location]="profile.location" [connections]="profile.connections" [imgUrl]="profile.imgUrl"></app-profile-card>
         </div>
+        <!-- <div infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="1000" (scrolled)="onScroll()"></div> -->
     </ng-container>
     <ng-template #noMemberTemplate>
         <div class="w-100 h-100 d-flex align-content-center justify-content-center">
@@ -10,7 +11,9 @@
         </div>
     </ng-template>
 </div>
-<!-- TODO:
-            <button *ngIf="communityMembers.length > topMembers.length" (click)="toggleComNav()" mat-button>View More</button>
-            -->
-<button (click)="toggleComNav()" mat-button>View More</button>
+<div #viewMore class="row">
+    <button *ngIf="communityMembers.length > cardNumber" class="col-md-4 ml-2" (click)="toggleViewMore()" mat-button>{{viewLess || !scrollMore ? 'View Less' : 'View More'}}</button>
+    <p class="lead mx-auto my-auto cursor-pointer col-md-7" [hidden]="!scrollMore || viewLess" (click)="this.scrollMore = this.viewLess = false">
+        Loading More... <span>(click to disable)</span>
+    </p>
+</div>

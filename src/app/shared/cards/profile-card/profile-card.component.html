@@ -1,7 +1,7 @@
-<mat-card>
-    <mat-card-title>
+<mat-card class="pt-3">
+    <mat-card-title class="mb-2">
         <div class="row text-center">
-            <div class="col-6 mx-auto">
+            <div class="col-7 mx-auto">
                 <img class="rounded-circle img-fluid" [src]="imgUrl" role="figure" alt="profile photo">
             </div>
         </div>
@@ -9,7 +9,7 @@
     <mat-card-content>
         <div class="row text-center">
             <div class="col-11 mx-auto">
-                <h3>{{name}}</h3>
+                <h4>{{name}}</h4>
             </div>
         </div>
     </mat-card-content>
@@ -17,14 +17,14 @@
         <div class="row text-center mb-2">
             <div class="col-6">
                 <a>
-                    <mat-icon placement="bottom" tooltip="Location" class="align-middle">my_location</mat-icon>
+                    <mat-icon placement="bottom" tooltip="Location" class="align-middle cursor-pointer">my_location</mat-icon>
                     <!--<i-globe placement="bottom" ngbTooltip="Location" class="align-bottom cursor-pointer"></i-globe>-->
-                    <span>{{location}}</span>
+                    <span class="h-100 align-text-top"> {{location}}</span>
                 </a>
             </div>
             <div class="col-6">
                 <a>
-                    <mat-icon placement="bottom" tooltip="Connections" class="align-middle">wifi_tethering</mat-icon>
+                    <mat-icon placement="bottom" tooltip="Connections" class="align-middle cursor-pointer">wifi_tethering</mat-icon>
                    <!-- <i-radio placement="bottom" ngbTooltip="Connections" class="align-bottom cursor-pointer"></i-radio>-->
                     <span class="h-100 align-text-top">{{connections}}</span>
                 </a>

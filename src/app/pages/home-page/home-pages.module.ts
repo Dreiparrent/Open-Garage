@@ -6,16 +6,16 @@ import { MatInputModule } from '@angular/material/input';
 import { HomePagesRoutingModule } from './home-pages-routing.module';
 import { HomePageComponent } from './home-page.component';
 import { SharedModule } from '../../shared/shared.module';
+import { MaterialImports } from '../../shared/imports/material-imports.module';
 
 @NgModule({
     imports: [
         CommonModule,
         HomePagesRoutingModule,
         SharedModule,
+        MaterialImports,
         FormsModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule
+        ReactiveFormsModule
     ],
     declarations: [
         HomePageComponent

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
-import { IProfile } from '../../../shared/community/community-interfaces';
+import { IProfile, CommunitySearchType } from '../../../shared/community/community-interfaces';
 
 @Component({
     selector: 'app-community-messages',
@@ -47,7 +47,7 @@ export class CommunityMessagesComponent implements OnInit {
     }
 
     nameClick(name: string) {
-        this.comService.updateSearch([name], []);
+        this.comService.updateSearch([name], [], name, CommunitySearchType.messageMembers);
     }
 
     mouseOver(i: number, name?: string) {

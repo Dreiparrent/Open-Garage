@@ -4,7 +4,7 @@ import { FormControl } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { CommunityService } from '../../../shared/community/community.service';
-import { IProfile } from '../../../shared/community/community-interfaces';
+import { IProfile, CommunitySearchType } from '../../../shared/community/community-interfaces';
 import { ENTER } from '@angular/cdk/keycodes';
 
 export class SearchOptions {
@@ -19,11 +19,14 @@ export class SearchOptions {
 export class CommunityJumbotronComponent implements OnInit, OnDestroy {
 
     @ViewChild('jumbotron') jumbotron: ElementRef;
+    @ViewChild('search') search: ElementRef;
 
     searchControl: FormControl;
 
     filteredOptions: Observable<any[]>;
     comSub: Subscription;
+    currentValue = '';
+    valueSub: Subscription;
 
     options: SearchOptions[] = [];
 
@@ -37,6 +40,10 @@ export class CommunityJumbotronComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.comSub = this.comService.members.subscribe(members => this.setOptions(members));
+        this.valueSub = this.comService.searchValue.subscribe(val => {
+            if (this.currentValue !== val)
+                this.search.nativeElement.value = val;
+        });
     }
 
     setOptions(members: IProfile[]) {
@@ -56,11 +63,13 @@ export class CommunityJumbotronComponent implements OnInit, OnDestroy {
 
     onKeyup(value: string) {
         if (value === '') {
-            this.comService.updateSearch([], []);
+            this.comService.updateSearch();
             return;
         }
+        this.currentValue = value;
         const sendMembers = [];
         const sendSkills = [];
+        let sendType = -1;
         this.filterOptions(value).forEach(val => {
             if (val.type === 0)
                 if (!sendMembers.includes(val.name))
@@ -69,11 +78,16 @@ export class CommunityJumbotronComponent implements OnInit, OnDestroy {
                 if (!sendSkills.includes(val.name))
                     sendSkills.push(val.name);
         });
-        this.comService.updateSearch(sendMembers, sendSkills);
+        if (sendMembers.length > 0 && sendSkills.length === 0)
+            sendType = CommunitySearchType.members;
+        else if (sendMembers.length === 0 && sendSkills.length > 0)
+            sendType = CommunitySearchType.skills;
+        this.comService.updateSearch(sendMembers, sendSkills, value, sendType);
     }
 
     ngOnDestroy() {
         this.comSub.unsubscribe();
+        this.valueSub.unsubscribe();
     }
 
 }

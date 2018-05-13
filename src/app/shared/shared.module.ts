@@ -10,6 +10,7 @@ import { NavButtonComponent } from './navigation/nav-button/nav-button.component
 import { ProfileCardComponent } from './cards/profile-card/profile-card.component';
 import { PopoverModule } from 'ngx-bootstrap';
 import { TooltipModule } from 'ngx-bootstrap';
+import { CarouselModule } from 'ngx-bootstrap';
 
 import { MaterialImports } from './imports/material-imports.module';
 import { SkillsSliderComponent } from './skills-slider/skills-slider.component';
@@ -27,6 +28,7 @@ import { CommunitiesCardComponent } from './cards/communities-card/communities-c
         SkillsCardComponent,
         TooltipModule,
         PopoverModule,
+        CarouselModule,
         CommunitiesCardComponent
     ],
     imports: [
@@ -34,7 +36,8 @@ import { CommunitiesCardComponent } from './cards/communities-card/communities-c
         CommonModule,
         MaterialImports,
         TooltipModule,
-        PopoverModule
+        PopoverModule,
+        CarouselModule.forRoot()
         // IconsModule
     ],
     declarations: [

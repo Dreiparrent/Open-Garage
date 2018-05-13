@@ -54,3 +54,10 @@ export enum Payments {
     'Wine (must be 21)',
     'Cash'
 }
+export enum CommunitySearchType {
+    skills,
+    members,
+    skillsSkills,
+    skillsMembers,
+    messageMembers
+}

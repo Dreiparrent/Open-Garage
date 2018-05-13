@@ -6,3 +6,31 @@
     width: 100vw;
     object-fit: cover
 }
+.bounce {
+    top: 75vh;
+    left: 50vw;
+    color: white;
+    -moz-animation: bounce 2s infinite;
+    -webkit-animation: bounce 2s infinite;
+    animation: bounce 2s infinite;
+}
+.bounce:hover {
+    -moz-animation: hover 500ms both ease-out;
+    -webkit-animation: hover 500ms both ease-out;
+    animation: hover 500ms both ease-out;
+}
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+@keyframes hover {
+    from {color: white;}
+    to {color: #212529}
+}

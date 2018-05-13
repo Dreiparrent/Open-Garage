@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { BreakpointObserver, Breakpoints, BreakpointState, MediaMatcher } from '@angular/cdk/layout';
 import { CommunityService } from '../../shared/community/community.service';
 import { ActivatedRoute } from '@angular/router';
-import { ICommunityData, IProfile } from '../../shared/community/community-interfaces';
+import { ICommunityData, IProfile, CommunitySearchType } from '../../shared/community/community-interfaces';
 import { Subscription } from 'rxjs';
 import { NavigationService } from '../../shared/navigation/navigation-service';
 
@@ -20,11 +20,14 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
 
     // new
     nameSub: Subscription;
+    searchSub: Subscription;
     membersSub: Subscription;
     skillsSub: Subscription;
     communityName: string;
     showWebs = false;
     tmpCom: boolean;
+    searchValue: string;
+    searchType: string;
     searchMembers = false;
     searchSkills = false;
 
@@ -35,8 +38,31 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
         this.nameSub = this.comService.init(this.route.snapshot.params['id']).subscribe(name => {
             this.communityName = name;
         });
-        this.membersSub = this.comService.searchMembers.subscribe(m => this.searchMembers = (m.length > 0));
-        this.skillsSub = this.comService.searchSkills.subscribe(s => this.searchSkills = (s.length > 0));
+        this.searchSub = this.comService.searchValue.subscribe(val => {
+            this.searchValue = val;
+            switch (this.comService.searchType.getValue()) {
+                case -1:
+                    this.searchType = null;
+                    break;
+                case CommunitySearchType.skills:
+                    this.searchType = 'Skills';
+                    break;
+                case CommunitySearchType.members:
+                    this.searchType = 'Members';
+                    break;
+                case CommunitySearchType.skillsSkills:
+                    this.searchType = 'Community Skills > Skills';
+                    break;
+                case CommunitySearchType.skillsMembers:
+                    this.searchType = 'Community Skills > Members';
+                    break;
+                case CommunitySearchType.messageMembers:
+                    this.searchType = 'Message Board > Members';
+                    break;
+            }
+            this.searchMembers = this.comService.searchMembers.getValue().length > 0;
+            this.searchSkills = this.comService.searchSkills.getValue().length > 0;
+        });
     }
 
     getMessages() {
@@ -48,12 +74,11 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
     }
 
     clearSearch() {
-        this.comService.updateSearch([], []);
+        this.comService.updateSearch();
     }
 
     ngOnDestroy(): void {
         this.nameSub.unsubscribe();
-        this.membersSub.unsubscribe();
-        this.skillsSub.unsubscribe();
+        this.searchSub.unsubscribe();
     }
 }

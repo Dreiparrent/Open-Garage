@@ -3,21 +3,97 @@
     <source srcset="assets/img/photos/fish.jpf">
     <img id="home-img" src="assets/img/photos/fish.jpg" alt="home background">
 </picture>
-<section id="home" class="full-height-vh row m-0">
+<section id="home" class="full-height-vh row m-0 dark-theme">
     <div class="col-md-12 content d-flex align-items-center justify-content-center px-0">
         <form class="row col-md-8 text-white">
             <div class="col-md-12">
-                <h1 class="font-weight-light">Find Your</h1>
+                <h1 class="font-weight-light">Search Your</h1>
                 <h1 class="display-4">Community</h1>
             </div>
-            <mat-form-field class="col-md-12 text-white dark-theme">
+            <mat-form-field class="col-md-12 text-white">
                 <input matInput placeholder="Search">
             </mat-form-field>
         </form>
     </div>
+    <a href="#infoSec" (click)="scrollTo('#infoSec')" class="position-absolute bounce">
+        <mat-icon class="cursor-pointer">keyboard_arrow_down</mat-icon>
+    </a>
+</section>
+<section id="infoSec" class="flex-row pt-2">
+    <h1 class="mx-auto text-center pb-2" style="width: auto">About</h1>
+    <p class="col-12">
+        Welcome to the wonderful world of Open Garage. What makes it wonderful is it’s your world – your communities. You’ve made
+        the decision to live where you live, work where you work, and study where you go to school. Maybe you’re new, and maybe you’re
+        grinding until you make Partner. Either way, chances are you aren’t very familiar with the people who surround you on a daily
+        basis. Our goal is to change that – to expose all of the untapped knowledge and talent that surrounds us, so that we can
+        help out each other, build real relationships, and ultimately build better communities.
+    </p>
+    <p class="col-12">
+        Why “Open Garage”? Think about your garage at home, or your parents, or your friends. What’s in there? A car, sure. But
+        what is it that’s hanging from the rafters, built into the wall, and piled in the corner? It’s your gear, equipment, toys,
+        and tools; it’s what you play with, what you tinker with, and what you fix things with. It’s everything that enables you
+        to pursue your passions and exercise your skills. Let’s open that up and show our communities what we have to offer.
+    </p>
+</section>
+<section class="flew-row home-theme">
+    <h1 class="mx-auto text-center pb-2" style="width: auto">Get Started</h1>
+    <div class="row px-1" id="startedList">
+        <div *ngFor="let gettit of getStarted; let i=index" (click)="sClick(i)" [id]="gettit.id"
+        class="col-12 col-sm-6 col-md-3 text-center cursor-pointer" [class.active]="gettit.active">
+            <mat-icon class="w-100">{{gettit.icon}}</mat-icon>
+            <h4>{{gettit.active ? gettit.h2 : gettit.h}}</h4>
+            <div class="row">
+                <ng-container <ng-container *ngIf="gettit.active; else inactiveTemplate">
+                    <p *ngFor="let p of gettit.t2" class="col-10 col-sm-8 mx-auto">{{p}}</p>
+                </ng-container>
+                <ng-template #inactiveTemplate>
+                    <p *ngFor="let p of gettit.t" class="col-10 col-sm-12 mx-auto">{{p}}</p>                
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="flex-row pb-3">
+    <h1 class="mx-auto text-center pb-2" style="width: auto">Values</h1>
+    <carousel>
+        <slide>
+            <div class="text-center pb-5 pt-3 px-5 bg-dp text-white">
+                <div class="lead">
+                    <h3>Connect</h3>
+                    <p>
+                        Open Garage was born out of a desire to connect people offline. As a result of living in such a perpetually connected world,
+                        we have become some of the most disconnected people to the world around us.
+                    </p>
+                </div>
+            </div>
+        </slide>
+        <slide>
+            <div class="text-center pb-5 pt-3 px-5 bg-dp text-white">
+                <div class="lead">
+                    <h3>Contribute</h3>
+                    <p>
+                        The premise of Open Garage is that everyone, BECAUSE of their race, creed, ethnicity, sexual orientation, gender, religion,
+                        hair style, or music choice, has something to contribute to the greater good. Further, we believe
+                        that it is precisely our differences that make such contributions meaningful and necessary.
+                    </p>
+                </div>
+            </div>
+        </slide>
+        <slide>
+            <div class="text-center pb-5 pt-3 px-5 bg-dp text-white">
+                <div class="lead">
+                    <h3>Respect</h3>
+                    <p>
+                        We welcome everyone to the Open Garage community. We don’t require you to share the same beliefs and values as your community
+                        members, but we do require you to respect them.
+                    </p>
+                </div>
+            </div>
+        </slide>
+    </carousel>
 </section>
 <section class="full-height-vh">
-    <h1 class="mx-auto text-center" style="width: auto">Explore</h1>
+    <h1 class="mx-auto text-center pb-2" style="width: auto">Explore</h1>
     <div class="container">
         <div class="row">
             <div class="col-12 col-md-6 col-lg-5">
@@ -26,19 +102,3 @@
         </div>
     </div>
 </section>
-<!--
-    <section style="height: 50vh">
-        <h1 class="mx-auto text-center" style="width: auto">Learn More</h1>
-        <div class="container">
-            <div class="row">
-            </div>
-        </div>
-    </section>
-    <section style="height: 50vh;">
-        <h1 class="mx-auto text-center" style="width: auto">Get Started</h1>
-        <div class="container">
-            <div class="row">
-            </div>
-        </div>
-    </section> 
--->

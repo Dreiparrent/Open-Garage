@@ -21,7 +21,32 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
 .dark-theme {
     @include angular-material-theme($dark-theme);
+    .material-icons {
+        font-size: 36px;
+        // color: white;
+    }
 }
+
+// Home Pannel Theme
+.home-theme {
+    @include angular-material-theme($app-theme);
+    .material-icons {
+        font-size: 60px;
+        color: map-get($map: $material-primary, $key: 500);
+    }
+}
+
+.nav-theme {
+    .mat-tab-label {
+        padding: 0;
+        // min-width: 100px;
+        width: auto !important;
+    }
+    .nav-button {
+        width: 100% !important;
+    }
+}
+
 
 // Search Theme
 $search-primary: mat-palette($material-primary);

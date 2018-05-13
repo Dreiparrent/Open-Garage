@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ICommunity, ICommunityData, IProfile, IMessage, ICommunitySkills } from './community-interfaces';
+import { ICommunity, ICommunityData, IProfile, IMessage, ICommunitySkills, CommunitySearchType } from './community-interfaces';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 
 @Injectable()
@@ -14,8 +14,10 @@ export class CommunityService {
     private _members = new BehaviorSubject<IProfile[]>([]);
     private _messages = new Subject<IMessage[]>();
 
-    private _searchMembers = new Subject<string[]>();
-    private _searchSkills = new Subject<string[]>();
+    private _searchValue = new BehaviorSubject<string>('');
+    private _searchType = new BehaviorSubject<number>(-1);
+    private _searchMembers = new BehaviorSubject<string[]>([]);
+    private _searchSkills = new BehaviorSubject<string[]>([]);
 
     constructor() { }
     getCommunities(uid: string) {
@@ -50,7 +52,27 @@ export class CommunityService {
         return this._communityName.getValue();
     }
     get members(): BehaviorSubject<IProfile[]> {
+        // origional
         return this._members;
+        // extra
+        /*
+        const tmpMembers: IProfile[] = [];
+        this._members.getValue().forEach(member => {
+            tmpMembers.push(member);
+            tmpMembers.push(member);
+            tmpMembers.push(member);
+        });
+        const tmpSubjects = new BehaviorSubject<IProfile[]>(tmpMembers);
+        return tmpSubjects;
+        */
+    }
+    /*
+    getMembers(batch: string, lastKey?: string) {
+    }
+    */
+    getMembers(batch: number, lastKey = 0) {
+        const startNumber = batch - lastKey;
+        return this._members.getValue().slice(startNumber, batch);
     }
     get messages(): Observable<IMessage[]> {
         return this._messages;
@@ -69,14 +91,22 @@ export class CommunityService {
     }
 
     // Search parameters
-    get searchMembers(): Observable<string[]> {
-        return this._searchMembers;
-    }
-    updateSearch(members: string[], skills: string[]) {
+    updateSearch(members: string[] = [], skills: string[] = [], searchValue: string = '', type: CommunitySearchType = -1) {
         this._searchMembers.next(members);
         this._searchSkills.next(skills);
+        this._searchType.next(type);
+        this._searchValue.next(searchValue);
     }
-    get searchSkills(): Observable<string[]> {
+    get searchValue(): BehaviorSubject<string> {
+        return this._searchValue;
+    }
+    get searchType(): BehaviorSubject<CommunitySearchType> {
+        return this._searchType;
+    }
+    get searchMembers(): BehaviorSubject<string[]> {
+        return this._searchMembers;
+    }
+    get searchSkills(): BehaviorSubject<string[]> {
         return this._searchSkills;
     }
 

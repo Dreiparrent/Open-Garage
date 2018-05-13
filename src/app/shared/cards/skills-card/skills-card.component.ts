@@ -1,6 +1,6 @@
 import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { CommunityService } from '../../community/community.service';
-import { ICommunitySkills, IProfile } from '../../community/community-interfaces';
+import { ICommunitySkills, IProfile, CommunitySearchType } from '../../community/community-interfaces';
 
 @Component({
     selector: 'app-skills-card',
@@ -16,10 +16,10 @@ export class SkillsCardComponent {
     constructor(private comService: CommunityService) { }
 
     cardClick() {
-        this.comService.updateSearch(this.profiles.map(p => p.name), [this.skill]);
+        this.comService.updateSearch(this.profiles.map(p => p.name), [this.skill], this.skill, CommunitySearchType.skillsSkills);
     }
     nameClick(profile) {
-        this.comService.updateSearch([profile], []);
+        this.comService.updateSearch([profile], [], profile, CommunitySearchType.skillsMembers);
     }
 
     mouseOver(i: number) {

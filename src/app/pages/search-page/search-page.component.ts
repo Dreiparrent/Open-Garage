@@ -53,7 +53,9 @@ export class SearchPageComponent implements OnInit {
     constructor(private comsService: CommunitiesService) { }
 
     ngOnInit() {
-        this.communities = this.comsService.locationSearch({ lat: 39.68238, lng: -104.964384});
+        this.comsService.locationSearch(12).then(com => {
+            this.communities = com;
+        }, err => console.log(err));
     }
 
 }
