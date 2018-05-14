@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ICommunity, ICommunityData, IProfile, IMessage, ICommunitySkills, CommunitySearchType } from './community-interfaces';
+import { ICommunity, ICommunityData, IProfile, IMessage, ICommunitySkills, CommunitySearchType, Payments } from './community-interfaces';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 
 @Injectable()
@@ -134,22 +134,30 @@ export class CommunityService {
 // Names
 const baxter: IProfile = {
     name: 'Baxter Cochennet',
+    fName: 'Baxter',
+    lName: 'Cochennet',
+    email: 'fakeEmail@mail.com',
     about: 'Simple about',
     skills: ['Accounting', 'Personal Finance', 'Budgeting', 'Photography'],
     passions: ['Cycling', 'Fly Fishing', 'Photography', 'SUP', 'Cliff Jumping', 'Community'],
     location: 'Denver',
     connections: 15,
+    paymentForm: [Payments['Nothing, happy to help']],
     imgUrl: '/assets/img/photos/baxter.jpg'
 };
 const me: IProfile = {
     name: 'Andrei Parrent',
+    fName: 'Andrei',
+    lName: 'Parrent',
+    email: 'dreiparrent@gmail.com',
     about: `After the inception of Sourcerer, I have been working on an ever growing list of code technique to further
      my coding passion.I am constantly looking for new opportunities to expand my knowledge of technologies
      and produce works I am proud of.`,
-    skills: ['Code', 'Web Design', 'whatever'],
+    skills: ['Code', 'Web Design', 'Other Stuff'],
     passions: ['some', 'passions'],
     location: 'Denver',
     connections: 9,
+    paymentForm: [Payments.Cash, Payments.Pizza],
     imgUrl: '/assets/img/photos/andrei.jpg'
 };
 const blankData: ICommunityData = {

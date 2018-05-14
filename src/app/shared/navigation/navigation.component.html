@@ -1,7 +1,7 @@
 <div class="h-100 nav-theme">
     <mat-tab-group>
         <mat-tab label="Navigation">
-            <div class="d-flex align-items-center justify-content-center w-100">
+            <div class="d-flex align-items-center justify-content-center w-100 h-100">
                 <div class="h-100 w-100">
                     <mat-nav-list>
                         <a mat-list-item class="cursor-pointer nav-button" *ngFor="let nav of navLinks; let i = index;" [routerLink]="nav.link" routerLinkActive="mat-list-item-focus">
@@ -14,8 +14,13 @@
                         </a>
                         <a mat-list-item class="cursor-pointer" *ngFor="let com of communityLinks" [routerLink]="['/community',com.link]" routerLinkActive="mat-list-item-focus">
                         {{ com.name }} </a>
-                        <mat-divider *ngIf="isAuth"></mat-divider>
-                        <h3 matSubheader *ngIf="isAuth">Profile</h3>
+                        <div *ngIf="isAuth" class="yourProfile position-absolute w-100">
+                            <mat-divider></mat-divider>
+                            <h3 matSubheader>Profile</h3>
+                            <div class="p-2">
+                                <app-your-profile-card></app-your-profile-card>
+                            </div>
+                        </div>
                         <!--
                         <a mat-list-item class="cursor-pointer" [routerLink]="['/profile',com.link]" routerLinkActive="mat-list-item-focus">
                             View Profile </a>

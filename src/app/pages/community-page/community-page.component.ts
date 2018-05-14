@@ -56,6 +56,12 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
                 case CommunitySearchType.skillsMembers:
                     this.searchType = 'Community Skills > Members';
                     break;
+                case CommunitySearchType.topSkills:
+                    this.searchType = 'Top Skills';
+                    break;
+                case CommunitySearchType.communityMember:
+                    this.searchType = 'Community Member';
+                    break;
                 case CommunitySearchType.messageMembers:
                     this.searchType = 'Message Board > Members';
                     break;

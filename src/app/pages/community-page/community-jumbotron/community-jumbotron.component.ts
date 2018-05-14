@@ -42,7 +42,7 @@ export class CommunityJumbotronComponent implements OnInit, OnDestroy {
         this.comSub = this.comService.members.subscribe(members => this.setOptions(members));
         this.valueSub = this.comService.searchValue.subscribe(val => {
             if (this.currentValue !== val)
-                this.search.nativeElement.value = val;
+                this.search.nativeElement.value = this.currentValue = val;
         });
     }
 

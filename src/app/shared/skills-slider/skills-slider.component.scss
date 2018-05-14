@@ -1,0 +1,30 @@
+::-webkit-scrollbar-track-piece  {
+background-color: #deb9cf;
+}
+::-webkit-scrollbar {
+    width: 9px; 
+    height: 9px; 
+    background: #deb9cf;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #91155e;
+    // border: 1px solid #deb9cf;
+}
+#skillsTitle {
+    margin-top: 1.25rem !important;
+    margin-left: 1.25rem !important;
+    margin-bottom: 1.5rem !important;
+    margin-right: 1.25rem !important;
+}
+#skillsHolder {
+    overflow-y: hidden;
+    white-space: nowrap;
+    height: 38px;
+};
+.skillsClass {
+    text-overflow: ellipsis;
+}
+.skillText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

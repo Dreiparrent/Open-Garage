@@ -3,7 +3,7 @@ import {
     Output, EventEmitter, ViewChild, ElementRef, HostListener
 } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
-import { IProfile } from '../../../shared/community/community-interfaces';
+import { IProfile, CommunitySearchType } from '../../../shared/community/community-interfaces';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { NavigationService } from '../../../shared/navigation/navigation-service';
 import { Subscription } from 'rxjs';
@@ -61,17 +61,19 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     }
 
     toggleViewMore() {
+        this.scrollMore = !this.scrollMore;
         if (this.viewLess) {
             this.cardMultiplier = 0;
             this.onScroll();
-            this.scrollMore = true;
-            return;
-        } else if (!this.scrollMore) {
+            this.scrollMore = false;
+        } else if (this.scrollMore) {
             this.vmHeight = $(this.viewMore.nativeElement).height();
             this.onScroll();
         }
-        this.scrollMore = !this.scrollMore;
-        // console.log('more', this.cardMartiplier);
+    }
+    toggleViewLess() {
+        this.cardMultiplier = 0;
+        this.onScroll();
     }
     onScroll() {
         this.cardMultiplier += 1;
@@ -123,7 +125,7 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     sortTopMembers(tmpTop: IProfile[]) {
         this.cardNumber = this.getCardNumber();
         this.multipleCardNumber = this.cardNumber * this.cardMultiplier;
-        if (tmpTop.length <= this.multipleCardNumber) {
+        if (tmpTop.length < this.multipleCardNumber) {
             this.multipleCardNumber = tmpTop.length;
             if (this.cardMultiplier > 1)
                 this.viewLess = true;
@@ -138,6 +140,10 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
             return 6;
         if (this.largeQuery.matches)
             return 8;
+    }
+
+    cardClick(profile: IProfile) {
+        this.comService.updateSearch([profile.name], profile.skills, profile.name, CommunitySearchType.communityMember);
     }
 
     searchMembers(members: string[]) {
@@ -168,13 +174,11 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
             const parHeight = $(this.viewMore.nativeElement.parentElement.parentElement.parentElement.parentElement).position().top;
             const elemPos = $(this.viewMore.nativeElement).position().top;
             if (winScroll - parHeight - elemPos + this.winHeight)
-                // this.scrollMore = false;
-                setTimeout(() => {
-                    // this.scrollMore = !this.scrollMore;
-                    if (this.scrollMore && !this.viewLess)
-                        this.onScroll();
-                }, 2000);
-            // console.log('scroll', winScroll - parHeight - elemPos + this.winHeight);
+                if (!this.viewLess)
+                    setTimeout(() => {
+                        if (this.scrollMore)
+                            this.onScroll();
+                    }, 2000);
         }
     }
     @HostListener('window:resize', [])

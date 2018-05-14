@@ -14,7 +14,8 @@ import {
     MatSelectModule,
     MatSnackBarModule,
     MatAutocompleteModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule
 } from '@angular/material';
 
 import 'hammerjs';
@@ -36,7 +37,8 @@ import 'hammerjs';
         MatSelectModule,
         MatSnackBarModule,
         MatAutocompleteModule,
-        MatTooltipModule
+        MatTooltipModule,
+        MatDialogModule
     ],
     exports: [
         MatSidenavModule,
@@ -53,7 +55,8 @@ import 'hammerjs';
         MatSelectModule,
         MatSnackBarModule,
         MatAutocompleteModule,
-        MatTooltipModule
+        MatTooltipModule,
+        MatDialogModule
     ]
 })
 

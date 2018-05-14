@@ -3,8 +3,8 @@ import { FormControl, Validators, FormBuilder, FormGroup, AbstractControl } from
 import { MyErrorStateMatcher } from './ragister-validator';
 import { MatChipInputEvent, MatChipList, MatChipListChange } from '@angular/material';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
+import { AuthService, IRegister } from '../../shared/auth/auth.service';
 import { Payments } from '../../shared/community/community-interfaces';
-import { RegisterService, IRegister } from './register.service';
 
 @Component({
     selector: 'app-register-page',
@@ -30,10 +30,8 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
     inputSkills: string[] = [];
     inputPassions: string[] = [];
     matcher = new MyErrorStateMatcher();
-    separatorKeysCodes = [ENTER, COMMA, '186'];
-
     rFormGroup: FormGroup;
-    constructor(private fb: FormBuilder, private regService: RegisterService) {
+    constructor(private fb: FormBuilder, private authService: AuthService) {
         for (const i in Payments)
             if (typeof Payments[i] === 'string')
                 this.payments.push(Payments[i]);
@@ -86,7 +84,6 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
 
     chipChange(changelist: MatChipListChange) {
         console.log(changelist);
-
     }
 
     createSteps() {
@@ -152,12 +149,12 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
             input.value = '';
     }
 
-    removeChip(chip: any, type: number): void {
+    removeChip(chip: any, isPassion = false): void {
         // let inputList;
-        console.log(chip, type);
-        const index = type ? this.inputPassions.indexOf(chip) : this.inputSkills.indexOf(chip);
+        console.log(chip, isPassion);
+        const index = isPassion ? this.inputPassions.indexOf(chip) : this.inputSkills.indexOf(chip);
         if (index >= 0)
-            if (type)
+            if (isPassion)
                 this.inputPassions.splice(index, 1);
             else
                 this.inputSkills.splice(index, 1);
@@ -181,7 +178,7 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
             payment: fPayments,
             about: formValues.about
         };
-        this.regService.registerUser(register);
+        this.authService.registerUser(register);
     }
 }
 enum FormChildren {

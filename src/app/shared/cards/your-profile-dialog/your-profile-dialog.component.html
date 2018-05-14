@@ -1,0 +1,95 @@
+<h2 mat-dialog-title>{{profile.name}}</h2>
+<mat-dialog-content>
+    <form [formGroup]="uFormGroup" (ngSubmit)="submitRegister(uFormGroup.value)">
+        <h3>Image</h3>
+        <fieldset>
+            <div class="row">
+                <mat-form-field class="col-sm-12 col-md-6">
+                    <input matInput type="text" placeholder="First Name" [(ngModel)]="profile.fName" formControlName="fName" [errorStateMatcher]="matcher">
+                    <mat-error *ngIf="getError('fName','required')">
+                        First name is
+                        <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 col-md-6">
+                    <input matInput type="text" placeholder="Last Name" [(ngModel)]="profile.lName" formControlName="lName" [errorStateMatcher]="matcher">
+                    <mat-error *ngIf="getError('lName', 'required')">
+                        last name is
+                        <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="row">
+                <mat-form-field class="col-md-12">
+                    <textarea matInput formControlName="about" [errorStateMatcher]="matcher" placeholder="Tell us about you" matTextareaAutosize
+                        matAutosizeMinRows="2" matAutosizeMaxRows="5" [(ngModel)]="profile.about"></textarea>
+                    <mat-error *ngIf="getError('about', 'required')">
+                        About is
+                        <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="row">
+                <mat-form-field class="col-md-12">
+                    <input matInput type="text" placeholder="Location" [(ngModel)]="profile.location" formControlName="location" [errorStateMatcher]="matcher">
+                    <mat-error *ngIf="getError('location', 'required')">
+                        Location is
+                        <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="row">
+                <mat-form-field class="col-md-12" hintLabel="Separate with comma or semicolon">
+                    <mat-chip-list #skillsList [errorStateMatcher]="matcher">
+                        <mat-chip *ngFor="let skill of profile.skills" [selectable]="true" [removable]="true" (remove)="removeChip(skill, 0)" (removed)="removeChip(skill)">
+                            {{ skill }}
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                        <input matInput placeholder="Skills/Knowledge" formControlName="skills" [matChipInputFor]="skillsList"
+                            [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="addChip($event, 0)">
+                        <mat-error [hidden]="!getError('skills' ,'required')">
+                            At least one skill is
+                            <strong>required</strong>
+                        </mat-error>
+                    </mat-chip-list>
+                </mat-form-field>
+                <mat-form-field class="col-md-12" hintLabel="Separate with comma or semicolon">
+                    <mat-chip-list #passionsList [errorStateMatcher]="matcher">
+                        <mat-chip *ngFor="let passion of profile.passions" [selectable]="true" [removable]="true" (remove)="removeChip(passion, 1)" (removed)="removeChip(passion, true)">
+                            {{ passion }}
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                        <input matInput placeholder="Passions" formControlName="passions" [matChipInputFor]="passionsList"
+                            [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="addChip($event, 1)">
+                        <mat-error [hidden]="!getError('passions', 'required')">
+                            At least one passion is
+                            <strong>required</strong>
+                        </mat-error>
+                    </mat-chip-list>
+                </mat-form-field>
+                <mat-form-field class="col-md-12">
+                    <mat-select placement="bottom" [(ngModel)]="profilePayments" formControlName="payment" placeholder="Accepted form of payment" [errorStateMatcher]="matcher" multiple>
+                        <mat-option *ngFor="let payment of payments" [value]="payment">
+                            {{ payment }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="getError('payment', 'required')">
+                        Payment form is
+                        <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </fieldset>
+    </form>    
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancel</button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button mat-button [mat-dialog-close]="uFormGroup.value">Update</button>
+</mat-dialog-actions>

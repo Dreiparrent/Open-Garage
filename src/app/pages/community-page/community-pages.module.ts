@@ -33,7 +33,6 @@ import { CommunityMessagesComponent } from './community-messages/community-messa
         CommunityMembersComponent,
         CommunitySkillsComponent,
         CarouselHeightDirective,
-        MatchHeightDirective,
         CommunityMessagesComponent
     ],
     providers: []

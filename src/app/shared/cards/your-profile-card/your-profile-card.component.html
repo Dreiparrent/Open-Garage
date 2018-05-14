@@ -1,0 +1,43 @@
+<mat-card class="pt-1">
+    <mat-card-title class="mb-2">
+        <div class="row text overflow-hidden w-100">
+            <div class="col-6 float-left">
+                <a>
+                    <mat-icon placement="bottom" container="body" tooltip="Location" class="align-middle cursor-pointer">my_location</mat-icon>
+                    <!--<i-globe placement="bottom" ngbTooltip="Location" class="align-bottom cursor-pointer"></i-globe>-->
+                    <span class="h-100 align-text-top"> {{profile.location}}</span>
+                </a>
+            </div>
+            <div class="col-6 text-right p-0">
+                <a>
+                    <mat-icon placement="bottom" container="body" tooltip="Connections" class="align-middle cursor-pointer">wifi_tethering</mat-icon>
+                    <!-- <i-radio placement="bottom" ngbTooltip="Connections" class="align-bottom cursor-pointer"></i-radio>-->
+                    <span class="h-100 align-text-top">{{profile.connections}}</span>
+                </a>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="col-7 mx-auto">
+                <img class="rounded-circle img-fluid" [src]="profile.imgUrl" role="figure" alt="profile photo">
+            </div>
+        </div>
+    </mat-card-title>
+    <mat-card-content>
+        <div class="row text-center">
+            <div class="col-11 mx-auto">
+                <h4>{{profile.name}}</h4>
+            </div>
+        </div>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-footer>
+        <div class="flex-row">
+            <div class="col-12 text-center">
+                <button mat-button (click)="openProfile()">Edit Profile</button>
+            </div>
+            <div class="col-12 text-center">
+                <button mat-button (click)="openUpdate()">Edit Email/Password</button>
+            </div>
+        </div>
+    </mat-card-footer>
+</mat-card>

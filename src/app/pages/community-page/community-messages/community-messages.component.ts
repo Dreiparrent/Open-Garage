@@ -14,12 +14,16 @@ export class CommunityMessagesComponent implements OnInit {
 
     searchProfile: IProfile = {
         name: '',
+        fName: '',
+        lName: '',
+        email: '',
         location: '',
         connections: 0,
         imgUrl: '',
         about: '',
         skills: [],
-        passions: []
+        passions: [],
+        paymentForm: []
     };
 
     messages: IMessageDisplay[] = [

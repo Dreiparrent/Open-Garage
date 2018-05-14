@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>{{profile.name}}</h2>
+<mat-dialog-content>
+    <form [formGroup]="uFormGroup" (ngSubmit)="submitRegister(uFormGroup.value)">
+        <fieldset>
+            <div class="row">
+                <mat-form-field class="col-md-12">
+                    <input matInput type="email" placeholder="Email" formControlName="email" [errorStateMatcher]="matcher" [(ngModel)]="profile.email">
+                    <mat-error *ngIf="getError('email', 'email')">
+                        Please enter a valid email address
+                    </mat-error>
+                    <mat-error *ngIf="getError('email', 'required')">
+                        Email is
+                        <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-md-12">
+                    <input matInput type="password" placeholder="Password" formControlName="pass1" [errorStateMatcher]="matcher">
+                    <mat-error *ngIf="getError('pass1', 'minlength')">
+                        Password should be at least 6 characters
+                    </mat-error>
+                    <mat-error *ngIf="getError('pass1', 'passMatch')">
+                        Please enter
+                        <strong>matching</strong> passwords
+                    </mat-error>
+                    <mat-error *ngIf="getError('pass1', 'required')">
+                        Password is
+                        <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-md-12">
+                    <input matInput type="password" placeholder="Password" formControlName="pass2" [errorStateMatcher]="matcher">
+                    <mat-error *ngIf="getError('pass2', 'minlength')">
+                        Password should be at least 6 characters
+                    </mat-error>
+                    <mat-error *ngIf="getError('pass2','passMatch')">
+                        Please enter
+                        <strong>matching</strong> passwords
+                    </mat-error>
+                    <mat-error *ngIf="getError('pass2', 'required')">
+                        Password is
+                        <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </fieldset>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancel</button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button mat-button [mat-dialog-close]="uFormGroup.value">Update</button>
+</mat-dialog-actions>

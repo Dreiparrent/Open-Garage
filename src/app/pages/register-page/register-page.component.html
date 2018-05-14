@@ -17,7 +17,7 @@
                     <mat-form-field class="col-md-12">
                         <input matInput type="password" placeholder="Password" formControlName="pass1" [errorStateMatcher]="matcher">
                         <mat-error *ngIf="getError('pass1', 'minlength')">
-                            Please should be at least 6 characters
+                            Password should be at least 6 characters
                         </mat-error>
                         <mat-error *ngIf="getError('pass1', 'passMatch')">
                             Please enter <strong>matching</strong> passwords
@@ -29,7 +29,7 @@
                     <mat-form-field class="col-md-12">
                         <input matInput type="password" placeholder="Password" formControlName="pass2" [errorStateMatcher]="matcher">
                         <mat-error *ngIf="getError('pass2', 'minlength')">
-                            Please should be at least 6 characters
+                            Password should be at least 6 characters
                         </mat-error>
                         <mat-error *ngIf="getError('pass2','passMatch')">
                             Please enter
@@ -48,13 +48,13 @@
                     <mat-form-field class="col-sm-12 col-md-6">
                         <input matInput type="text" placeholder="First Name" formControlName="fName" [errorStateMatcher]="matcher">
                         <mat-error *ngIf="getError('fName','required')">
-                            Name is <strong>required</strong>
+                            First name is <strong>required</strong>
                         </mat-error>
                     </mat-form-field>
                     <mat-form-field class="col-sm-12 col-md-6">
                         <input matInput type="text" placeholder="Last Name" formControlName="lName" [errorStateMatcher]="matcher">
                         <mat-error *ngIf="getError('lName', 'required')">
-                            Name is <strong>required</strong>
+                            Last name is <strong>required</strong>
                         </mat-error>
                     </mat-form-field>
                     <mat-form-field class="col-md-12">
@@ -68,14 +68,43 @@
             <h6>Step 3</h6>
             <fieldset>
                 <div class="row">
-                    <mat-form-field class="col-md-12" hintLabel="Separate with comma or semicolon">
-                        <mat-chip-list #skillsList [errorStateMatcher]="matcher" placement="bottom" [popover]="popovers.skills" popoverTitle="Skills/Knowledge" container="body" triggers="mouseenter:mouseleave">
-                            <mat-chip *ngFor="let skill of inputSkills" [selectable]="true" [removable]="true" (remove)="removeChip(skill, 0)">
+                    <mat-form-field class="col-md-12" hintLabel="Separate with comma or semicolon" placement="bottom" [popover]="popovers.skills" popoverTitle="Skills/Knowledge" container="body" triggers="mouseover:mouseleave">
+                        <mat-chip-list #skillsList [errorStateMatcher]="matcher">
+                            <mat-chip *ngFor="let skill of inputSkills" [selectable]="true" [removable]="true" (remove)="removeChip(skill, 0)" (removed)="removeChip(skill)">
                                 {{ skill }}
                                 <mat-icon matChipRemove>cancel</mat-icon>
                             </mat-chip>
-                            <input matInput  placeholder="Skills/Knowledge" formControlName="skills" [matChipInputFor]="skillsList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="addChip($event, 0)">
+                            <input matInput placeholder="Skills/Knowledge" formControlName="skills" [matChipInputFor]="skillsList" [matChipInputAddOnBlur]="true"
+                                (matChipInputTokenEnd)="addChip($event, 0)">
+                            <mat-error [hidden]="!getError('skills' ,'required')">
+                                At least one skill is
+                                <strong>required</strong>
+                            </mat-error>
+                        </mat-chip-list>
+                    </mat-form-field>
+                    <mat-form-field class="col-md-12" hintLabel="Separate with comma or semicolon" placement="bottom" [popover]="popovers.passions" popoverTitle="Passions" container="body" triggers="mouseenter:mouseleave">
+                        <mat-chip-list #passionsList [errorStateMatcher]="matcher">
+                            <mat-chip *ngFor="let passion of inputPassions" [selectable]="true" [removable]="true" (remove)="removeChip(passion, 1)"
+                                (removed)="removeChip(passion, true)">
+                                {{ passion }}
+                                <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                            <input matInput placeholder="Passions" formControlName="passions" [matChipInputFor]="passionsList" [matChipInputAddOnBlur]="true"
+                                (matChipInputTokenEnd)="addChip($event, 1)">
+                            <mat-error [hidden]="!getError('passions', 'required')">
+                                At least one passion is
+                                <strong>required</strong>
+                            </mat-error>
+                        </mat-chip-list>
+                    </mat-form-field>
+                    <!--
+                    <mat-form-field class="col-md-12" hintLabel="Separate with comma or semicolon">
+                        <mat-chip-list #skillsList [errorStateMatcher]="matcher" placement="bottom" [popover]="popovers.skills" popoverTitle="Skills/Knowledge" container="body" triggers="mouseenter:mouseleave">
+                            <mat-chip *ngFor="let skill of inputSkills" [selectable]="true" [removable]="true" (remove)="removeChip(skill)" (removed)="removeChip(skill)">
+                                {{ skill }}
+                                <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                            <input matInput placeholder="Skills/Knowledge" formControlName="skills" [matChipInputFor]="skillsList" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="addChip($event, 0)">
                             <mat-error [hidden]="!getError('skills' ,'required')">
                                 At least one skill is <strong>required</strong>
                             </mat-error>
@@ -84,17 +113,17 @@
                     <mat-form-field class="col-md-12" hintLabel="Separate with comma or semicolon">
                         <mat-chip-list #passionsList [errorStateMatcher]="matcher" placement="bottom" [popover]="popovers.passions"
                             popoverTitle="Passions" container="body" triggers="mouseenter:mouseleave">
-                            <mat-chip *ngFor="let passion of inputPassions" [selectable]="true" [removable]="true" (remove)="removeChip(passion, 1)">
+                            <mat-chip *ngFor="let passion of inputPassions" [selectable]="true" [removable]="true" (remove)="removeChip(passion, ture)" (removed)="removeChip(passion, ture)">
                                 {{ passion }}
                                 <mat-icon matChipRemove>cancel</mat-icon>
                             </mat-chip>
-                            <input matInput placeholder="Passions" formControlName="passions" [matChipInputFor]="passionsList"
-                                [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="addChip($event, 1)">
+                            <input matInput placeholder="Passions" formControlName="passions" [matChipInputFor]="passionsList" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="addChip($event, 1)">
                             <mat-error [hidden]="!getError('passions', 'required')">
                                 At least one passion is <strong>required</strong>
                             </mat-error>
                         </mat-chip-list>
                     </mat-form-field>
+                    -->
                     <mat-form-field class="col-md-12">
                         <mat-select placement="bottom" formControlName="payment" [popover]="popovers.payment" popoverTitle="Accepted from of payment" container="body" triggers="mouseenter:mouseleave"
                             placeholder="Accepted form of payment" [errorStateMatcher]="matcher" multiple>

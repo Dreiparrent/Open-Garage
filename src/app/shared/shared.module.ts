@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommunityGuardService } from './community/community-guard.service';
 // import { IconsModule } from './imports/icons.module';
 
@@ -17,6 +18,13 @@ import { SkillsSliderComponent } from './skills-slider/skills-slider.component';
 import { CommunityPathMatcher } from './routes/community-path-matcher';
 import { SkillsCardComponent } from './cards/skills-card/skills-card.component';
 import { CommunitiesCardComponent } from './cards/communities-card/communities-card.component';
+import { MatchHeightDirective } from './directives/match-height.directive';
+import { CarouselHeightDirective } from './directives/carousel-height.directive';
+import { YourProfileCardComponent } from './cards/your-profile-card/your-profile-card.component';
+import { YourProfileDialogComponent } from './cards/your-profile-dialog/your-profile-dialog.component';
+import { MAT_DIALOG_DEFAULT_OPTIONS, MAT_CHIPS_DEFAULT_OPTIONS } from '@angular/material';
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
+import { UpdateProfileDialogComponent } from './cards/update-profile-dialog/update-profile-dialog.component';
 
 @NgModule({
     exports: [
@@ -29,7 +37,10 @@ import { CommunitiesCardComponent } from './cards/communities-card/communities-c
         TooltipModule,
         PopoverModule,
         CarouselModule,
-        CommunitiesCardComponent
+        CommunitiesCardComponent,
+        MatchHeightDirective,
+        FormsModule,
+        ReactiveFormsModule,
     ],
     imports: [
         RouterModule,
@@ -37,7 +48,9 @@ import { CommunitiesCardComponent } from './cards/communities-card/communities-c
         MaterialImports,
         TooltipModule,
         PopoverModule,
-        CarouselModule.forRoot()
+        CarouselModule.forRoot(),
+        FormsModule,
+        ReactiveFormsModule,
         // IconsModule
     ],
     declarations: [
@@ -46,11 +59,21 @@ import { CommunitiesCardComponent } from './cards/communities-card/communities-c
         NavButtonComponent,
         SkillsSliderComponent,
         SkillsCardComponent,
-        CommunitiesCardComponent
+        CommunitiesCardComponent,
+        MatchHeightDirective,
+        YourProfileCardComponent,
+        YourProfileDialogComponent,
+        UpdateProfileDialogComponent
+    ],
+    entryComponents: [
+        YourProfileDialogComponent,
+        UpdateProfileDialogComponent
     ],
     providers: [
         CommunityGuardService,
-        CommunityPathMatcher
+        CommunityPathMatcher,
+        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } },
+        { provide: MAT_CHIPS_DEFAULT_OPTIONS, useValue: { separatorKeyCodes: [ENTER, COMMA, '186'] } }
     ]
 })
 export class SharedModule { }

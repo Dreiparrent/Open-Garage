@@ -1,20 +1,14 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommunityService } from '../community/community.service';
-import { IProfile, ICommunitySkills } from '../community/community-interfaces';
+import { IProfile, ICommunitySkills, CommunitySearchType } from '../community/community-interfaces';
 import { IPerfLoggingPrefs } from 'selenium-webdriver/chrome';
 import { MediaMatcher } from '@angular/cdk/layout';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-skills-slider',
     templateUrl: './skills-slider.component.html',
-    styles: [
-        `#skillsTitle {
-            margin-top: 1.25rem !important;
-            margin-left: 1.25rem !important;
-            margin-bottom: 1.5rem !important;
-            margin-right: 1.25rem !important;
-        }`
-    ]
+    styleUrls: ['./skills-slider.component.scss']
 })
 export class SkillsSliderComponent implements OnDestroy {
 
@@ -31,7 +25,9 @@ export class SkillsSliderComponent implements OnDestroy {
     medQuery: MediaQueryList;
     largeQuery: MediaQueryList;
     tmpSkills; skillsNumber = 3;
-    constructor(private changeDetectorRef: ChangeDetectorRef, private media: MediaMatcher) {
+    skillsSub: Subscription;
+    skillsSearched: string;
+    constructor(private changeDetectorRef: ChangeDetectorRef, private media: MediaMatcher, private comService: CommunityService) {
         this.createObservers();
     }
 
@@ -47,6 +43,12 @@ export class SkillsSliderComponent implements OnDestroy {
         this.mobileQuery.addListener(this._queryListener);
         if (this.skillsNumber !== this.getSkillsNumber())
             this.skillsNumber = this.getSkillsNumber();
+        this.skillsSub = this.comService.searchType.subscribe(type => {
+            if (type !== CommunitySearchType.topSkills) {
+                this.skillsSearched = null;
+                this.hideSkills = true;
+            }
+        });
     }
 
     sortSkills(skills: ISkills) {
@@ -60,7 +62,7 @@ export class SkillsSliderComponent implements OnDestroy {
         this.topSkills = [];
         this.topSkills = uniques.sort((a, b) => {
             return skills[b] - skills[a];
-        }).slice(0, this.skillsNumber);
+        }); // .slice(0, this.skillsNumber);
         this.countTopSkills(skills);
     }
 
@@ -70,8 +72,9 @@ export class SkillsSliderComponent implements OnDestroy {
         this.topSkills.forEach(skill => {
             totalSkills += frequencyList[skill];
         });
+        const mLength = this.topSkills.length >= this.skillsNumber ? this.topSkills.length : this.skillsNumber;
         this.topSkills.forEach(skill => {
-            const width = (frequencyList[skill] / totalSkills) * 100;
+            const width = (frequencyList[skill] / totalSkills) * (mLength / this.skillsNumber) * 100;
             freqArray[skill] = width;
         });
         this.skillsArray = freqArray;
@@ -83,8 +86,16 @@ export class SkillsSliderComponent implements OnDestroy {
         const skillPerc: number = this.skillsArray[skill];
         return Math.round(skillPerc * 10) / 10 + '%';
     }
-    skillsClick() {
-        this.hideSkills = !this.hideSkills;
+    skillsClick(skill) {
+        if (!this.skillsSearched) {
+            this.skillsSearched = skill;
+            this.comService.updateSearch([], [skill], skill, CommunitySearchType.topSkills);
+            this.hideSkills = false;
+        } else {
+            this.comService.updateSearch();
+            this.skillsSearched = null;
+            this.hideSkills = true;
+        }
     }
     getSkillsNumber(): number {
         if (this.mobileQuery.matches)
@@ -92,6 +103,8 @@ export class SkillsSliderComponent implements OnDestroy {
         return 6;
     }
     ngOnDestroy(): void {
+        this.mobileQuery.removeListener(this._queryListener);
+        this.skillsSub.unsubscribe();
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
     }

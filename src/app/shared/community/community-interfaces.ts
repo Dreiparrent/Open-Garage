@@ -5,14 +5,25 @@ export function _coords_to_inavigate(coords: Coordinates): INavigation {
     };
     return nav;
 }
-
+export enum Payments {
+    'Nothing, happy to help',
+    'Pizza',
+    'Tacos',
+    'Beer (must be 21)',
+    'Wine (must be 21)',
+    'Cash'
+}
 export interface IProfile {
-    name: string;
+    name?: string;
+    fName: string;
+    lName: string;
+    email: string;
     about: string;
     skills: string[];
     passions: string[];
     location: string;
     connections: number;
+    paymentForm: Payments[];
     imgUrl?: string;
 }
 export interface IMessage {
@@ -46,18 +57,12 @@ export interface ICommunity {
     members: number;
     link: string;
 }
-export enum Payments {
-    'Nothing, happy to help',
-    'Pizza',
-    'Tacos',
-    'Beer (must be 21)',
-    'Wine (must be 21)',
-    'Cash'
-}
 export enum CommunitySearchType {
     skills,
     members,
     skillsSkills,
     skillsMembers,
+    topSkills,
+    communityMember,
     messageMembers
 }
