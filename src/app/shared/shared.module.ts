@@ -25,6 +25,7 @@ import { YourProfileDialogComponent } from './cards/your-profile-dialog/your-pro
 import { MAT_DIALOG_DEFAULT_OPTIONS, MAT_CHIPS_DEFAULT_OPTIONS } from '@angular/material';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { UpdateProfileDialogComponent } from './cards/update-profile-dialog/update-profile-dialog.component';
+import { NavChatComponent } from './navigation/nav-chat/nav-chat.component';
 
 @NgModule({
     exports: [
@@ -63,7 +64,8 @@ import { UpdateProfileDialogComponent } from './cards/update-profile-dialog/upda
         MatchHeightDirective,
         YourProfileCardComponent,
         YourProfileDialogComponent,
-        UpdateProfileDialogComponent
+        UpdateProfileDialogComponent,
+        NavChatComponent
     ],
     entryComponents: [
         YourProfileDialogComponent,

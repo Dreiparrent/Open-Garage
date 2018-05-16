@@ -1,0 +1,78 @@
+<mat-tab-group class="hide-nav nav-theme" [selectedIndex]="selectIndex">
+    <mat-tab>
+        <div class="w-100 h-100 d-flex flex-column">
+            <form>
+                <mat-form-field class="w-100 px-2 pt-2 searchForm">
+                    <input #searchInput type="text" placeholder="Search" aria-label="messages" matInput [formControl]="searchControl" (keyup)="searchKeyup(searchInput.value)">
+                    <!-- <input #searchInput type="text" placeholder="Search" aria-label="messages" matInput [formControl]="searchControl" (keyup)="searchKeyup(searchInput.value)" [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                                {{ option }}
+                            </mat-option>
+                        </mat-autocomplete> -->
+                </mat-form-field>
+            </form>
+            <div class="f-auto">
+                <mat-list>
+                    <mat-list-item *ngFor="let chat of filteredChats | async" class="cursor-pointer" (click)="tabChat()">
+                        <img matListAvatar [src]="chat.user.imgUrl" alt="profile img">
+                        <h3 matLine>
+                            {{chat.user.name}}
+                        </h3>
+                        <h3 matLine>
+                            <span> {{chat.subject}} </span>
+                            <small class="text-muted"> {{chat.lastMessage.text}} </small>
+                        </h3>
+                    </mat-list-item>
+                </mat-list>
+            </div>
+            <div class="w-100 f-bottom">
+                <mat-progress-bar class="f-bottom" mode="buffer" [value]="searchProg" [bufferValue]="searchBuf" [color]="searchCol"></mat-progress-bar>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab>
+        <div class="w-100 h-100 d-flex flex-column">
+            <h5 (click)="tabMessage()" matTooltip="Back?" matTooltipPosition="right" class="p-2 cursor-pointer">
+                Message
+                <small class="text-muted">&gt; {{messageName}}</small>
+            </h5>
+            <div class="f-auto">
+                <mat-list>
+                    <mat-list-item *ngFor="let message of messages | async">
+                        <!-- <img matListAvatar [src]="chat.user.imgUrl" alt="profile img"> -->
+                        <!-- <h3 matLine>
+                            {{chat.user.name}}
+                        </h3> -->
+                        <h3 matLine class="hide-lg">
+                            <small class="text-muted">{{message.user}}</small>
+                        </h3>
+                        <h3 matLine class="hide-lg">
+                            {{message.text}}
+                        </h3>
+                        <div id="hide">
+                            <h6 class="flex-row w-100 h-auto">
+                                <small class="col-12 col-lg-auto text-muted">
+                                    {{message.user}}
+                                </small>
+                                <span class="col-12 col-lg-auto">
+                                    {{message.text}}
+                                </span>
+                            </h6>
+                        </div>
+                        <mat-divider></mat-divider>
+                    </mat-list-item>
+                </mat-list>
+            </div>
+            <form class="w-100 f-bottom">
+                <mat-form-field class="w-100 p-2">
+                    <textarea #messageInput matInput placeholder="Your message" class="w-100" (keydown.control.enter)="sendMessage(messageInput.value)" 
+                    cdkAutosizeTextarea [formControl]="messageControl" [errorStateMatcher]="matcher"></textarea>
+                    <mat-error *ngIf="messageControl.hasError('messageSend')">Message failed to send</mat-error>
+                    <mat-icon matSuffix (click)="sendMessage(messageInput.value)" [color]="chatCol">send</mat-icon>
+                </mat-form-field>
+                <mat-progress-bar mode="buffer" [value]="chatProg" [bufferValue]="chatBuf" [color]="chatCol"></mat-progress-bar>
+            </form>
+        </div>
+    </mat-tab>
+</mat-tab-group>

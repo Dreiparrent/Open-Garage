@@ -42,14 +42,67 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
         // min-width: 100px;
         width: auto !important;
     }
-    .nav-button {
-        width: 100% !important;
-    }
+    // .nav-button {
+    //     width: 100% !important;
+    // }
     .mat-tab-body-wrapper {
         height: 100%;
     }
     .mat-tab-group {
         height: 100%;
+    }
+    .f-auto {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        flex: auto;
+    }
+    .f-auto::-webkit-scrollbar-track-piece  {
+        background-color: #deb9cf;
+    }
+    .f-auto::-webkit-scrollbar {
+        width: 9px; 
+        height: 9px; 
+        background: #deb9cf;
+    }
+    .f-auto::-webkit-scrollbar-thumb {
+        background-color: #91155e;
+        // border: 1px solid #deb9cf;
+    }
+    .f-bottom {
+        flex: none;
+        width: 50vw;
+    }
+    @media screen and (min-width: 768px) {
+        .f-bottom {
+            width: 40vw;
+        }
+    }
+    @media screen and (min-width: 992px) {
+        .f-bottom {
+            width: 30vw;
+        }
+    }
+    @media screen and (min-width: 1200px) {
+        .f-bottom {
+            width: 20vw;
+        }
+    }
+}
+
+.hide-nav {
+    .mat-tab-header {
+        display: none;
+    }
+    .mat-list {
+        padding-top: 0;
+        overflow-y: scroll;
+    }
+    .mat-form-field-suffix {
+        font-size: 100%;
+    }
+    .hide-lg.mat-line {
+        white-space: normal !important;
+        text-overflow: unset !important;
     }
 }
 
