@@ -4,7 +4,7 @@
         <fieldset>
             <div class="row">
                 <mat-form-field class="col-md-12">
-                    <input matInput type="email" placeholder="Email" formControlName="email" [errorStateMatcher]="matcher" [(ngModel)]="profile.email">
+                    <input matInput type="email" placeholder="Email" formControlName="email" [errorStateMatcher]="matcher" [(ngModel)]="$any(profile.userData).profile.email">
                     <mat-error *ngIf="getError('email', 'email')">
                         Please enter a valid email address
                     </mat-error>

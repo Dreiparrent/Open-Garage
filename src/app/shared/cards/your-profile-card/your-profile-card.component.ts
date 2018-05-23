@@ -12,12 +12,23 @@ import { UpdateProfileDialogComponent } from '../update-profile-dialog/update-pr
 })
 export class YourProfileCardComponent implements OnInit {
 
-    profile: IUser;
+    profile: IUser = {
+        connections: 0,
+        imgUrl: '',
+        location: '',
+        name: '',
+        passions: [],
+        skills: [],
+        userData: null
+    };
 
     constructor(private dialog: MatDialog, private auth: AuthService) { }
 
     ngOnInit() {
-        this.profile = this.auth.getUser();
+        this.auth.getUser().then(user => {
+            console.log(user);
+            this.profile = user;
+        });
     }
 
     openProfile() {

@@ -5,14 +5,14 @@
         <fieldset>
             <div class="row">
                 <mat-form-field class="col-sm-12 col-md-6">
-                    <input matInput type="text" placeholder="First Name" [(ngModel)]="profile.fName" formControlName="fName" [errorStateMatcher]="matcher">
+                    <input matInput type="text" placeholder="First Name" [(ngModel)]="$any(profile.userData).profile.fName" formControlName="fName" [errorStateMatcher]="matcher">
                     <mat-error *ngIf="getError('fName','required')">
                         First name is
                         <strong>required</strong>
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field class="col-sm-12 col-md-6">
-                    <input matInput type="text" placeholder="Last Name" [(ngModel)]="profile.lName" formControlName="lName" [errorStateMatcher]="matcher">
+                    <input matInput type="text" placeholder="Last Name" [(ngModel)]="$any(profile.userData).profile.lName" formControlName="lName" [errorStateMatcher]="matcher">
                     <mat-error *ngIf="getError('lName', 'required')">
                         last name is
                         <strong>required</strong>
@@ -24,7 +24,7 @@
             <div class="row">
                 <mat-form-field class="col-md-12">
                     <textarea matInput formControlName="about" [errorStateMatcher]="matcher" placeholder="Tell us about you" matTextareaAutosize
-                        matAutosizeMinRows="2" matAutosizeMaxRows="5" [(ngModel)]="profile.about"></textarea>
+                        matAutosizeMinRows="2" matAutosizeMaxRows="5" [(ngModel)]="$any(profile.userData).profile.about"></textarea>
                     <mat-error *ngIf="getError('about', 'required')">
                         About is
                         <strong>required</strong>

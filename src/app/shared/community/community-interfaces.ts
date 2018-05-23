@@ -1,4 +1,4 @@
-import { DocumentReference } from '@firebase/firestore-types';
+import { DocumentReference, GeoPoint } from '@firebase/firestore-types';
 
 export function _coords_to_inavigate(coords: Coordinates): INavigation {
     const nav: INavigation = {
@@ -21,7 +21,7 @@ export interface IProfile {
     lName: string;
     about: string;
     email: string;
-    location?: DocumentReference;
+    location?: DocumentReference | {location: string, nav: GeoPoint};
 }
 export interface ITags {
     passions: string[];

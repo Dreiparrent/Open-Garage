@@ -1,12 +1,18 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { IProfile, Payments, IUser, IUserData } from '../community/community-interfaces';
+import { IProfile, Payments, IUser, IUserData, ITags } from '../community/community-interfaces';
+import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { DocumentReference, GeoPoint } from '@firebase/firestore-types';
 
 @Injectable()
 export class AuthService {
     token: string;
+    currentUser: DocumentReference;
 
-    constructor() { }
+    constructor(private db: AngularFirestore, private fauth: AngularFireAuth) {
+        this.currentUser = db.collection('users').doc('A5LOuQSWacJroy4NuTFg').ref;
+    }
 
     /*
     signupUser(email: string, password: string) {
@@ -59,8 +65,55 @@ export class AuthService {
         return true;
     }
 
-    getUser(): IUser {
-        return baxter;
+    getUser(): Promise<IUser> {
+        return this.currentUser.get().then(userSnap => {
+            if (userSnap.exists)
+                return userSnap.ref.collection('userData').doc('profile').get().then(profileSnap => {
+                    if (profileSnap.exists) {
+                        const profileData: IProfile = <any>profileSnap.data();
+                        return (profileData.location as DocumentReference).get().then(locSnap => {
+                            if (locSnap.exists)
+                                return <any>locSnap.data();
+                            else throw new Error('Cannot accquire profile location for profile');
+                        }).then((loc: { location: string, nav: GeoPoint }) => {
+                            profileData.location = loc;
+                            return profileData;
+                        });
+                    } else throw new Error('Cannot accquire profile data');
+                    // return newUser;
+                }).then(user => {
+                    return userSnap.ref.collection('userData').doc('tags').get().then(tagsSnap => {
+                        if (tagsSnap.exists)
+                            return { profile: user, tags: <ITags><any>tagsSnap.data() };
+                        else throw new Error('Cannot accquire profile tags');
+                    });
+                }).then(userData => {
+                    const tmpUser: IUser = <any>userSnap.data();
+                    return (tmpUser.imgUrl as DocumentReference).get().then(imgSnap => {
+                        if (imgSnap.exists)
+                            return <any>imgSnap.data()['else'];
+                        else throw new Error('Cannot accquire profile image');
+                    }).then((imgData: string) => {
+                        console.log(imgData);
+                        return {
+                            connections: tmpUser.connections,
+                            imgUrl: imgData,
+                            location: tmpUser.location,
+                            name: tmpUser.name,
+                            passions: userData.tags.passions,
+                            skills: userData.tags.skills,
+                            userData: userData
+                        };
+                    });
+                });
+            else throw new Error('Cannot get current uesr');
+        }).then((user: IUser) => {
+            console.log(user);
+            return user;
+        }).catch(error => {
+            throw new Error( error);
+            // console.error('Firebase auth get user', error);
+        });
     }
 }
 export interface IRegister {

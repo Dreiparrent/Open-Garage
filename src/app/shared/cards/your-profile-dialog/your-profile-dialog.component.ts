@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, ViewChild, AfterViewInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatChipInputEvent, MatChipList } from '@angular/material';
-import { IUser, Payments } from '../../community/community-interfaces';
+import { IUser, Payments, IProfile, IUserData } from '../../community/community-interfaces';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MyErrorStateMatcher } from '../../../pages/register-page/ragister-validator';
@@ -13,6 +13,7 @@ import { MyErrorStateMatcher } from '../../../pages/register-page/ragister-valid
 export class YourProfileDialogComponent implements OnInit, AfterViewInit {
 
     payments: string[] = [];
+    // profile: IUser;
     profilePayments: string[] = [];
     @ViewChild('skillsList') skillsList: MatChipList;
     @ViewChild('passionsList') passionsList: MatChipList;
@@ -30,14 +31,9 @@ export class YourProfileDialogComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.buildForm();
-        /*
-        this.profile.paymentForm.forEach(payment => {
-            if (typeof payment === 'number')
-                this.profilePayments.push(Payments[payment]);
-            else
-                this.profilePayments.push(payment);
+        (this.profile.userData as IUserData).tags.paymentForm.forEach(paym => {
+            this.profilePayments.push(Payments[paym]);
         });
-        */
     }
 
     buildForm() {

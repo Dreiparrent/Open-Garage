@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MyErrorStateMatcher } from '../../../pages/register-page/ragister-validator';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { IProfile } from '../../community/community-interfaces';
+import { IUser } from '../../community/community-interfaces';
 
 @Component({
   selector: 'app-update-profile-dialog',
@@ -19,7 +19,7 @@ export class UpdateProfileDialogComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         public dialogRef: MatDialogRef<UpdateProfileDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public profile: IProfile) {
+        @Inject(MAT_DIALOG_DATA) public profile: IUser) {
     }
 
     ngOnInit() {
