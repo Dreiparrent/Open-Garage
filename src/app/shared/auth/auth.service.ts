@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { IProfile, Payments } from '../community/community-interfaces';
+import { IProfile, Payments, IUser, IUserData } from '../community/community-interfaces';
 
 @Injectable()
 export class AuthService {
@@ -14,16 +14,22 @@ export class AuthService {
     }
     */
     registerUser(reg: IRegister) {
-        const newProfile: IProfile = {
+        const newProfile: IUser = {
             name: reg.fName + '' + reg.lName,
-            fName: reg.fName,
-            lName: reg.lName,
-            email: reg.email,
+            userData: {
+                profile: {
+                    fName: reg.fName,
+                    lName: reg.lName,
+                    about: reg.about,
+                    email: reg.email
+                },
+                tags: {
+                    passions: reg.passions,
+                    skills: reg.skills,
+                    paymentForm: reg.payment,
+                }
+            },
             location: reg.location,
-            passions: reg.passions,
-            skills: reg.skills,
-            about: reg.about,
-            paymentForm: reg.payment,
             connections: 0
         };
         if (reg.imgUrl)
@@ -53,7 +59,7 @@ export class AuthService {
         return true;
     }
 
-    getUser(): IProfile {
+    getUser(): IUser {
         return baxter;
     }
 }
@@ -86,16 +92,11 @@ export interface IUpdateProfile {
 }
 
 // TODO: remove this
-const baxter: IProfile = {
+const baxter: IUser = {
     name: 'Baxter Cochennet',
-    fName: 'Baxter',
-    lName: 'Cochennet',
-    email: 'fakeEmail@mail.com',
-    about: 'Simple about',
     skills: ['Accounting', 'Personal Finance', 'Budgeting', 'Photography'],
     passions: ['Cycling', 'Fly Fishing', 'Photography', 'SUP', 'Cliff Jumping', 'Community'],
     location: 'Denver',
     connections: 15,
-    paymentForm: [Payments['Nothing, happy to help']],
     imgUrl: '/assets/img/photos/baxter.jpg'
 };

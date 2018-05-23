@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, EventEmitter, Input } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
-import { IProfile } from '../../../shared/community/community-interfaces';
+import { IUser } from '../../../shared/community/community-interfaces';
 import { Subscription } from 'rxjs';
 import { MatSidenav } from '@angular/material/sidenav';
 
@@ -11,7 +11,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 })
 export class CommunitySidenavComponent implements OnInit, OnDestroy {
 
-    members: IProfile[];
+    members: IUser[];
     isSmall = false;
     comSub: Subscription;
     smallSub: Subscription;
@@ -28,7 +28,7 @@ export class CommunitySidenavComponent implements OnInit, OnDestroy {
         });
     }
 
-    sortMembers(members: IProfile[]): void {
+    sortMembers(members: IUser[]): void {
         this.members = members.slice().sort((profile1, profile2) => {
             if (profile1.name > profile2.name)
                 return 1;

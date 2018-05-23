@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { YourProfileDialogComponent } from '../your-profile-dialog/your-profile-dialog.component';
-import { IProfile } from '../../community/community-interfaces';
+import { IUser, IUserData } from '../../community/community-interfaces';
 import { AuthService, IYourProfile, IUpdateProfile } from '../../auth/auth.service';
 import { UpdateProfileDialogComponent } from '../update-profile-dialog/update-profile-dialog.component';
 
@@ -12,7 +12,7 @@ import { UpdateProfileDialogComponent } from '../update-profile-dialog/update-pr
 })
 export class YourProfileCardComponent implements OnInit {
 
-    profile: IProfile;
+    profile: IUser;
 
     constructor(private dialog: MatDialog, private auth: AuthService) { }
 

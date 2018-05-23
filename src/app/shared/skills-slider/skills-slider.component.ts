@@ -105,8 +105,6 @@ export class SkillsSliderComponent implements OnDestroy {
     ngOnDestroy(): void {
         this.mobileQuery.removeListener(this._queryListener);
         this.skillsSub.unsubscribe();
-        // Called once, before the instance is destroyed.
-        // Add 'implements OnDestroy' to the class.
     }
 }
 interface ISkills {

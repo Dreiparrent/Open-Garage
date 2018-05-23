@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IProfile, Payments } from './community-interfaces';
+import { Payments, IUser } from './community-interfaces';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -52,40 +52,22 @@ export interface IMessage {
     user: string;
 }
 export interface IChat {
-    user: IProfile;
+    user: IUser;
     subject: string;
     messages: IMessage[];
     id: string;
     lastMessage?: IMessage;
 }
-const me: IProfile = {
+const me: IUser = {
     name: 'Andrei Parrent',
-    fName: 'Andrei',
-    lName: 'Parrent',
-    email: 'dreiparrent@gmail.com',
-    about: `After the inception of Sourcerer, I have been working on an ever growing list of code technique to further
-     my coding passion.I am constantly looking for new opportunities to expand my knowledge of technologies
-     and produce works I am proud of.`,
-    skills: ['Code', 'Web Design', 'Other Stuff'],
-    passions: ['some', 'passions'],
     location: 'Denver',
     connections: 9,
-    paymentForm: [Payments.Cash, Payments.Pizza],
     imgUrl: '/assets/img/photos/andrei.jpg'
 };
-const you: IProfile = {
+const you: IUser = {
     name: 'you',
-    fName: 'Andrei',
-    lName: 'Parrent',
-    email: 'dreiparrent@gmail.com',
-    about: `After the inception of Sourcerer, I have been working on an ever growing list of code technique to further
-     my coding passion.I am constantly looking for new opportunities to expand my knowledge of technologies
-     and produce works I am proud of.`,
-    skills: ['Code', 'Web Design', 'Other Stuff'],
-    passions: ['some', 'passions'],
     location: 'Denver',
     connections: 9,
-    paymentForm: [Payments.Cash, Payments.Pizza],
     imgUrl: '/assets/img/photos/andrei.jpg'
 };
 const sampleChat: IChat[] = [

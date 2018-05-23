@@ -3,7 +3,7 @@ import {
     Output, EventEmitter, ViewChild, ElementRef, HostListener
 } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
-import { IProfile, CommunitySearchType } from '../../../shared/community/community-interfaces';
+import { IProfile, CommunitySearchType, IUser } from '../../../shared/community/community-interfaces';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { NavigationService } from '../../../shared/navigation/navigation-service';
 import { Subscription } from 'rxjs';
@@ -37,9 +37,9 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     hasTops = false;
     hasMessages = false;
     // Memebr holders
-    tmpMembers: IProfile[] = [];
-    communityMembers: IProfile[] = [];
-    topMembers: IProfile[] = [];
+    tmpMembers: IUser[] = [];
+    communityMembers: IUser[] = [];
+    topMembers: IUser[] = [];
 
     constructor(private cd: ChangeDetectorRef,
         private comService: CommunityService, private navService: NavigationService,
@@ -56,7 +56,8 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
                 this.sortMembers();
         });
         this.searchSub = this.comService.searchMembers.subscribe(members => {
-            this.searchMembers(members);
+            if (this.tmpMembers.length > 0)
+                this.searchMembers(members);
         });
     }
 
@@ -122,7 +123,7 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
             // this.comService.showWeb = this.hasTops;
     }
 
-    sortTopMembers(tmpTop: IProfile[]) {
+    sortTopMembers(tmpTop: IUser[]) {
         this.cardNumber = this.getCardNumber();
         this.multipleCardNumber = this.cardNumber * this.cardMultiplier;
         if (tmpTop.length < this.multipleCardNumber) {
@@ -142,7 +143,7 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
             return 8;
     }
 
-    cardClick(profile: IProfile) {
+    cardClick(profile: IUser) {
         this.comService.updateSearch([profile.name], profile.skills, profile.name, CommunitySearchType.communityMember);
     }
 
@@ -150,7 +151,9 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
         if (members.length > 0) {
             this.communityMembers = [];
             members.forEach(member => {
-                this.communityMembers = this.communityMembers.concat(this.tmpMembers.filter(m => m.name === member));
+                this.communityMembers = this.communityMembers.concat(this.tmpMembers.filter(m => {
+                    return m.name === member && this.communityMembers.filter(user => user.name === m.name).length < 1;
+                }));
             });
             this.sortMembers();
         } else {

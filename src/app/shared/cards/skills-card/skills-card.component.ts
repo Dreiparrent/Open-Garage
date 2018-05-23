@@ -1,6 +1,6 @@
 import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { CommunityService } from '../../community/community.service';
-import { ICommunitySkills, IProfile, CommunitySearchType } from '../../community/community-interfaces';
+import { ICommunitySkills, IUser, CommunitySearchType } from '../../community/community-interfaces';
 
 @Component({
     selector: 'app-skills-card',
@@ -10,7 +10,7 @@ import { ICommunitySkills, IProfile, CommunitySearchType } from '../../community
 export class SkillsCardComponent {
 
     @Input('skill') skill: string;
-    @Input('profiles') profiles: IProfile[];
+    @Input('profiles') profiles: IUser[];
     hoverNumber = -1;
 
     constructor(private comService: CommunityService) { }

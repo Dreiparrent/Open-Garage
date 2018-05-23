@@ -4,7 +4,7 @@ import { FormControl } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { CommunityService } from '../../../shared/community/community.service';
-import { IProfile, CommunitySearchType } from '../../../shared/community/community-interfaces';
+import { CommunitySearchType, IUser, IUserData } from '../../../shared/community/community-interfaces';
 import { ENTER } from '@angular/cdk/keycodes';
 
 export class SearchOptions {
@@ -46,7 +46,7 @@ export class CommunityJumbotronComponent implements OnInit, OnDestroy {
         });
     }
 
-    setOptions(members: IProfile[]) {
+    setOptions(members: IUser[]) {
         members.forEach(member => {
             this.options.push({ name: member.name, type: 0 });
             member.skills.forEach(skill => {

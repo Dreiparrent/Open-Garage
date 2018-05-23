@@ -1,3 +1,5 @@
+import { DocumentReference } from '@firebase/firestore-types';
+
 export function _coords_to_inavigate(coords: Coordinates): INavigation {
     const nav: INavigation = {
         lat: coords.latitude,
@@ -5,6 +7,7 @@ export function _coords_to_inavigate(coords: Coordinates): INavigation {
     };
     return nav;
 }
+
 export enum Payments {
     'Nothing, happy to help',
     'Pizza',
@@ -14,27 +17,57 @@ export enum Payments {
     'Cash'
 }
 export interface IProfile {
-    name?: string;
     fName: string;
     lName: string;
-    email: string;
     about: string;
-    skills: string[];
+    email: string;
+    location?: DocumentReference;
+}
+export interface ITags {
     passions: string[];
+    paymentForm: Payments[];
+    skills: string[];
+}
+export interface IUserData {
+    tags: ITags;
+    profile: IProfile;
+}
+export interface IUser {
+    name?: string;
+    userData?: DocumentReference | IUserData;
+    skills?: string[];
+    passions?: string[];
     location: string;
     connections: number;
-    paymentForm: Payments[];
-    imgUrl?: string;
+    imgUrl?: DocumentReference | string;
 }
+
+/*
+export class IUser<T> {
+    name?: string;
+    userData?: T; // DocumentReference | IUserData;
+    private _skills?: string[];
+    get skills() {
+        return this._skills;
+    }
+    set skills(skills: string[]) {
+
+    }
+    passions?: string[];
+    location: DocumentReference | string;
+    connections: number;
+    imgUrl?: DocumentReference | string;
+}
+*/
 export interface IMessage {
     name: string;
 }
 export interface ICommunitySkills {
-    [skill: string]: IProfile[];
+    [skill: string]: IUser[];
 }
 export interface ICommunityData {
     name: string;
-    members: IProfile[];
+    members: IUser[];
     messages: IMessage[];
     link: string;
     skills?: ICommunitySkills[];

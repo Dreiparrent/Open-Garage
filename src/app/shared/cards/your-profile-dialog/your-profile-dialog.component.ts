@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, ViewChild, AfterViewInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatChipInputEvent, MatChipList } from '@angular/material';
-import { IProfile, Payments } from '../../community/community-interfaces';
+import { IUser, Payments } from '../../community/community-interfaces';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MyErrorStateMatcher } from '../../../pages/register-page/ragister-validator';
@@ -22,7 +22,7 @@ export class YourProfileDialogComponent implements OnInit, AfterViewInit {
     constructor(
         private fb: FormBuilder,
         public dialogRef: MatDialogRef<YourProfileDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public profile: IProfile) {
+        @Inject(MAT_DIALOG_DATA) public profile: IUser) {
         for (const i in Payments)
             if (typeof Payments[i] === 'string')
                 this.payments.push(Payments[i]);
@@ -30,12 +30,14 @@ export class YourProfileDialogComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.buildForm();
+        /*
         this.profile.paymentForm.forEach(payment => {
             if (typeof payment === 'number')
                 this.profilePayments.push(Payments[payment]);
             else
                 this.profilePayments.push(payment);
         });
+        */
     }
 
     buildForm() {

@@ -5,6 +5,11 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared.module';
 
+
+import { AngularFireModule } from 'angularfire2';
+import { AngularFirestoreModule } from 'angularfire2/firestore';
+import { AngularFireStorageModule } from 'angularfire2/storage';
+import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AuthService } from './shared/auth/auth.service';
 import { AuthGuard } from './shared/auth/auth-guard.service';
 import { ICommunity } from './shared/community/community-interfaces';
@@ -44,6 +49,10 @@ import { CommunitiesComponent } from './layouts/communities/communities.componen
         TooltipModule.forRoot(),
         MaterialImports,
         ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
+        AngularFireModule.initializeApp(environment.firebase),
+        AngularFireAuthModule,
+        AngularFirestoreModule,
+        AngularFireStorageModule
     ],
     providers: [
         AuthService,

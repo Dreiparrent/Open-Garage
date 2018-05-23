@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
-import { ICommunitySkills, IProfile } from '../../../shared/community/community-interfaces';
+import { ICommunitySkills, IUser } from '../../../shared/community/community-interfaces';
 import { NgxCarousel, NgxCarouselStore } from 'ngx-carousel';
 import { Subscription } from 'rxjs';
 
@@ -29,7 +29,7 @@ export class CommunitySkillsComponent implements OnInit, OnDestroy {
     @Output() communitySkills = new EventEmitter<number[]>();
     insertSkills: string[];
     tmpSkills: ICommunitySkills[] = [];
-    tmpInsert: string[];
+    tmpInsert: string[] = [];
     skills: ICommunitySkills[] = [];
     membersSub: Subscription;
     searchSub: Subscription;
@@ -51,12 +51,19 @@ export class CommunitySkillsComponent implements OnInit, OnDestroy {
             loop: true,
             custom: 'banner'
         };
-        this.membersSub = this.comService.members.subscribe(members => this.sortSkills(members));
-        this.searchSub = this.comService.searchSkills.subscribe(skills => this.searchSkills(skills));
+        this.membersSub = this.comService.members.subscribe(members => {
+            if (members.length > 0)
+                this.sortSkills(members);
+        });
+        this.searchSub = this.comService.searchSkills.subscribe(skills => {
+            if (this.tmpInsert.length > 0)
+                this.searchSkills(skills);
+        });
     }
 
-    sortSkills(members: IProfile[]) {
-        console.log('sort');
+    sortSkills(members: IUser[]) {
+        this.skills = [];
+        console.log('sort', members);
         const comSkills: number[] = [];
         const inSkills = [];
         members.forEach(member => {
