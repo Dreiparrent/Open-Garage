@@ -99,7 +99,12 @@ export class YourProfileDialogComponent implements OnInit, AfterViewInit {
         this.dialogRef.close('test');
     }
 
-    submitRegister(formValue) {
+    submitRegister(formValue): IUser {
+        const formUser: IUser = this.profile;
+        formUser.passions = this.profile.passions ? this.profile.passions : [];
+        formUser.skills = this.profile.skills ? this.profile.skills : [];
+        // console.log(formUser);
+        return formUser;
         // TODO: add close
     }
 

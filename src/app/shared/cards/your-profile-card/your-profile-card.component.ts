@@ -12,15 +12,7 @@ import { UpdateProfileDialogComponent } from '../update-profile-dialog/update-pr
 })
 export class YourProfileCardComponent implements OnInit {
 
-    profile: IUser = {
-        connections: 0,
-        imgUrl: '',
-        location: '',
-        name: '',
-        passions: [],
-        skills: [],
-        userData: null
-    };
+    profile: IUser;
 
     constructor(private dialog: MatDialog, private auth: AuthService) { }
 
