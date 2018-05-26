@@ -25,7 +25,7 @@ export class YourProfileCardComponent implements OnInit {
 
     openProfile() {
         const dialogRef = this.dialog.open(YourProfileDialogComponent, { data: this.profile });
-        dialogRef.afterClosed().subscribe((result: IYourProfile) => {
+        dialogRef.afterClosed().subscribe((result: [IUser, boolean]) => {
             if (result)
                 this.auth.updateProfileInfo(result);
         });

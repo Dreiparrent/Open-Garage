@@ -9,7 +9,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "ser": "angular-http-server --path dist"
+    "ser": "angular-http-server --path dist",
+    "func": "firebase deploy --only functions"
   },
   "private": true,
   "dependencies": {

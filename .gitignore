@@ -7,6 +7,7 @@
 /tmp
 /out-tsc
 /stats.json
+/functions/lib
 
 # dependencies
 /node_modules
@@ -37,6 +38,7 @@ npm-debug.log
 testem.log
 /typings
 firebase-debug.log
+/functions/firebase-debug.log
 
 # e2e
 /e2e/*.js

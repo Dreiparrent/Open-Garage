@@ -17,6 +17,8 @@ export class YourProfileDialogComponent implements OnInit, AfterViewInit {
     profilePayments: string[] = [];
     @ViewChild('skillsList') skillsList: MatChipList;
     @ViewChild('passionsList') passionsList: MatChipList;
+    olds: any;
+    change = false;
     matcher = new MyErrorStateMatcher();
     uFormGroup: FormGroup;
 
@@ -24,6 +26,12 @@ export class YourProfileDialogComponent implements OnInit, AfterViewInit {
         private fb: FormBuilder,
         public dialogRef: MatDialogRef<YourProfileDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public profile: IUser) {
+        const tags = (this.profile.userData as IUserData).tags;
+        this.olds = {
+            passions: tags.passions.slice(),
+            paymentForm: tags.paymentForm.slice(),
+            skills: tags.skills.slice()
+        };
         for (const i in Payments)
             if (typeof Payments[i] === 'string')
                 this.payments.push(Payments[i]);
@@ -81,31 +89,38 @@ export class YourProfileDialogComponent implements OnInit, AfterViewInit {
                 this.profile.skills.push(value.trim());
         if (input)
             input.value = '';
+        this.change = true;
     }
 
     removeChip(chip: any, isPassion = false): void {
-        // let inputList;
-        console.log(chip, isPassion);
         const index = isPassion ? this.profile.passions.indexOf(chip) : this.profile.skills.indexOf(chip);
         if (index >= 0)
             if (isPassion)
                 this.profile.passions.splice(index, 1);
             else
                 this.profile.skills.splice(index, 1);
-        console.log(index, this.profile.passions);
+        this.change = true;
     }
 
     closeDialog() {
         this.dialogRef.close('test');
     }
 
-    submitRegister(formValue): IUser {
+    submitRegister(formValue): [IUser, boolean] {
         const formUser: IUser = this.profile;
         formUser.passions = this.profile.passions ? this.profile.passions : [];
         formUser.skills = this.profile.skills ? this.profile.skills : [];
-        // console.log(formUser);
-        return formUser;
-        // TODO: add close
+        if (this.change) {
+            const payments: number[] = [];
+            this.profilePayments.forEach(payment => {
+                payments.push(Payments[payment]);
+            });
+            (formUser.userData as IUserData).tags.passions = formUser.passions;
+            (formUser.userData as IUserData).tags.paymentForm = payments;
+            (formUser.userData as IUserData).tags.skills = formUser.skills;
+        }
+        return [formUser, this.change];
+        // TODO: add close also add other update qualifier?
     }
 
 }

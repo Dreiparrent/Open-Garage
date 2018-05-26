@@ -75,7 +75,7 @@
                 </mat-form-field>
                 <mat-form-field class="col-md-12">
                     <mat-select placement="bottom" [(ngModel)]="profilePayments" formControlName="payment" placeholder="Accepted form of payment" [errorStateMatcher]="matcher" multiple>
-                        <mat-option *ngFor="let payment of payments" [value]="payment">
+                        <mat-option *ngFor="let payment of payments" [value]="payment" (click)="change = true">
                             {{ payment }}
                         </mat-option>
                     </mat-select>

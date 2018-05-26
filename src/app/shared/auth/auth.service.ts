@@ -8,10 +8,12 @@ import { DocumentReference, GeoPoint } from '@firebase/firestore-types';
 @Injectable()
 export class AuthService {
     token: string;
-    currentUser: DocumentReference;
+    userRef: DocumentReference;
+    currentUser: IUser;
+    currentData: IUserData;
 
     constructor(private db: AngularFirestore, private fauth: AngularFireAuth) {
-        this.currentUser = db.collection('users').doc('A5LOuQSWacJroy4NuTFg').ref;
+        this.userRef = db.collection('users').doc('A5LOuQSWacJroy4NuTFg').ref;
     }
 
     /*
@@ -42,8 +44,18 @@ export class AuthService {
             newProfile.imgUrl = reg.imgUrl;
         console.log(newProfile);
     }
-    updateProfileInfo(update: IYourProfile) {
-        console.log(update);
+    updateProfileInfo(update: [IUser, boolean]) {
+        // console.log(update);
+        const currentData = this.currentUser.userData as IUserData;
+        const userData = update[0].userData as IUserData;
+        this.userRef.collection('userData').doc('profile').update({
+            about: userData.profile.about,
+            fName: userData.profile.fName,
+            lName: userData.profile.lName
+        }).then(() => {
+            if (update[1])
+                this.userRef.collection('userData').doc('tags').update(userData.tags);
+        });
     }
     updateProfileData(update: IUpdateProfile) {
         console.log(update);
@@ -66,7 +78,7 @@ export class AuthService {
     }
 
     getUser(): Promise<IUser> {
-        return this.currentUser.get().then(userSnap => {
+        return this.userRef.get().then(userSnap => {
             if (userSnap.exists)
                 return userSnap.ref.collection('userData').doc('profile').get().then(profileSnap => {
                     if (profileSnap.exists) {
@@ -108,7 +120,8 @@ export class AuthService {
                 });
             else throw new Error('Cannot get current uesr');
         }).then((user: IUser) => {
-            console.log(user);
+            this.currentUser = user;
+            this.currentData = (user.userData as IUserData);
             return user;
         }).catch(error => {
             throw new Error( error);
