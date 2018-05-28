@@ -35,9 +35,13 @@
             <div class="col-12 text-center">
                 <button mat-button (click)="openProfile()">Edit Profile</button>
             </div>
-            <div class="col-12 text-center">
+            <div *ngIf="isProvide" class="col-12 text-center">
                 <button mat-button (click)="openUpdate()">Edit Email/Password</button>
+            </div>
+            <div class="col-12 text-center">
+                <button mat-button color="warn" (click)="logout()">Logout</button>
             </div>
         </div>
     </mat-card-footer>
 </mat-card>
+<mat-progress-bar *ngIf="updateProg < 100" mode="buffer" [value]="updateProg" [bufferValue]="updateBuf" [color]="updateCol"></mat-progress-bar>

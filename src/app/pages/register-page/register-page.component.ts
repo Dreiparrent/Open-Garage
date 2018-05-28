@@ -31,6 +31,8 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
     inputPassions: string[] = [];
     matcher = new MyErrorStateMatcher();
     rFormGroup: FormGroup;
+    authType = 0;
+    steps;
     constructor(private fb: FormBuilder, private authService: AuthService) {
         for (const i in Payments)
             if (typeof Payments[i] === 'string')
@@ -86,6 +88,23 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
         console.log(changelist);
     }
 
+    fAuth($event) {
+        $event.preventDefault();
+        // this.authType = 1;
+        $('.icons-tab-steps').steps('next');
+    }
+
+    gAuth($event) {
+        console.log('gAuth');
+        $event.preventDefault();
+        this.authService.gAuth().then(result => {
+            if (result) {
+                this.authType = 2;
+                $('.icons-tab-steps').steps('next');
+            }
+        });
+    }
+
     createSteps() {
         $('.icons-tab-steps').steps({
             headerTag: 'h6',
@@ -104,10 +123,13 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
                     return true;
                 switch (newIndex) {
                     case 1:
-                        this.formChildren('email').markAsDirty();
-                        this.formChildren('pass1').markAsDirty();
-                        this.formChildren('pass2').markAsDirty();
-                        return this.formChildren('email').valid && this.formChildren('pass1').valid && this.formChildren('pass2').valid;
+                        if (this.authType === 0) {
+                            this.formChildren('email').markAsDirty();
+                            this.formChildren('pass1').markAsDirty();
+                            this.formChildren('pass2').markAsDirty();
+                            return this.formChildren('email').valid && this.formChildren('pass1').valid && this.formChildren('pass2').valid;
+                        } else
+                            return this.authService.isAuthenticated().getValue();
                     case 2:
                         this.formChildren('fName').markAsDirty();
                         this.formChildren('lName').markAsDirty();
@@ -162,14 +184,12 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
     }
     submitRegister(formValues) {
         const isValid = this.rFormGroup.valid;
-        console.log(isValid);
         const fPayments: number[] = [];
         formValues.payment.forEach((payment: string) => {
             fPayments.push(Payments[payment]);
         });
         const register: IRegister = {
-            email: formValues.email,
-            pass: formValues.pass1,
+            type: this.authType,
             fName: formValues.fName,
             lName: formValues.lName,
             location: formValues.location,
@@ -178,6 +198,11 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
             payment: fPayments,
             about: formValues.about
         };
+        if (this.authType === 0) {
+            register.email = formValues.email;
+            register.pass = formValues.pass1;
+        }
+        console.log(register);
         this.authService.registerUser(register);
     }
 }

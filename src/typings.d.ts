@@ -5,6 +5,26 @@ interface NodeModule {
 }
 interface JQuery {
     steps(settings?: StepsSettings): JQuery;
+    steps(method: 'add', step: StepObject): any;
+    steps(method: 'insert', index: number, step: StepObject): any;
+    steps(method: 'remove', index: number): boolean;
+    steps(method: 'getCurrentStep'): StepObject;
+    steps(method: 'getCurrentIndex'): number;
+    steps(method: 'getStep', index: number): StepObject;
+    steps(method: 'next'): boolean;
+    steps(method: 'previous'): boolean;
+    steps(method: 'finish'): void;
+    steps(method: 'destroy'): void;
+    steps(method: 'skip', count: number): boolean;
+}
+interface StepObjectWizard {
+    
+}
+interface StepObject {
+    title: '';
+    content: '';
+    contentMode: 'html' | 0;
+    contentUrl: ''
 }
 interface StepsSettings {
     /* Appearance */

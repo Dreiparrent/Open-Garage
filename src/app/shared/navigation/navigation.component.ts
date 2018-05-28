@@ -42,14 +42,13 @@ export class NavigationComponent implements OnInit, OnDestroy {
             this.navService.toggle(m);
         });
         // closedStart | onPositionChanged | openedStart
-
-        this.isAuth = this.authService.isAuthenticated();
+        this.authService.isAuthenticated().subscribe(authStatus => {
+            console.log(authStatus);
+            this.isAuth = authStatus;
+        });
         this.navLinks = (this.isAuth) ? authLinks : noAuthLinks;
         if (this.isAuth)
-            this.communityLinks = this.comService.getCommunities('testID');
-
-        // TODO: Remove this
-        this.navLinks = noAuthLinks;
+            this.communityLinks = this.comService.getCommunities('testID'); // TODO: fix this
         /*
         this.testToggle.change.subscribe((m: MatSlideToggleChange) => {
             this.toggleLogin(m);
@@ -107,6 +106,10 @@ const noAuthLinks: INavLinks[] = [
     }
 ];
 const authLinks: INavLinks[] = [
+    {
+        display: 'Home',
+        link: '/home'
+    },
     {
         display: 'Search',
         link: '/search'

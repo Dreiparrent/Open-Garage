@@ -12,6 +12,7 @@ import { ProfileCardComponent } from './cards/profile-card/profile-card.componen
 import { PopoverModule } from 'ngx-bootstrap';
 import { TooltipModule } from 'ngx-bootstrap';
 import { CarouselModule } from 'ngx-bootstrap';
+import { AlertModule } from 'ngx-bootstrap';
 
 import { MaterialImports } from './imports/material-imports.module';
 import { SkillsSliderComponent } from './skills-slider/skills-slider.component';
@@ -26,6 +27,7 @@ import { MAT_DIALOG_DEFAULT_OPTIONS, MAT_CHIPS_DEFAULT_OPTIONS } from '@angular/
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { UpdateProfileDialogComponent } from './cards/update-profile-dialog/update-profile-dialog.component';
 import { NavChatComponent } from './navigation/nav-chat/nav-chat.component';
+import { AlertsComponent } from './alerts/alerts.component';
 
 @NgModule({
     exports: [
@@ -38,10 +40,12 @@ import { NavChatComponent } from './navigation/nav-chat/nav-chat.component';
         TooltipModule,
         PopoverModule,
         CarouselModule,
+        AlertModule,
         CommunitiesCardComponent,
         MatchHeightDirective,
         FormsModule,
         ReactiveFormsModule,
+        AlertsComponent
     ],
     imports: [
         RouterModule,
@@ -50,6 +54,7 @@ import { NavChatComponent } from './navigation/nav-chat/nav-chat.component';
         TooltipModule,
         PopoverModule,
         CarouselModule.forRoot(),
+        AlertModule.forRoot(),
         FormsModule,
         ReactiveFormsModule,
         // IconsModule
@@ -65,7 +70,8 @@ import { NavChatComponent } from './navigation/nav-chat/nav-chat.component';
         YourProfileCardComponent,
         YourProfileDialogComponent,
         UpdateProfileDialogComponent,
-        NavChatComponent
+        NavChatComponent,
+        AlertsComponent
     ],
     entryComponents: [
         YourProfileDialogComponent,

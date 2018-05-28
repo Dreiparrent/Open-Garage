@@ -4,6 +4,7 @@ import { IUser, Payments, IProfile, IUserData } from '../../community/community-
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MyErrorStateMatcher } from '../../../pages/register-page/ragister-validator';
+import { firestore } from 'firebase/app';
 
 @Component({
     selector: 'app-your-profile-dialog',
@@ -110,6 +111,11 @@ export class YourProfileDialogComponent implements OnInit, AfterViewInit {
         const formUser: IUser = this.profile;
         formUser.passions = this.profile.passions ? this.profile.passions : [];
         formUser.skills = this.profile.skills ? this.profile.skills : [];
+        const userLocation = (this.profile.userData as IUserData).profile.location as { location: string, nav: firestore.GeoPoint };
+        (formUser.userData as IUserData).profile.location = {
+            location: this.profile.location,
+            nav: userLocation.nav
+        };
         if (this.change) {
             const payments: number[] = [];
             this.profilePayments.forEach(payment => {

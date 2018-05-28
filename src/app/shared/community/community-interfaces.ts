@@ -1,4 +1,6 @@
 import { DocumentReference, GeoPoint } from '@firebase/firestore-types';
+import { Reference } from '@firebase/storage-types';
+import { AngularFireStorage } from 'angularfire2/storage';
 
 export function _coords_to_inavigate(coords: Coordinates): INavigation {
     const nav: INavigation = {

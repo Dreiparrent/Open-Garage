@@ -13,6 +13,10 @@ import { UpdateProfileDialogComponent } from '../update-profile-dialog/update-pr
 export class YourProfileCardComponent implements OnInit {
 
     profile: IUser;
+    isProvide: boolean;
+    updateProg = 100;
+    updateBuf = 0;
+    updateCol = 'primary';
 
     constructor(private dialog: MatDialog, private auth: AuthService) { }
 
@@ -20,14 +24,21 @@ export class YourProfileCardComponent implements OnInit {
         this.auth.getUser().then(user => {
             console.log(user);
             this.profile = user;
+            this.isProvide = this.auth.userProvider.includes('password');
         });
     }
 
     openProfile() {
         const dialogRef = this.dialog.open(YourProfileDialogComponent, { data: this.profile });
         dialogRef.afterClosed().subscribe((result: [IUser, boolean]) => {
-            if (result)
-                this.auth.updateProfileInfo(result);
+            if (result) {
+                this.updateProg = 0;
+                this.auth.updateProfileInfo(result).subscribe(progress => {
+                    this.updateProg = progress;
+                    if (progress === -1)
+                        this.updateCol = 'warn';
+                });
+            }
         });
     }
     openUpdate() {
@@ -40,9 +51,18 @@ export class YourProfileCardComponent implements OnInit {
                 if (result.pass1 && result.pass2)
                     if (result.pass1 === result.pass2)
                         profUpdates.pass = result.pass1;
-                this.auth.updateProfileData(profUpdates);
+                this.updateProg = 0;
+                this.auth.updateProfileData(profUpdates).subscribe(progress => {
+                    this.updateProg = progress;
+                    if (progress === -1)
+                        this.updateCol = 'warn';
+                });
             }
         });
+    }
+
+    logout() {
+        this.auth.logout().then(result => console.log('logout', result));
     }
 
 }

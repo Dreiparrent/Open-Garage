@@ -1,7 +1,7 @@
 <div class="h-100 nav-theme">
-    <mat-tab-group>
+    <mat-tab-group [ngClass]="{'hide-nav': !isAuth}">
         <mat-tab label="Navigation">
-            <div class="h-100 w-100 d-flex flex-column">
+            <div class="h-100 w-100 d-flex flex-column" [ngClass]="{'pt-5': !isAuth}">
                 <div class="f-auto">
                     <mat-nav-list>
                         <a mat-list-item class="cursor-pointer nav-button" *ngFor="let nav of navLinks; let i = index;" [routerLink]="nav.link" routerLinkActive="mat-list-item-focus">
@@ -9,17 +9,10 @@
                             <mat-divider *ngIf="isAuth"></mat-divider>
                     <h3 matSubheader *ngIf="isAuth">Your Communities</h3>
                     <a mat-list-item class="cursor-pointer" routerLink="/community" routerLinkActive="mat-list-item-focus">
-                    <!-- <a mat-list-item class="cursor-pointer" [routerLink]="['/','community','']" routerLinkActive="mat-list-item-focus"> -->
                         Communities
                     </a>
                     <a mat-list-item class="cursor-pointer" *ngFor="let com of communityLinks" [routerLink]="['/community',com.link]" routerLinkActive="mat-list-item-focus">
                     {{ com.name }} </a>
-                    <!--
-                        <a mat-list-item class="cursor-pointer" [routerLink]="['/profile',com.link]" routerLinkActive="mat-list-item-focus">
-                            View Profile </a>
-                        <a mat-list-item class="cursor-pointer" [routerLink]="['/profile',com.link]" routerLinkActive="mat-list-item-focus">
-                            Edit Profile </a>
-                        -->
                     </mat-nav-list>
                 </div>
                 <div *ngIf="isAuth" class="f-bottom">
@@ -33,7 +26,7 @@
                 </div>
             </div>
         </mat-tab>
-        <mat-tab label="Messages">
+        <mat-tab label="Messages" *ngIf="isAuth">
             <div class="w-100 h-100">
                 <app-nav-chat class="w-100 h-100"></app-nav-chat>
             </div>

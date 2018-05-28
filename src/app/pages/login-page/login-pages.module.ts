@@ -6,11 +6,13 @@ import { MatInputModule } from '@angular/material/input';
 import { LoginPagesRoutingModule } from './login-pages-routing.module';
 import { LoginPageComponent } from './login-page.component';
 import { MaterialImports } from '../../shared/imports/material-imports.module';
+import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
     imports: [
         CommonModule,
         LoginPagesRoutingModule,
+        SharedModule,
         MaterialImports
     ],
     declarations: [LoginPageComponent],

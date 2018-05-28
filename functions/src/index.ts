@@ -10,12 +10,16 @@ interface ITags {
     skills: string[];
     paymentForm: number[];
 }
-interface IProfile {
+interface IProfile<T> {
     about: string;
     email: string;
     fName: string;
     lName: string;
-    location: any;
+    location: T;
+}
+interface ILocation {
+    location: string;
+    nav: GeoPoint;
 }
 
 // export const helloWorld = functions.https.onRequest((request, response) => {
@@ -24,16 +28,63 @@ interface IProfile {
 
 /* ** PROFILE ** */
 export const updateProfile = functions.firestore.document('users/{userId}/userData/profile').onUpdate((change, context): Promise<any> => {
-    const newVal = <any>change.after.data();
+    // if (typeof change.before.data()['location'] === 'object')
+    //     return null;
+    const prevVal: IProfile<DocumentReference> = <any>change.before.data();
+    const newVal: IProfile<ILocation> = <any>change.after.data();
     const uid = context.params.userId;
     const newName = newVal.fName + ' ' + newVal.lName;
-    // const location: string = <any>newVal['location']; add this
+    let locationRef = prevVal.location;
+    let newUser = false;
+    try {
+        locationRef.id.slice();
+        if (newVal.email) {
+            console.log('email');
+            return null;
+        }
+    } catch (error) {
+        try {
+            newVal.location.location.slice();
+            newUser = true;
+            console.log('notEmail');
+        } catch (error) {
+            return null;
+        }
+    }
+
 
     return change.after.ref.set(newVal, { merge: true }).then(result => {
-        return admin.firestore().collection('users').doc(uid).set({
-            name: newName
-        }, {merge: true});
-    });
+        return admin.firestore().collection('users').doc(uid).get().then(userSnap => {
+            if (userSnap.exists)
+                newUser = userSnap.data()['new'];
+            return userSnap.ref;
+        });
+    }).then(userRef => {
+        // const exx = result ? 'exists' : 'DNE';
+        if (newUser) {
+            return userRef.getCollections().then(collections => {
+                return collections.length < 2; // double check for connections or messages
+            }).then(isNew => {
+                if (isNew)
+                    return admin.firestore().collection('location').add(newVal.location).then(ref => {
+                        locationRef = ref;
+                        return userRef.set({ connections: 0});
+                    });
+                else {
+                    newUser = false;
+                    throw new Error('Created new user where user already exists');
+                }
+            });
+        } else return locationRef.set(newVal.location);
+    }).then(result => {
+        return change.after.ref.set({ location: locationRef }, { merge: true });
+    }).then(userSet => {
+        return admin.firestore().collection('users').doc(uid).set(
+            {
+                name: newName,
+                location: newVal.location.location
+            }, { merge: true });
+        });
 });
 
 /* ** TAGS ** */
@@ -75,14 +126,28 @@ export const removeTag = (user: string, tag: string, isSkill = false): Promise<a
 export const updateTags = functions.firestore.document('users/{userId}/userData/tags').onUpdate((change, context): Promise<any> => {
     // vals
     const prevVal: ITags = <any>change.before.data();
-    const newVal: ITags= <any>change.after.data();
+    const newVal: ITags = <any>change.after.data();
+    if (newVal === prevVal)
+        return null;
     const uid = context.params.userId;
     const update = {ref: change.after.ref.parent.parent };
     // sort new / old
-    const newPassions = newVal.passions.filter(passsion => prevVal.passions.indexOf(passsion) === -1);
-    const removePassions = prevVal.passions.filter(passion => newVal.passions.indexOf(passion) === -1);
-    const newSkills = newVal.skills.filter(skill => prevVal.skills.indexOf(skill) === -1);
-    const removeSkills = prevVal.skills.filter(skill => newVal.skills.indexOf(skill) === -1);
+    let newPassions, removePassions;
+    if (prevVal.passions) {
+        newPassions = newVal.passions.filter(passsion => prevVal.passions.indexOf(passsion) === -1);
+        removePassions = prevVal.passions.filter(passion => newVal.passions.indexOf(passion) === -1);
+    } else {
+        newPassions = newVal.passions;
+        removePassions = [];
+    }
+    let newSkills, removeSkills;
+    if (prevVal.skills) {
+        newSkills = newVal.skills.filter(skill => prevVal.skills.indexOf(skill) === -1);
+        removeSkills = prevVal.skills.filter(skill => newVal.skills.indexOf(skill) === -1);
+    } else {
+        newSkills = newVal.skills;
+        removeSkills = [];
+    }
 
     //TODO: add payment forms here
 
