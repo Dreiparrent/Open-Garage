@@ -54,6 +54,7 @@ export class CommunitiesPageComponent implements OnInit, OnDestroy {
         this.mapPins = [];
         this.listPins = [];
         this.hyps = [];
+        /*
         this.comsServive.locationSearch(10).then(com => {
             this.communities = com;
             this.communities.forEach(comm => {
@@ -73,10 +74,11 @@ export class CommunitiesPageComponent implements OnInit, OnDestroy {
                     expanded: false,
                     open: false
                 });
-                */
+                */ /*
                 this.hyps.push(comm.hyp);
             });
         }, err => console.error(err));
+        */
     }
 
     mapIn(pin: IPin) {

@@ -3,84 +3,62 @@ import * as $ from 'jquery';
 import { NavigationService } from './navigation-service';
 import { MatSidenav } from '@angular/material/sidenav';
 import { AuthService } from '../auth/auth.service';
-import { ICommunity } from '../community/community-interfaces';
+import { ICommunity, ICommunityData } from '../community/community-interfaces';
 import { CommunityService } from '../community/community.service';
 import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, of, BehaviorSubject, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-nav',
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss']
 })
-export class NavigationComponent implements OnInit, OnDestroy {
+export class NavigationComponent implements OnInit {
 
     @Input('sidenav') sidenav: MatSidenav;
-    @Input('extnav') extnav: MatSidenav;
-    @ViewChild('testToggle') testToggle: MatSlideToggle;
-    // openChange: EventEmitter<boolean>;
     isAuth: boolean;
     navLinks: INavLinks[];
-    communityLinks: ICommunity[];
+    /*
+    get navLinks() {
+        return this._navLinks.asObservable();
+    }
+    */
+    // communityLinks: string[];
+    communityLinks: Observable<ICommunity[]>;
     navSubscribe: Subscription;
     comSubscribe: Subscription;
 
     constructor(private navService: NavigationService, private authService: AuthService, private comService: CommunityService) {
+        this.navService.navProfile.subscribe(prof => {
+            if (prof) {
+                this.navLinks = authLinks;
+                this.isAuth = prof.auth;
+            } else
+                this.navLinks = noAuthLinks;
+        });
+        this.communityLinks = this.authService.communities;
     }
 
     ngOnInit() {
         this.navSubscribe = this.navService.listen().subscribe((m: boolean) => {
-            console.log('toggled', m);
-        });
-        this.comSubscribe = this.navService.comSenderListen().subscribe((m: boolean) => {
-            this.extnav.toggle();
+            if (m)
+                this.sidenav.open();
+            else this.sidenav.close();
         });
         this.sidenav.position = 'end'; // remove to make start
         this.sidenav.mode = 'over'; // over | push | side
         this.sidenav.fixedInViewport = true;
+        /*
         this.sidenav.openedChange.subscribe((m: boolean) => {
             this.navService.toggle(m);
         });
-        // closedStart | onPositionChanged | openedStart
-        this.authService.isAuthenticated().subscribe(authStatus => {
-            console.log(authStatus);
-            this.isAuth = authStatus;
-        });
-        this.navLinks = (this.isAuth) ? authLinks : noAuthLinks;
-        if (this.isAuth)
-            this.communityLinks = this.comService.getCommunities('testID'); // TODO: fix this
-        /*
-        this.testToggle.change.subscribe((m: MatSlideToggleChange) => {
-            this.toggleLogin(m);
-        });
         */
-
-        if (this.extnav !== undefined)
-            this.extnav.openedChange.subscribe((m: boolean) => {
-                this.navService.toggleCommunity(m);
-            });
+        // closedStart | onPositionChanged | openedStart
     }
 
-    toggleLogin(m: MatSlideToggleChange) {
-        if (m.checked) {
-            this.isAuth = true;
-            this.communityLinks = this.comService.getCommunities('testID');
-            this.navLinks = authLinks;
-        } else {
-            this.isAuth = false;
-            this.communityLinks = [];
-            this.navLinks = noAuthLinks;
-        }
-    }
     trackByIndex(index: number, value: number) {
         return index;
-    }
-
-    ngOnDestroy(): void {
-        this.sidenav.openedChange.unsubscribe();
-        this.navSubscribe.unsubscribe();
-        if (this.extnav !== undefined)
-            this.extnav.openedChange.unsubscribe();
     }
 }
 interface INavLinks {

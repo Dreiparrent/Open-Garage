@@ -1,4 +1,4 @@
-import { DocumentReference, GeoPoint } from '@firebase/firestore-types';
+import { DocumentReference, GeoPoint, DocumentData } from '@firebase/firestore-types';
 import { Reference } from '@firebase/storage-types';
 import { AngularFireStorage } from 'angularfire2/storage';
 
@@ -67,11 +67,15 @@ export interface IMessage {
 export interface ICommunitySkills {
     [skill: string]: IUser[];
 }
+export interface IImg {
+    jpf: string;
+    webp: string;
+    else: string;
+}
 export interface ICommunityData {
     name: string;
     members: IUser[];
     messages: IMessage[];
-    link: string;
     skills?: ICommunitySkills[];
 }
 export interface INavigation {
@@ -81,14 +85,9 @@ export interface INavigation {
 export interface ICommunity {
     name: string;
     desc: string;
-    img: {
-        jpf: string;
-        webp: string;
-        else: string;
-    };
-    location: string;
-    nav: INavigation;
-    hyp: number;
+    img: IImg | DocumentReference;
+    location?: string;
+    nav?: INavigation;
     members: number;
     link: string;
 }
@@ -101,3 +100,6 @@ export enum CommunitySearchType {
     communityMember,
     messageMembers
 }
+export const placeholderUrl =
+    // tslint:disable-next-line:max-line-length
+    `https://firebasestorage.googleapis.com/v0/b/open-garage-fb.appspot.com/o/img%2Fplaceholder.gif?alt=media&token=d081080f-eee8-437f-b638-564f5f55d587`;

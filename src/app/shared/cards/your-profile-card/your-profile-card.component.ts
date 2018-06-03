@@ -4,6 +4,11 @@ import { YourProfileDialogComponent } from '../your-profile-dialog/your-profile-
 import { IUser, IUserData } from '../../community/community-interfaces';
 import { AuthService, IYourProfile, IUpdateProfile } from '../../auth/auth.service';
 import { UpdateProfileDialogComponent } from '../update-profile-dialog/update-profile-dialog.component';
+import { NavigationService } from '../../navigation/navigation-service';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Location } from '@angular/common';
+import { AlertService, Alerts } from '../../alerts/alert.service';
 
 @Component({
     selector: 'app-your-profile-card',
@@ -18,13 +23,20 @@ export class YourProfileCardComponent implements OnInit {
     updateBuf = 0;
     updateCol = 'primary';
 
-    constructor(private dialog: MatDialog, private auth: AuthService) { }
+    constructor(
+        private dialog: MatDialog,
+        private authService: AuthService,
+        private navService: NavigationService,
+        private location: Location,
+        private alertService: AlertService
+    ) { }
 
     ngOnInit() {
-        this.auth.getUser().then(user => {
-            console.log(user);
-            this.profile = user;
-            this.isProvide = this.auth.userProvider.includes('password');
+        this.navService.navProfile.subscribe(navSub => {
+            if (navSub) {
+                this.isProvide = navSub.isProvide;
+                this.profile = navSub.user;
+            }
         });
     }
 
@@ -33,7 +45,7 @@ export class YourProfileCardComponent implements OnInit {
         dialogRef.afterClosed().subscribe((result: [IUser, boolean]) => {
             if (result) {
                 this.updateProg = 0;
-                this.auth.updateProfileInfo(result).subscribe(progress => {
+                this.authService.updateProfileInfo(result).subscribe(progress => {
                     this.updateProg = progress;
                     if (progress === -1)
                         this.updateCol = 'warn';
@@ -52,7 +64,7 @@ export class YourProfileCardComponent implements OnInit {
                     if (result.pass1 === result.pass2)
                         profUpdates.pass = result.pass1;
                 this.updateProg = 0;
-                this.auth.updateProfileData(profUpdates).subscribe(progress => {
+                this.authService.updateProfileData(profUpdates).subscribe(progress => {
                     this.updateProg = progress;
                     if (progress === -1)
                         this.updateCol = 'warn';
@@ -62,7 +74,12 @@ export class YourProfileCardComponent implements OnInit {
     }
 
     logout() {
-        this.auth.logout().then(result => console.log('logout', result));
+        this.authService.logout().then(result => {
+            if (result) {
+                this.navService.setOpen(false);
+                this.alertService.addAlert(Alerts.logout);
+            }
+        });
     }
 
 }

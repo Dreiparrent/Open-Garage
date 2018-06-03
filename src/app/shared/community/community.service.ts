@@ -3,11 +3,14 @@ import {
     ICommunity, ICommunityData, IProfile, IMessage, ICommunitySkills, CommunitySearchType, Payments,
     IUser,
     IUserData,
-    ITags
+    ITags,
+    IImg,
+    placeholderUrl
 } from './community-interfaces';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { AngularFirestore, AngularFirestoreCollection, DocumentSnapshot } from 'angularfire2/firestore';
 import { DocumentReference, DocumentData } from '@firebase/firestore-types';
+import { AlertService, Alerts } from '../alerts/alert.service';
 
 @Injectable()
 export class CommunityService {
@@ -29,16 +32,23 @@ export class CommunityService {
     private _searchSkills = new BehaviorSubject<string[]>([]);
 
     // construct database
-    constructor(private db: AngularFirestore) {
+    constructor(private db: AngularFirestore, private alertService: AlertService) {
         this._communityCollection = db.collection('community');
     }
 
     /* ** Initial Calls ** */
-    // Main calls
-    getCommunities(uid: string) {
-        return communities;
+    resetCommunity() {
+        this._communityData.next(blankData);
+        // this. _communityName = new BehaviorSubject('');
+        this._skills.next([]);
+        this._members.next([]);
+        this._messages.next([]);
     }
+    // Main calls
     init(id: string): BehaviorSubject<string> {
+        if (id === this.communityID)
+            return this._communityName;
+        this.resetCommunity();
         this.communityID = id;
         return this._communityName;
     }
@@ -75,29 +85,10 @@ export class CommunityService {
     get members(): Observable<IUser[]> {
         return this._members.asObservable();
     }
-    /*
-    getMember(ref: DocumentReference) {
-        const newUser: IUser<IUserData>;
-        ref.collection('userData').doc('tags').get().then(tagSnap => {
-            const tags: ITags = <any>tagSnap.data();
-            newUser.passions = tags.passions;
-            newUser.skills = tags.
-        })
-    }
-    */
     getMembers(batch: string, lastKey?: string, pushUser = true): IUser[] {
         // this.db.collection('users').get()
         return this._members.getValue();
     }
-    /*
-    getMembers(batch: string, lastKey?: string) {
-    }
-
-    getMembers(batch: number, lastKey = 0) {
-        const startNumber = batch - lastKey;
-        return this._members.getValue().slice(startNumber, batch);
-    }
-    */
     // Messages
     get messages(): Observable<IMessage[]> {
         return this._messages;
@@ -138,33 +129,61 @@ export class CommunityService {
     }
 
     /* ** Firebase ** */
-    getCommunity(id?: string): boolean {
-        // TODO: Replace this with link finder
-        return !!detailCommunities[Communities[id]];
+    getCommunity(id?: string, img = false): Promise<ICommunity> {
+        const currentID = id ? id : this._communityID.getValue();
+        return this._communityCollection.doc(currentID).ref.get().then(comSnap => {
+            if (comSnap.exists)
+                return comSnap.data() as IfbComData;
+            else
+                throw new Error('Unable to fetch community');
+        }).then(comData => {
+            if (img)
+                return comData.img.get().then(imgSnap => {
+                    if (imgSnap.exists)
+                        return imgSnap.data() as IImg;
+                    else return <IImg>{
+                        else: placeholderUrl
+                    };
+                }).then(imgData => {
+                    return comData.location.get().then(locationSnap => {
+                        if (locationSnap.exists)
+                            return <ICommunity>{
+                                desc: comData.desc,
+                                img: imgData,
+                                link: currentID,
+                                location: locationSnap.data()['location'],
+                                members: comData.members,
+                                name: comData.name
+                            };
+                        else throw new Error('Unable to fetch community location');
+                    });
+                });
+            return <ICommunity>{
+                link: currentID,
+                members: comData.members,
+                name: comData.name,
+                desc: comData.desc,
+                img: comData.img,
+            };
+        }).catch(error => {
+            this.alertService.addAlert(Alerts.communityError);
+            throw new Error(error);
+        });
     }
     // Called by initial setters
     getCommunityData(id?: string) {
         const currentID = id ? id : this._communityID.getValue();
-        this._communityCollection.doc(currentID).ref.get().then(val => {
-            if (val.exists)
-                return val;
-            else
-                throw new Error('Community DNE');
-        }).then(val => {
-            const comData: IfbComData = <any>val.data();
-            this.communityData = {
-                link: currentID,
-                members: [],
-                messages: [],
-                name: comData.name
-            };
-            return val.ref.collection('communityData').doc('members').get().then(memberSnap => {
+        this.getCommunity(currentID).then(val => {
+            // this.communityData = val;
+            return this._communityCollection.doc(currentID).collection('communityData')
+                .doc('members').ref.get().then(memberSnap => {
                 if (memberSnap.exists)
                     return this.setMembers(memberSnap.data()).then(mems => mems);
                 else
                     throw new Error('Community members not found');
             }).then(users => {
-                return val.ref.collection('communityData').doc('messages').get().then(messageSnap => {
+                return this._communityCollection.doc(currentID).collection('communityData')
+                    .doc('messages').ref.get().then(messageSnap => {
                     // tslint:disable-next-line:curly
                     if (messageSnap.exists) {
                         /*
@@ -190,7 +209,7 @@ export class CommunityService {
                     members: testMembers,
                     // members: newData.usr,
                     messages: newData.msg,
-                    name: comData.name
+                    name: val.name
                 };
             });
         }).then(comData => {
@@ -205,7 +224,7 @@ export class CommunityService {
         // return detailCommunities[parsed];
     }
 
-    setMembers(membs: DocumentData): Promise<IUser[]> {
+    private setMembers(membs: DocumentData): Promise<IUser[]> {
         const users = <{ founder: DocumentReference, members: Array<DocumentReference> }>membs;
         const members: IUser[] = this._members.getValue().slice();
         return new Promise<IUser[]>((res, rej) => {
@@ -222,25 +241,7 @@ export class CommunityService {
                     };
                 } else throw new Error('Cannot get user tags');
             }).then(usrData => {
-                return member.get().then(m => {
-                    if (m.exists) {
-                        const memberData: IUser = <any>m.data();
-                        return (memberData.imgUrl as DocumentReference).get().then(img => {
-                            if (img.exists)
-                                usrData.img = img.data()['else'] as string;
-                            return usrData;
-                        }).then(newData => {
-                            return <IUser>{
-                                connections: memberData.connections,
-                                imgUrl: newData.img,
-                                location: memberData.location,
-                                name: memberData.name,
-                                passions: newData.pass,
-                                skills: newData.skill
-                            };
-                        });
-                    } else throw new Error('cannot get user data');
-                });
+                return this.getMember(member.id, usrData);
             }).then(user => {
                 members.push(user);
                 this._members.next(members);
@@ -252,6 +253,36 @@ export class CommunityService {
                 rej(error);
             });
         }
+        });
+    }
+
+    getMember(id: string, usrData = {
+        pass: [],
+        skill: [],
+        paym: null,
+        img: ''
+    }) {
+        return this.db.collection('users').doc(id).ref.get().then(m => {
+            if (m.exists) {
+                const memberData: IUser = <any>m.data();
+                return (memberData.imgUrl as DocumentReference).get().then(img => {
+                    if (img.exists)
+                        usrData.img = img.data()['else'] as string;
+                    return usrData;
+                }).then(newData => {
+                    return <IUser>{
+                        connections: memberData.connections,
+                        imgUrl: newData.img,
+                        location: memberData.location,
+                        name: memberData.name,
+                        passions: newData.pass,
+                        skills: newData.skill
+                    };
+                });
+            } else {
+                this.alertService.addAlert(Alerts.userError);
+                throw new Error('cannot get user data');
+            }
         });
     }
 
@@ -271,108 +302,15 @@ interface IfbComData extends DocumentData {
     name: string;
 }
 // Names
-const baxter: IUser = {
-    name: 'Baxter Cochennet',
-    userData: {
-        profile: {
-            fName: 'Baxter',
-            lName: 'Cochennet',
-            about: 'Simple about',
-            email: 'fakeEmail@mail.com',
-        },
-        tags: {
-            passions: ['Cycling', 'Fly Fishing', 'Photography', 'SUP', 'Cliff Jumping', 'Community'],
-            skills: ['Accounting', 'Personal Finance', 'Budgeting', 'Photography'],
-            paymentForm: [Payments['Nothing, happy to help']]
-        }
-    },
-    skills: ['Accounting', 'Personal Finance', 'Budgeting', 'Photography'],
-    passions: ['Cycling', 'Fly Fishing', 'Photography', 'SUP', 'Cliff Jumping', 'Community'],
-    location: 'Denver',
-    connections: 15,
-    imgUrl: '/assets/img/photos/baxter.jpg'
-};
-const me: IUser = {
-    name: 'Andrei Parrent',
-    userData: {
-        profile: {
-            fName: 'Andrei',
-            lName: 'Parrent',
-            about: `After the inception of Sourcerer, I have been working on an ever growing list of code technique to further
-             my coding passion.I am constantly looking for new opportunities to expand my knowledge of technologies
-             and produce works I am proud of.`,
-             email: 'dreiparrent@gmail.com'
-        },
-        tags: {
-            skills: ['Code', 'Web Design', 'Other Stuff'],
-            passions: ['PWA', 'Web Design'],
-            paymentForm: [Payments.Cash, Payments.Pizza]
-        }
-    },
-    skills: ['Code', 'Web Design', 'Other Stuff'],
-    passions: ['PWA', 'Web Design'],
-    location: 'Denver',
-    connections: 9,
-    imgUrl: '/assets/img/photos/andrei.jpg'
-};
 const blankData: ICommunityData = {
     name: '',
     members: [],
-    messages: [],
-    link: ''
+    messages: []
 };
-// Test Communities
-const testData: ICommunityData = {
-    name: 'Test Community',
-    members: <IUser[]>[baxter, me, baxter, me, baxter, me, baxter, me],
-    messages: [],
-    link: 'test'
-};
-const test: ICommunity = {
-    name: testData.name,
-    desc: '',
-    img: {
-        webp: '../../../assets/img/photos/eclipse.webp',
-        jpf: '../../../assets/img/photos/eclipse.jpf',
-        else: '../../../assets/img/photos/eclipse.jpg'
-    },
-    location: 'Denver',
-    nav: {
-        lat: 39.7392,
-        lng: -104.9903
-    },
-    hyp: 112.2593,
-    members: 8,
-    link: testData.link
-};
-/*
-const test2Data: ICommunityData = {
-    name: 'Test Community',
-    skills: 'no skills',
-    members: [baxter, me],
-    messages: '',
-    link: 'test'
-};
-const test2: ICommunity = {
-    name: testData.name,
-    desc: '',
-    link: testData.link
-};
-
-const test3Data: ICommunityData = {
-    name: 'Test Community',
-    skills: 'no skills',
-    members: [baxter, me],
-    messages: '',
-    link: 'test'
-};
-const test3: ICommunity = {
-    name: testData.name,
-    desc: '',
-    link: testData.link
-};
-*/
-// Helpers
-enum Communities { test }
-const communities: ICommunity[] = [ test ];
-const detailCommunities: ICommunityData[] = [ testData ];
+interface IfbComData extends DocumentData {
+    desc: string;
+    img: DocumentReference;
+    location: DocumentReference;
+    members: number;
+    name: string;
+}

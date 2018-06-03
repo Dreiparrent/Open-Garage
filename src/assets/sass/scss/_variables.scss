@@ -15,6 +15,26 @@ $theme-colors: (
     dark: #0d0309
     */
 );
+.alert-danger {
+    color: map-get($map: $material-primary, $key: 600);
+    background-color: map-get($map: $material-primary, $key: A400);
+    border-color: map-get($map: $material-primary, $key: 600);
+}
+.alert-warning {
+    color: map-get($map: $material-primary, $key: 600);
+    background-color: map-get($map: $material-primary, $key: 200);
+    border-color: map-get($map: $material-primary, $key: 600);
+}
+.alert-info {
+    color: map-get($map: $material-secondary, $key: 700);
+    background-color: map-get($map: $material-secondary, $key: 300);
+    border-color: map-get($map: $material-secondary, $key: 700);
+}
+.alert-success {
+    color: map-get($map: $material-secondary, $key: 500);
+    background-color: map-get($map: $material-secondary, $key: 100);
+    border-color: map-get($map: $material-secondary, $key: 500);
+}
 $primary-gradient: (
     0: #911C5E,
     1: #821D61,

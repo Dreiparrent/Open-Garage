@@ -31,6 +31,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SwUpdateService } from './sw-update.service';
 import { CommunitiesComponent } from './layouts/communities/communities.component';
+import { AlertService } from './shared/alerts/alert.service';
+import { CommunitiesService } from './shared/community/communities.service';
 
 @NgModule({
     declarations: [
@@ -58,7 +60,9 @@ import { CommunitiesComponent } from './layouts/communities/communities.componen
         AuthService,
         AuthGuard,
         NavigationService,
+        AlertService,
         CommunityService,
+        CommunitiesService,
         SwUpdateService
     ],
     bootstrap: [AppComponent]

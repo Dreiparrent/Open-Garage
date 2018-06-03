@@ -4,10 +4,7 @@
         <app-nav-button (navClick)="sidenav.toggle()"></app-nav-button>
         <router-outlet></router-outlet>
     </mat-sidenav-content>
-    <mat-sidenav #communityNav mode="push" fixedInViewport="true">
-        <app-community-sidenav [comnav]="communityNav"></app-community-sidenav>
-    </mat-sidenav>
     <mat-sidenav #sidenav>
-        <app-nav [sidenav]="sidenav" [extnav]="communityNav"></app-nav>
+        <app-nav [sidenav]="sidenav"></app-nav>
     </mat-sidenav>
 </mat-sidenav-container>

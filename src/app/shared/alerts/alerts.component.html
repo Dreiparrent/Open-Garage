@@ -1,17 +1,7 @@
 <alert *ngFor="let alert of alerts" [type]="alert.type" [dismissible]="true" (onClosed)="onClosed(alert)">
+    <!-- {{ alert.msg }} -->
     <strong>{{ alert.msg }}</strong>
+    <a *ngIf="alert.link" [routerLink]="alert.link.route" [queryParams]="alert.link.params"
+     [skipLocationChange]="alert.link.skipChange"
+     class="alert-link"> {{ alert.link.msg }}</a>.
 </alert>
-<!--
-    <alert type="success">
-        <strong>Well done!</strong> You successfully read this important alert message.
-    </alert>
-    <alert type="info">
-        <strong>Heads up!</strong> This alert needs your attention, but it's not super important.
-    </alert>
-    <alert type="warning">
-        <strong>Warning!</strong> Better check yourself, you're not looking too good.
-    </alert>
-    <alert type="danger">
-        <strong>Oh snap!</strong> Change a few things up and try submitting again.
-    </alert>
--->

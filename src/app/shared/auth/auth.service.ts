@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { IProfile, Payments, IUser, IUserData, ITags } from '../community/community-interfaces';
+import { IProfile, Payments, IUser, IUserData, ITags, ICommunityData, ICommunity, placeholderUrl } from '../community/community-interfaces';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { DocumentReference } from '@firebase/firestore-types';
@@ -8,6 +8,8 @@ import { auth, firestore, User } from 'firebase/app';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AngularFireStorage } from 'angularfire2/storage';
+import { AlertService, Alerts } from '../alerts/alert.service';
+import { CommunityService } from '../community/community.service';
 
 @Injectable()
 export class AuthService {
@@ -17,18 +19,23 @@ export class AuthService {
     protected _user: User;
     set user(user: User) {
         this._user = user;
-        this.token = user.uid;
-        this.isAith = true;
+        if (user === null) {
+            this.token = null;
+            this.isAith = false;
+        } else {
+            this.token = user.uid;
+            this.isAith = true;
+        }
     }
     get user() {
         return this._user;
     }
 
-    _isAuth = new BehaviorSubject(false);
-    private get isAuth() {
+    private _isAuth = new BehaviorSubject(false);
+    get isAuth() {
         return this._isAuth.getValue();
     }
-    private set isAith(authStatus: boolean) {
+    set isAith(authStatus: boolean) {
         if (authStatus && this.user)
             this._isAuth.next(authStatus);
         else if (!authStatus) this._isAuth.next(authStatus);
@@ -36,26 +43,46 @@ export class AuthService {
     userCred: auth.AuthCredential;
     currentUser: IUser;
     currentData: IUserData;
+    private _userCommunities = new BehaviorSubject<ICommunity[]>([]);
+    private get userCommunities() {
+        return this._userCommunities.getValue();
+    }
+    private set userCommunities(coms: ICommunity[]) {
+        this._userCommunities.next(coms);
+    }
+    public get communities() {
+        return this._userCommunities.asObservable();
+    }
 
-    constructor(private db: AngularFirestore, private fireAuth: AngularFireAuth, private fireStorage: AngularFireStorage) {
+    constructor(private alertService: AlertService,
+        private db: AngularFirestore,
+        private fireAuth: AngularFireAuth,
+        private fireStorage: AngularFireStorage,
+        private comService: CommunityService) {
         // this.userRef = db.collection('users').doc('A5LOuQSWacJroy4NuTFg').ref;
         fireAuth.authState.subscribe(user => {
             if (user) {
+                this.userRef = this.db.collection('users').doc(user.uid).ref;
                 this.user = user;
-                this.userRef = this.db.collection('users').doc(this.token).ref;
                 this.fireAuth.auth.fetchProvidersForEmail(user.email).then(provider => {
                     this.userProvider = provider;
                 });
+                /*
+                .then(an => {
+                    this.noProfileError();
+                });
+                */
             }
         });
-        if (environment.production)
+        /*
+        if (!environment.production)
             this.signinUser(environment.loginInfo.email, environment.loginInfo.password);
+        */
     }
 //#region Logins
     signinUser(email: string, password: string): Promise<boolean> {
         return this.fireAuth.auth.signInWithEmailAndPassword(email, password).then((result: auth.UserCredential) => {
             this.userCred = result.credential;
-            this.user = result.user;
             return true;
         }, (error: any) => {
             console.error(error);
@@ -65,7 +92,6 @@ export class AuthService {
     gAuth(): Promise<boolean> {
         return this.fireAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then((result: auth.UserCredential) => {
             this.userCred = result.credential;
-            this.user = result.user;
             return true;
         }, (error: any) => {
             console.log(error);
@@ -75,19 +101,27 @@ export class AuthService {
     fAuth(): Promise<boolean> {
         return this.fireAuth.auth.signInWithPopup(new auth.FacebookAuthProvider()).then((result: auth.UserCredential) => {
             this.userCred = result.credential;
-            this.user = result.user;
             return true;
         }, (error: any) => {
             console.log(error);
             return false;
         });
     }
-//#endregion
-    /* TODO: use this to first get auth key before register
-    signupUser(email: string, password: string) {
-        // your code for signing up the new user
+    // logout
+    logout(): Promise<boolean> {
+        return this.fireAuth.auth.signOut().then(result => {
+            this.user = null;
+            return true;
+        }).catch(error => {
+            this.alertService.addAlert(Alerts.custom, {
+                msg: 'Unable to logout',
+                type: 'danger'
+            });
+            throw new Error(error);
+        });
     }
-    */
+//#endregion
+
 //#region register and update
     registerUser(reg: IRegister): Observable<number> {
         const newUserData: IUserData = {
@@ -215,23 +249,19 @@ export class AuthService {
         return progress;
     }
 //#endregion
-    logout(): Promise<boolean> {
-        this.token = null;
-        return this.fireAuth.auth.signOut().then(result => {
-            return true;
-        });
-    }
 
     getToken() {
         return this.token;
     }
 
-    isAuthenticated(): BehaviorSubject<boolean> {
-        return this._isAuth;
+    isAuthenticated(): Observable<boolean> {
+        return this._isAuth.asObservable();
     }
 
 //#region get user
     getUser(): Promise<IUser> {
+        console.log('get user');
+        // console.log('get user', this.userRef);
         return this.userRef.get().then(userSnap => {
             if (userSnap.exists) {
                 this.token = userSnap.id;
@@ -269,12 +299,12 @@ export class AuthService {
                                     tmpUser.imgUrl = <any>imgSnap.data()['else'];
                                 } else {
                                     tmpUser.imgUrl = placeholderUrl;
-                                    console.error('Cannot accquire profile image');
-                                    // throw new Error('Cannot accquire profile image');
+                                    this.alertService.addAlert(Alerts.noPhoto);
                                 }
                                 return tmpUser;
                             });
                         else {
+                            this.alertService.addAlert(Alerts.noPhoto);
                             tmpUser.imgUrl = placeholderUrl;
                             return tmpUser;
                         }
@@ -293,17 +323,50 @@ export class AuthService {
         }).then((user: IUser) => {
             this.currentUser = user;
             this.currentData = (user.userData as IUserData);
+            this.getCommunities();
             return user;
         }).catch(error => {
-            throw new Error( error);
-            // console.error('Firebase auth get user', error);
+            if (error === 'Cannot accquire profile data' || error === 'Cannot get current uesr')
+                this.noProfileError();
+            else
+                this.alertService.addAlert(Alerts.custom, {
+                    msg: error,
+                    type: 'warning'
+                });
+            throw new Error(error);
         });
+    }
+
+    private getCommunities() {
+        this.userRef.collection('communities').get().then(comsSnap => {
+            if (!comsSnap.empty)
+                comsSnap.forEach(userCom => {
+                    // this.userCommunities.push(userCom.id);
+                    const comRef: DocumentReference = userCom.data()['ref'];
+                    comRef.get().then(com => {
+                        if (com.exists)
+                            return com.id;
+                        else
+                            throw new Error('Unable to get community data');
+                    }).then(comName => {
+                        this.comService.getCommunity(comName).then(comData => {
+                            this.userCommunities.push(comData);
+                        });
+                        // this.userCommunities.
+                    });
+                    // this.userCommunities.
+                });
+            else
+                this.alertService.addAlert(Alerts.noCommunity);
+        });
+    }
+
+    private noProfileError() {
+        this.alertService.addAlert(Alerts.incomelete); // TODO: add restriction here or in servvice
+        this.isAith = false;
     }
 //#endregion
 }
-const placeholderUrl =
-    // tslint:disable-next-line:max-line-length
-    `https://firebasestorage.googleapis.com/v0/b/open-garage-fb.appspot.com/o/img%2Fplaceholder.gif?alt=media&token=d081080f-eee8-437f-b638-564f5f55d587`;
 export interface IRegister {
     type: number;
     email?: string;

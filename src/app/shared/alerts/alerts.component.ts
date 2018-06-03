@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { AlertService, Alerts, IAlert } from './alert.service';
 
 @Component({
     selector: 'app-alerts',
@@ -6,45 +7,15 @@ import { Component, OnInit, Input } from '@angular/core';
     styleUrls: ['./alerts.component.scss']
 })
 export class AlertsComponent {
+    alerts = [];
 
-    @Input('toggle')
-    toggle = false; // romove this and remove the alert toggle
-    @Input('type')
-    type = 'danger'; // TODO: change this to by enum or interface
-    // also, this will probable need a service
-    // also also change these colors to be the right colors
-
-    alerts = this.toggle ? [
-        {
-            type: 'danger',
-            msg: 'You\'re missing your pofile photo'
-        }
-    ] : [];
-
-    constructor() { }
-
-    onClosed(dismissedAlert: any): void {
-        this.alerts = this.alerts.filter(alert => alert !== dismissedAlert);
+    constructor(private alertService: AlertService) {
+        alertService.getAlerts().subscribe(alerts => {
+            this.alerts = alerts;
+        });
     }
 
-    /*
-    defaultAlerts: any[] = [
-        {
-            type: 'success',
-            msg: `You successfully read this important alert message.`
-        },
-        {
-            type: 'info',
-            msg: `This alert needs your attention, but it's not super important.`
-        },
-        {
-            type: 'warning',
-            msg: `Better check yourself, you're not looking too good.`
-        }
-    ];
-    alerts = this.defaultAlerts;
-    onClosed(dismissedAlert: any): void {
-        this.alerts = this.alerts.filter(alert => alert !== dismissedAlert);
+    onClosed(dismissedAlert: IAlert): void {
+        this.alertService.removeAlert(dismissedAlert);
     }
-    */
 }

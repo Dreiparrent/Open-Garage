@@ -5,6 +5,7 @@ import { MatChipInputEvent, MatChipList, MatChipListChange } from '@angular/mate
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { AuthService, IRegister } from '../../shared/auth/auth.service';
 import { Payments } from '../../shared/community/community-interfaces';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-register-page',
@@ -33,7 +34,7 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
     rFormGroup: FormGroup;
     authType = 0;
     steps;
-    constructor(private fb: FormBuilder, private authService: AuthService) {
+    constructor(private fb: FormBuilder, private authService: AuthService, private route: ActivatedRoute) {
         for (const i in Payments)
             if (typeof Payments[i] === 'string')
                 this.payments.push(Payments[i]);
@@ -42,6 +43,20 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.buildForm();
         this.createSteps();
+        this.route.queryParams.subscribe(params => {
+            if (params['incomplete']) {
+                console.log(this.authService.userProvider);
+                // if (this.authService.userProvider.includes('password'))
+                if (this.authService.userProvider.includes('google.com')) {
+                    this.authType = 2;
+                    this.authService.isAith = true;
+                } else if (this.authService.userProvider.includes('facebook')) { // TODO: this is not 'facebook'
+                    this.authType = 1;
+                    this.authService.isAith = true;
+                }
+                $('.icons-tab-steps').steps('next');
+            }
+        });
     }
 
     buildForm() {
@@ -129,7 +144,7 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
                             this.formChildren('pass2').markAsDirty();
                             return this.formChildren('email').valid && this.formChildren('pass1').valid && this.formChildren('pass2').valid;
                         } else
-                            return this.authService.isAuthenticated().getValue();
+                            return true; // this.authService.isAith;
                     case 2:
                         this.formChildren('fName').markAsDirty();
                         this.formChildren('lName').markAsDirty();

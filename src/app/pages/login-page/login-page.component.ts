@@ -83,8 +83,18 @@ export class LoginPageComponent implements OnInit {
     }
 
     private reload() {
-        this.router.navigate(['/home']);
-        // TODO: fix this slow load
+        this.router.navigate(['/home'], {
+            queryParams: {
+                login: true
+            }
+        }).then(res => {
+            this.router.navigate(['/'], {
+                skipLocationChange: true,
+                queryParams: {
+                    reload: true
+                }
+            });
+        });
     }
 
 }
