@@ -224,9 +224,13 @@ export class CommunityService {
         // return detailCommunities[parsed];
     }
 
-    private setMembers(membs: DocumentData): Promise<IUser[]> {
+    setMembers(membs: DocumentData, setMembers = true): Promise<IUser[]> {
         const users = <{ founder: DocumentReference, members: Array<DocumentReference> }>membs;
-        const members: IUser[] = this._members.getValue().slice();
+        console.log(users);
+        let members: IUser[];
+        if (setMembers)
+            members = this._members.getValue().slice();
+        else members = [];
         return new Promise<IUser[]>((res, rej) => {
         for (let i = 0; i < users.members.length; i++) {
             const member = users.members[i];
@@ -241,12 +245,31 @@ export class CommunityService {
                     };
                 } else throw new Error('Cannot get user tags');
             }).then(usrData => {
-                return this.getMember(member.id, usrData);
+                if (!setMembers)
+                    return this.getMember(member.id, usrData).then(newUserData => {
+                        return member.collection('userData').doc('profile').get().then(profileSnap => {
+                            if (profileSnap.exists)
+                                return profileSnap.data() as IProfile;
+                            else throw new Error('Cannot get profile data');
+                        }).then(profileData => {
+                            const newUser = newUserData;
+                            newUser.userData = {
+                                profile: profileData,
+                                tags: {
+                                    passions: usrData.pass,
+                                    paymentForm: usrData.paym,
+                                    skills: usrData.skill
+                                }
+                            };
+                            return newUser;
+                        });
+                    });
+                else return this.getMember(member.id, usrData);
             }).then(user => {
                 members.push(user);
-                this._members.next(members);
-                // console.log(this._members.getValue());
-                if (i = users.members.length)
+                if (setMembers)
+                    this._members.next(members);
+                if (i === users.members.length - 1)
                     res(members);
             }).catch(error => {
                 console.error('Error while getting members', error);
@@ -265,9 +288,13 @@ export class CommunityService {
         return this.db.collection('users').doc(id).ref.get().then(m => {
             if (m.exists) {
                 const memberData: IUser = <any>m.data();
+                if (!memberData.imgUrl)
+                    memberData.imgUrl = this.db.collection('images').doc('placehiolder').ref;
                 return (memberData.imgUrl as DocumentReference).get().then(img => {
                     if (img.exists)
                         usrData.img = img.data()['else'] as string;
+                    else
+                        usrData.img = placeholderUrl;
                     return usrData;
                 }).then(newData => {
                     return <IUser>{
@@ -276,13 +303,36 @@ export class CommunityService {
                         location: memberData.location,
                         name: memberData.name,
                         passions: newData.pass,
-                        skills: newData.skill
+                        skills: newData.skill,
+                        ref: m.ref
                     };
                 });
             } else {
                 this.alertService.addAlert(Alerts.userError);
                 throw new Error('cannot get user data');
             }
+        });
+    }
+
+    joinCommunity(authToken: string): Promise<boolean> {
+        return this._communityCollection.doc(this.communityID).ref.update({
+            join: authToken
+        }).then(result => {
+            return new Promise<boolean>((resolve, reject) => {
+                const unSub = this._communityCollection.doc(this.communityID).collection('communityData').doc('members').ref
+                    .onSnapshot(changeSnap => {
+                        const newMembers: DocumentReference[] = changeSnap.data()['members'];
+                        console.log('New Members', newMembers);
+                        const addedToken = newMembers.filter(member => member.id === authToken);
+                        console.log('New Members', addedToken);
+                        if (addedToken.length > 0)
+                            resolve(true);
+                        // else return false;
+                    });
+                setTimeout(() => {
+                    resolve(false);
+                }, 10000);
+            });
         });
     }
 

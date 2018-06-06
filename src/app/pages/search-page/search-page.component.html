@@ -9,7 +9,7 @@
             </div>
             <form class="col-12">
                 <mat-form-field class="col-12 row">
-                    <input #searchInput type="text" class="col-12" matInput placeholder="Search">
+                    <input #searchInput type="text" class="col-12" matInput (keyup)="search(searchInput.value)" placeholder="Search">
                 </mat-form-field>
             </form>
         </div>
@@ -17,10 +17,11 @@
     <section id="results" class="col-md-7 col-lg-8 col-xl-9 bg-dark row pb-4">
         <div *ngFor="let search of searchResults | async" class="col-12 col-xl-6 mx-auto pt-4 comCard">
             <ng-container *ngIf="search.community; else elseTemplate">
-                <app-communities-card [community]="search.data"></app-communities-card>
+                <app-communities-card [community]="search.data" class="cursor-pointer" (click)="comClick(search.data.link)"></app-communities-card>
             </ng-container>
             <ng-template #elseTemplate>
-                <app-profile-card [name]="search.data.name" [location]="search.data.location" [connections]="search.data.connections" [imgUrl]="search.data.imgUrl"></app-profile-card>
+                <app-profile-card [name]="search.data.name" [location]="search.data.location" [connections]="search.data.connections" [imgUrl]="search.data.imgUrl"
+                 class="cursor-pointer" (click)="userClick(search.data)"></app-profile-card>
             </ng-template>
         </div>
     </section>

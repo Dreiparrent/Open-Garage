@@ -11,7 +11,7 @@
     </ng-template>
 </div>
 <div #viewMore class="row">
-    <button *ngIf="communityMembers.length > cardNumber" class="col-md-4 ml-2" (click)="toggleViewMore()" mat-button>{{viewLess ? 'View Less' : 'View More'}}</button>
+    <button *ngIf="communityMembers.length > cardNumber" [disabled]="!isMember" class="col-md-4 ml-2" (click)="toggleViewMore()" mat-button>{{viewLess ? 'View Less' : 'View More'}}</button>
     <p class="lead mx-auto my-auto cursor-pointer col-md-7" [hidden]="!scrollMore || viewLess" (click)="scrollMore = viewLess = false">
         Loading More... <span>(click to disable)</span>
     </p>

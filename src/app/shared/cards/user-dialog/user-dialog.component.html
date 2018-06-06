@@ -1,0 +1,55 @@
+<h2 mat-dialog-title class="mb-2">
+    <div class="row text-center">
+        <div class="col-5 mx-auto">
+            <img class="rounded-circle img-fluid" [src]="profile.imgUrl" role="figure" alt="profile photo">
+        </div>
+    </div>
+</h2>
+<mat-dialog-content>
+    <div class="row text-center">
+        <div class="col-11 mx-auto">
+            <h3>{{profile.name}}</h3>
+        </div>
+    </div>
+    <div class="row text-center">
+        <div class="col-11 mx-auto">
+            <p>{{about}}</p>
+        </div>
+    </div>
+    <div class="row text-center">
+        <div class="col-11 mx-auto">
+            <h5>Skills</h5>
+            <mat-chip-list>
+                <mat-chip *ngFor="let skill of profile.skills">{{skill}}</mat-chip>
+            </mat-chip-list>
+        </div>
+    </div>
+    <div class="row text-center pb-2">
+        <div class="col-11 mx-auto">
+            <h5>Passions</h5>
+            <mat-chip-list>
+                <mat-chip *ngFor="let pass of profile.passions">{{pass}}</mat-chip>
+            </mat-chip-list>
+        </div>
+    </div>
+    <div class="row text-center mb-2">
+        <div class="col-6">
+            <a>
+                <mat-icon placement="bottom" tooltip="Location" container="body" class="align-middle cursor-pointer">my_location</mat-icon>
+                <!--<i-globe placement="bottom" ngbTooltip="Location" class="align-bottom cursor-pointer"></i-globe>-->
+                <span class="h-100 align-text-top"> {{profile.location}}</span>
+            </a>
+        </div>
+        <div class="col-6">
+            <a>
+                <mat-icon placement="bottom" tooltip="Connections" container="body" class="align-middle cursor-pointer">wifi_tethering</mat-icon>
+                <!-- <i-radio placement="bottom" ngbTooltip="Connections" class="align-bottom cursor-pointer"></i-radio>-->
+                <span class="h-100 align-text-top">{{profile.connections}}</span>
+            </a>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Close</button>
+    <button mat-button [disabled]="false" placement="bottom" [tooltip]="connectTip" container="body" [mat-dialog-close]="connectUser()">Connect</button>
+</mat-dialog-actions>

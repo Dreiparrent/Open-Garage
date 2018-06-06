@@ -7,6 +7,9 @@ import { IProfile, CommunitySearchType, IUser } from '../../../shared/community/
 import { MediaMatcher } from '@angular/cdk/layout';
 import { NavigationService } from '../../../shared/navigation/navigation-service';
 import { Subscription } from 'rxjs';
+import { UserDialogComponent } from '../../../shared/cards/user-dialog/user-dialog.component';
+import { MatDialog } from '@angular/material';
+import { AuthService } from '../../../shared/auth/auth.service';
 
 @Component({
     selector: 'app-community-members',
@@ -21,6 +24,7 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     viewLess = false;
     winHeight: number;
     vmHeight: number;
+    isMember = false;
 
     // Observerer
     private _queryListener: () => void;
@@ -41,9 +45,13 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     communityMembers: IUser[] = [];
     topMembers: IUser[] = [];
 
-    constructor(private cd: ChangeDetectorRef,
+    constructor(private cd: ChangeDetectorRef, private dialog: MatDialog, private authService: AuthService,
         private comService: CommunityService, private navService: NavigationService,
         private changeDetectorRef: ChangeDetectorRef, private media: MediaMatcher) {
+        comService.members.subscribe(members => {
+            if (members.filter(user => user.ref.id === this.authService.token).length > 0)
+                this.isMember = true;
+        });
         this.createObservers();
     }
 
@@ -144,6 +152,11 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     }
 
     cardClick(profile: IUser) {
+        const dialogRef = this.dialog.open(UserDialogComponent, { data: profile });
+        dialogRef.afterClosed().subscribe((result: any) => {
+            if (result)
+                console.log(result);
+        });
         this.comService.updateSearch([profile.name], profile.skills, profile.name, CommunitySearchType.communityMember);
     }
 

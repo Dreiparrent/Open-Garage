@@ -13,18 +13,21 @@ import { CommunityService } from '../community/community.service';
 
 @Injectable()
 export class AuthService {
-    token: string;
+    private _token: string;
+    get token() {
+        return this._token;
+    }
     userRef: DocumentReference;
     userProvider: string[];
     protected _user: User;
     set user(user: User) {
         this._user = user;
         if (user === null) {
-            this.token = null;
-            this.isAith = false;
+            this._token = null;
+            this.isAuth = false;
         } else {
-            this.token = user.uid;
-            this.isAith = true;
+            this._token = user.uid;
+            this.isAuth = true;
         }
     }
     get user() {
@@ -35,7 +38,7 @@ export class AuthService {
     get isAuth() {
         return this._isAuth.getValue();
     }
-    set isAith(authStatus: boolean) {
+    set isAuth(authStatus: boolean) {
         if (authStatus && this.user)
             this._isAuth.next(authStatus);
         else if (!authStatus) this._isAuth.next(authStatus);
@@ -250,10 +253,6 @@ export class AuthService {
     }
 //#endregion
 
-    getToken() {
-        return this.token;
-    }
-
     isAuthenticated(): Observable<boolean> {
         return this._isAuth.asObservable();
     }
@@ -264,7 +263,7 @@ export class AuthService {
         // console.log('get user', this.userRef);
         return this.userRef.get().then(userSnap => {
             if (userSnap.exists) {
-                this.token = userSnap.id;
+                this._token = userSnap.id;
                 return userSnap.ref.collection('userData').doc('profile').get().then(profileSnap => {
                     if (profileSnap.exists) {
                         const profileData: IProfile = <any>profileSnap.data();
@@ -363,7 +362,7 @@ export class AuthService {
 
     private noProfileError() {
         this.alertService.addAlert(Alerts.incomelete); // TODO: add restriction here or in servvice
-        this.isAith = false;
+        this.isAuth = false;
     }
 //#endregion
 }

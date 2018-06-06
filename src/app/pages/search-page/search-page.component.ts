@@ -4,7 +4,9 @@ import { CommunitiesService, ISearch } from '../../shared/community/communities.
 import { AlertService, Alerts, IAlert } from '../../shared/alerts/alert.service';
 import { firestore } from 'firebase/app';
 import { Observable } from 'rxjs';
-import { MatInput } from '@angular/material';
+import { MatInput, MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
+import { UserDialogComponent } from '../../shared/cards/user-dialog/user-dialog.component';
 
 @Component({
     selector: 'app-search-page',
@@ -59,7 +61,10 @@ export class SearchPageComponent implements OnInit {
     ];
     */
 
-    constructor(private comsService: CommunitiesService, private alertService: AlertService) {
+    constructor(private comsService: CommunitiesService,
+        private alertService: AlertService,
+        private router: Router,
+        private dialog: MatDialog) {
         this.searchResults = comsService.getSearch();
     }
 
@@ -87,11 +92,29 @@ export class SearchPageComponent implements OnInit {
             this.alertService.removeAlert(this.currentAlert);
         this.location = new firestore.GeoPoint(position.coords.latitude, position.coords.longitude);
         if (this.searchInput.nativeElement.value.length < 1)
-            this.comsService.locationSearch(this.location);
+            this.comsService.locationSearch(this.location, 1);
     }
     positionError(error: PositionError) {
         if (error.code === error.PERMISSION_DENIED)
             this.currentAlert = this.alertService.addAlert(Alerts.locationError);
+    }
+
+    search(search: string) {
+        console.log(search);
+        this.comsService.search(search);
+    }
+
+    comClick(link: string) {
+        this.router.navigate(['/community', link]);
+    }
+
+    userClick(profile: IUser) {
+        const dialogRef = this.dialog.open(UserDialogComponent, { data: profile });
+        dialogRef.afterClosed().subscribe((result: any) => {
+            if (result)
+                console.log(result);
+        });
+        // here
     }
 
 }

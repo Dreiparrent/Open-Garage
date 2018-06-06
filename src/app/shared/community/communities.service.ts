@@ -13,6 +13,7 @@ export class CommunitiesService {
     private _locCollection: AngularFirestoreCollection;
     private _locationChange = 0.2;
     private _searchResults = new BehaviorSubject<ISearch<ICommunity | IUser>[]>([]);
+    private _isSearch = false;
     get searchResults() {
         return this._searchResults.getValue();
     }
@@ -41,22 +42,23 @@ export class CommunitiesService {
         this._locCollection = db.collection('location');
     }
     locationSearch(pos: firestore.GeoPoint, locationAdd = 1): void { // void for now? make error?
-        if (locationAdd < 2)
+        if (!this._isSearch) {
+            if (locationAdd < 2)
             this.clearSearch();
-        const change = this._locationChange + locationAdd * this._locationChange; // 0.2 TODO: add nothing found
-        const greaterPoint: firestore.GeoPoint = new firestore.GeoPoint(pos.latitude + change, pos.longitude + change);
-        const lesserPoint: firestore.GeoPoint = new firestore.GeoPoint(pos.latitude - change, pos.longitude - change);
-        this._locCollection.ref.where('nav', '<', greaterPoint).where('nav', '>', lesserPoint).get().then(snap => {
-            if (snap.empty)
+            const change = this._locationChange + locationAdd * this._locationChange; // 0.2 TODO: add nothing found
+            const greaterPoint: firestore.GeoPoint = new firestore.GeoPoint(pos.latitude + change, pos.longitude + change);
+            const lesserPoint: firestore.GeoPoint = new firestore.GeoPoint(pos.latitude - change, pos.longitude - change);
+            this._locCollection.ref.where('nav', '<', greaterPoint).where('nav', '>', lesserPoint).get().then(snap => {
+                if (snap.empty)
                 return [];
             else
-                return snap.docs;
+            return snap.docs;
         }).then(docs => {
             docs.forEach(doc => {
                 const locType = doc.data()['type'];
                 if (locType === 0)
-                    doc.ref.collection('user').get().then(users => {
-                        users.forEach(user => {
+                doc.ref.collection('user').get().then(users => {
+                    users.forEach(user => {
                             const ref: DocumentReference = user.data()['ref'];
                             this.comService.getMember(user.id).then(userData => {
                                 this.searchUsers.push(userData);
@@ -64,7 +66,7 @@ export class CommunitiesService {
                             });
                         });
                     });
-                else if (locType === 1)
+                    else if (locType === 1)
                     doc.ref.collection('community').get().then(coms => {
                         coms.forEach(com => {
                             this.comService.getCommunity(com.id, true).then(comData => {
@@ -75,11 +77,48 @@ export class CommunitiesService {
                             });
                         });
                     });
+                });
             });
-        });
+        }
     }
 
     search(search: string) {
+        this._isSearch = true;
+        this.clearSearch();
+        this._searchResults.next([]);
+        this.searchUsers = [];
+        this.searchCommunities = [];
+        this.db.collection('community').ref.where('name', '>=', search).get().then(comSnap => {
+            if (comSnap.empty)
+                return [];
+            else
+                return comSnap.docs;
+        }).then(coms => {
+            coms.forEach(com => {
+                this.comService.getCommunity(com.id, true).then(comData => {
+                    this.searchCommunities.push(comData);
+                    this.searchResults.push({ community: true, data: comData });
+                    console.log(this.searchCommunities);
+                    console.log(this.searchResults);
+                });
+            });
+        }).then(() => {
+            this.db.collection('users').ref.where('name', '>=', search).get().then(userSnap => {
+                if (userSnap.empty)
+                    return [];
+                else
+                    return userSnap.docs;
+            }).then(users => {
+                console.log(users);
+                users.forEach(user => {
+                    const ref: DocumentReference = user.data()['ref'];
+                    this.comService.getMember(user.id).then(userData => {
+                        this.searchUsers.push(userData);
+                        this.searchResults.push({ community: false, data: userData });
+                    });
+                });
+            });
+        });
         // this.clearSearch
     }
 
@@ -87,8 +126,9 @@ export class CommunitiesService {
         return this._searchResults.asObservable();
     }
     clearSearch() {
-        this.searchCommunities = [];
-        this.searchUsers = [];
+        this._searchCommunities = [];
+        this._searchUsers = [];
+        this._searchResults.next([]);
     }
     /*
     locationSearch(hype: number): Promise<ICommunity[]> {

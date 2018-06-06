@@ -1,7 +1,7 @@
 <ng-template #profileContainer>
 <app-profile-card [name]="searchProfile.name" [location]="searchProfile.location" [connections]="searchProfile.connections" [imgUrl]="searchProfile.imgUrl"></app-profile-card>
 </ng-template>
-<div class="card-body px-4">
+<div class="card-body px-4" *ngIf="isMember; else elseTemplate">
     <mat-list class="row d-flex">
         <mat-list-item class="col-12 ml-auto" *ngFor="let message of messages; let i = index">
             <h6 matLine class="my-0 row-fluid d-flex">
@@ -34,3 +34,6 @@
         </mat-list-item>
     </mat-list>    
 </div>
+<ng-template #elseTemplate>
+    <button mat-button [disabled]="true">You must be a member to view messages</button>
+</ng-template>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
 import { CommunitySearchType, IUser } from '../../../shared/community/community-interfaces';
+import { AuthService } from '../../../shared/auth/auth.service';
 
 @Component({
     selector: 'app-community-messages',
@@ -11,6 +12,7 @@ export class CommunityMessagesComponent implements OnInit {
 
     ownName = 'Random Person';
     hoverNumber = -1;
+    isMember = false;
 
     searchProfile: IUser = {
         name: '',
@@ -40,7 +42,12 @@ export class CommunityMessagesComponent implements OnInit {
         },
     ];
 
-    constructor(private comService: CommunityService) { }
+    constructor(private comService: CommunityService, private authService: AuthService) {
+        comService.members.subscribe(members => {
+            if (members.filter(user => user.ref.id === this.authService.token).length > 0)
+                this.isMember = true;
+        });
+    }
 
     ngOnInit() {
     }

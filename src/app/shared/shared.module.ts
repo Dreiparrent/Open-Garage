@@ -28,6 +28,7 @@ import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { UpdateProfileDialogComponent } from './cards/update-profile-dialog/update-profile-dialog.component';
 import { NavChatComponent } from './navigation/nav-chat/nav-chat.component';
 import { AlertsComponent } from './alerts/alerts.component';
+import { UserDialogComponent } from './cards/user-dialog/user-dialog.component';
 
 @NgModule({
     exports: [
@@ -71,11 +72,13 @@ import { AlertsComponent } from './alerts/alerts.component';
         YourProfileDialogComponent,
         UpdateProfileDialogComponent,
         NavChatComponent,
-        AlertsComponent
+        AlertsComponent,
+        UserDialogComponent
     ],
     entryComponents: [
         YourProfileDialogComponent,
-        UpdateProfileDialogComponent
+        UpdateProfileDialogComponent,
+        UserDialogComponent
     ],
     providers: [
         CommunityGuardService,

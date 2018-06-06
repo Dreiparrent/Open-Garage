@@ -21,6 +21,11 @@ export class AlertService {
                 this.addAlert(Alerts.login);
             if (params['reload'])
                 location.reload(true);
+            if (params['joinCom']) { // TODO: fix this reload bs
+                console.log(this.route.snapshot.url);
+                // this.router.navigate(['./']);
+                this.alerts.push(enumAlerts[Alerts.comJoinSuccess]);
+            }
             if (params['userSearch']) {
                 this.removeAlert(enumAlerts[Alerts.noCommunity]);
                 this.router.navigate(['/search']);
@@ -32,8 +37,13 @@ export class AlertService {
         if (alert === Alerts.custom) {
             this.alerts.push(customAlert);
             return;
-        }
+        } else if (alert === Alerts.incomelete)
+            this.alerts.push(enumAlerts[Alerts.incomeleteAutoAlert]);
         const newAlert = enumAlerts[alert];
+        if (alert === Alerts.comJoinSuccess) // TODO: fix this reload bs
+            this.router.navigate(['./'], { queryParams: { joinCom: true }, relativeTo: this.route }).then(() => {
+                this.router.navigate(['./'], { queryParams: { reload: true }, skipLocationChange: true });
+            });
         if (!newAlert.multiple && this.alerts.includes(newAlert))
             return;
         this.alerts.push(newAlert);
@@ -65,6 +75,7 @@ export interface IAlert {
 export enum Alerts {
     custom = -1,
     incomelete,
+    incomeleteAutoAlert,
     noPhoto,
     noCommunity,
     message,
@@ -74,6 +85,7 @@ export enum Alerts {
     loginForFull,
     userError,
     communityError,
+    comJoinSuccess,
     locationError
 }
 const enumAlerts: IAlert[] = [
@@ -87,6 +99,10 @@ const enumAlerts: IAlert[] = [
                 incomplete: true
             }
         }
+    },
+    {
+        msg: 'You will appear logged out until profile is completed',
+        type: 'warning'
     },
     {
         msg: 'Your profile is missing a profile image',
@@ -108,7 +124,7 @@ const enumAlerts: IAlert[] = [
         msg: 'New message',
         type: 'success'
     },
-    {
+    { // 5
         msg: 'Successfully logged in',
         type: 'success'
     },
@@ -136,9 +152,13 @@ const enumAlerts: IAlert[] = [
         msg: 'An error occured while trying to get user data',
         type: 'danger'
     },
-    {
+    { // 10
         msg: 'An error occured while trying to get community data',
         type: 'danger'
+    },
+    {
+        msg: 'You successfully joined this community',
+        type: 'success'
     },
     {
         msg: 'Location services not allowed',

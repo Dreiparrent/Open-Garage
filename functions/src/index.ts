@@ -1,8 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 admin.initializeApp();
-// tslint:disable-next-line:no-implicit-dependencies
-import { DocumentReference, GeoPoint, CollectionReference, WriteResult } from '@google-cloud/firestore';
+import { DocumentReference, GeoPoint, CollectionReference, WriteResult, FieldValue } from '@google-cloud/firestore';
 
 /* ** INTERFACES ** */
 interface ITags {
@@ -22,6 +21,25 @@ interface ILocation {
     nav: GeoPoint;
 }
 
+// Community Interface
+interface ICommunity {
+    desc: string;
+    img: DocumentReference;
+    location: DocumentReference;
+    members: number;
+    name: string;
+    join?: string;
+}
+interface ICommunityMembers {
+    founder: DocumentReference;
+    members: DocumentReference[];
+}
+interface ICommunityData {
+    members: ICommunityMembers;
+    messages: {
+        ref: DocumentReference;
+    }
+}
 // export const helloWorld = functions.https.onRequest((request, response) => {
 //  response.send("Hello from Firebase!");
 // });
@@ -173,4 +191,74 @@ export const updateTags = functions.firestore.document('users/{userId}/userData/
             tagType.push('Skill removed');
         console.info(tagType.join(', '), uid);
     });
+});
+
+export const joinCommunity = functions.firestore.document('community/{communityId}').onUpdate((change, context): Promise<any> => {
+    const prevVal: ICommunity = <any>change.before.data();
+    const newVal: ICommunity = <any>change.after.data();
+    const communityId: string = context.params.communityId;
+    if (newVal === prevVal)
+        return null;
+    let newUser: string;
+    if (newVal.join)
+        newUser = newVal.join;
+    else return null;
+    return admin.firestore().collection('community').doc(communityId).collection('communityData').doc('members').get().then(membersSnap => {
+        if (membersSnap.exists) {
+            const members: ICommunityMembers = <any>membersSnap.data();
+            let membCount = 0;
+            members.members.forEach(member => {
+                membCount += 1;
+                if (member.id === newUser)
+                    newUser = null;;
+            });
+            return { comRef: membersSnap.ref, userRef: null, memberData: members, count: membCount };
+        } else {
+            console.error('Error while getting community member data');
+            return null;
+        }
+    }).then(comData => {
+        if (newUser !== null && comData !== null) {
+            const tmpNewMembers = comData;
+            return admin.firestore().collection('users').doc(newUser).get().then(userSnap => {
+                if (userSnap.exists) {
+                    tmpNewMembers.memberData.members.push(userSnap.ref);
+                    tmpNewMembers.userRef = userSnap.ref;
+                    return tmpNewMembers;
+                } else {
+                    console.error('Error while retrieving user data ');
+                    return null;
+                }
+            });
+            //tmpUser.ref.update()
+        } else {
+            console.error('User is already a member of this community');
+            return null;
+        }  
+    }).then(comData => {
+        if (comData !== null) {
+            return comData.comRef.update(comData.memberData).then(result => {
+                return comData;
+            });
+        } else return null;
+    }).then(comData => {
+        if (comData !== null)
+            return admin.firestore().collection('community').doc(communityId).set(<ICommunity>{
+                desc: prevVal.desc,
+                img: prevVal.img,
+                location: prevVal.location,
+                members: comData.count + 1,
+                name: prevVal.name
+            }).then(result => {
+                return comData;
+            });
+        else {
+            console.error('Error while adding member');
+            return null;
+        }
+    }).then(comData => {
+        if (comData !== null)
+            return comData.userRef.collection('communities').doc(communityId).set({ ref: comData.comRef.parent.parent });
+        else return null;
+    })
 });

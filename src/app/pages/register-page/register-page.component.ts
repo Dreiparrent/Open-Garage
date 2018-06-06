@@ -49,10 +49,10 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
                 // if (this.authService.userProvider.includes('password'))
                 if (this.authService.userProvider.includes('google.com')) {
                     this.authType = 2;
-                    this.authService.isAith = true;
+                    this.authService.isAuth = true;
                 } else if (this.authService.userProvider.includes('facebook')) { // TODO: this is not 'facebook'
                     this.authType = 1;
-                    this.authService.isAith = true;
+                    this.authService.isAuth = true;
                 }
                 $('.icons-tab-steps').steps('next');
             }

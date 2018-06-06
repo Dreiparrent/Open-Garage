@@ -5,6 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { ICommunityData, IProfile, CommunitySearchType } from '../../shared/community/community-interfaces';
 import { Subscription } from 'rxjs';
 import { NavigationService } from '../../shared/navigation/navigation-service';
+import { AuthService } from '../../shared/auth/auth.service';
+import { AlertService, Alerts } from '../../shared/alerts/alert.service';
 
 @Component({
     selector: 'app-community-page',
@@ -16,7 +18,10 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
     hasMessages = true;
 
     // TODO: remove or update this
+    comID: string;
     hovered = false;
+    isAuth = false;
+    isMember = false;
 
     // new
     nameSub: Subscription;
@@ -31,11 +36,18 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
     searchMembers = false;
     searchSkills = false;
 
-    constructor(private comService: CommunityService, private route: ActivatedRoute) {
+    constructor(private comService: CommunityService, private authService: AuthService,
+        private route: ActivatedRoute, private alertService: AlertService) {
+        comService.members.subscribe(members => {
+            if (members.filter(user => user.ref.id === this.authService.token).length > 0)
+                this.isMember = true;
+        });
+        authService.isAuthenticated().subscribe(auth => this.isAuth = auth);
     }
 
     ngOnInit() {
-        this.nameSub = this.comService.init(this.route.snapshot.params['id']).subscribe(name => {
+        this.comID = this.route.snapshot.params['id'];
+        this.nameSub = this.comService.init(this.comID).subscribe(name => {
             this.communityName = name;
         });
         this.searchSub = this.comService.searchValue.subscribe(val => {
@@ -81,6 +93,15 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
 
     clearSearch() {
         this.comService.updateSearch();
+    }
+
+    joinCommunity() {
+        if (this.authService.isAuth)
+            this.comService.joinCommunity(this.authService.token).then(result => {
+                if (result)
+                    this.alertService.addAlert(Alerts.comJoinSuccess);
+            });
+        else this.alertService.addAlert(Alerts.loginForFull);
     }
 
     ngOnDestroy(): void {

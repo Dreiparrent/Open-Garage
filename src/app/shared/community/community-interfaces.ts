@@ -42,6 +42,7 @@ export interface IUser {
     location: string;
     connections: number;
     imgUrl?: DocumentReference | string;
+    ref?: DocumentReference;
 }
 
 /*
