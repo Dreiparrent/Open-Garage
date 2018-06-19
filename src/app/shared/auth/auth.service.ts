@@ -360,6 +360,24 @@ export class AuthService {
         });
     }
 
+    sharedCommunity(profileRef: DocumentReference): Promise<boolean> {
+        return profileRef.collection('communities').get().then(comsSnap => {
+            const comIds: string[] = [];
+            if (!comsSnap.empty)
+                comsSnap.forEach(com => {
+                    comIds.push(com.id);
+                });
+            return comIds;
+        }).then(comIds => {
+            let isInc = false;
+            this.userCommunities.forEach(com => {
+                if (comIds.filter(comId => com.link === comId).length > 0)
+                    isInc = true;
+            });
+            return isInc;
+        }).then(isInc => isInc);
+    }
+
     private noProfileError() {
         this.alertService.addAlert(Alerts.incomelete); // TODO: add restriction here or in servvice
         this.isAuth = false;

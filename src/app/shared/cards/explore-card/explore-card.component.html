@@ -1,0 +1,34 @@
+<div class="row">
+    <div *ngFor="let user of users; index as i; odd as isOdd" class="col-12 flex-row">
+        <mat-card class="mat-elevation-z0 bg-transparent col-8 col-sm-6 col-md-7 col-lg-6 mt-5" [ngClass]="{'float-right': isOdd}">
+        <mat-card-content>
+            <div class="row text-center">
+                <div class="col-5" [ngClass]="{'order-last': isOdd}">
+                    <img class="rounded-circle img-fluid" [src]="user.imgUrl" role="figure" alt="profile photo">
+                </div>
+                <div class="row col-7 card-offset">
+                    <h4 class="col-12 my-auto px-0 py-auto" [ngClass]="(isOdd)?'text-right':'text-left'">{{user.name}}</h4>
+                    <blockquote class="blockquote col-12 justify-content-center py-auto" [ngClass]="(isOdd)?'text-left':'text-right'">
+                        <h4 class="align-middle">{{user.skpa}}</h4>
+                    </blockquote>
+                    <h6 class="col-12 my-auto text-muted py-auto" [ngClass]="(isOdd)?'text-right':'text-left'">{{user.com}}</h6>
+                </div>
+            </div>
+        </mat-card-content>
+        <!-- <mat-card-footer>
+            <div class="row text-center mb-2">
+                <div class="col-6">
+                    <a>
+                        <span class="h-100 align-text-top"> {{location}}</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a>
+                        <span class="h-100 align-text-top">{{connections}}</span>
+                    </a>
+                </div>
+            </div>
+        </mat-card-footer> -->
+        </mat-card>
+    </div>
+</div>

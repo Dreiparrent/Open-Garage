@@ -1,4 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { CommunitiesService, ISearch, SimpleFilter } from '../../shared/community/communities.service';
+import { Router } from '@angular/router';
+import { map, flatMap, mapTo, reduce, switchMap, concatAll, catchError, startWith, mergeMap } from 'rxjs/operators';
+import { forkJoin } from 'rxjs/observable/forkJoin';
+import { ICommunity, IUser } from '../../shared/community/community-interfaces';
+import { Observable, Subject, pipe, from, of } from 'rxjs';
+// import { mergeMap } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
+import { IExploreUser } from '../../shared/cards/explore-card/explore-card.component';
 
 @Component({
     selector: 'app-home-page',
@@ -73,9 +82,36 @@ export class HomePageComponent implements OnInit {
     ];
     preFlexBasis: string;
     preMaxWidth: string;
+    searchControl: FormControl;
+
+    autoComplete: Observable<any[]>;
+    filterOptions: (val?: string) => any;
+
+    exploreUsers: IExploreUser[] = [
+        {
+            name: 'Baxter Cochennet',
+            imgUrl: '/assets/img/photos/baxter.jpg',
+            skpa: 'Cycling',
+            com: 'Test Community',
+            type: 0
+        },
+        {
+            name: 'Baxter Cochennet',
+            imgUrl: '/assets/img/photos/baxter.jpg',
+            skpa: 'Cycling',
+            com: 'Test Community',
+            type: 0
+        }
+    ];
 
     // pointerState = ''
-    constructor() {
+    constructor(private router: Router, private comsService: CommunitiesService) {
+        this.searchControl = new FormControl();
+        this.searchControl.valueChanges.pipe(
+            startWith(''),
+            map(val => this.comsService.search(val))
+        ).subscribe();
+        this.autoComplete = this.comsService.getSearch().pipe();
     }
 
     ngOnInit() {
@@ -89,6 +125,14 @@ export class HomePageComponent implements OnInit {
             scrollTop: $(elem).offset().top
         }, 800, () => {
             window.location.hash = elem;
+        });
+    }
+
+    onSelected(search: string) {
+        this.router.navigate(['/search'], {
+            queryParams: {
+                search: search
+            }
         });
     }
 

@@ -1,12 +1,15 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ICommunity, IProfile, ICommunityData, IUser } from '../../shared/community/community-interfaces';
-import { CommunitiesService, ISearch } from '../../shared/community/communities.service';
+import { CommunitiesService, ISearch, SimpleFilter } from '../../shared/community/communities.service';
 import { AlertService, Alerts, IAlert } from '../../shared/alerts/alert.service';
 import { firestore } from 'firebase/app';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { MatInput, MatDialog } from '@angular/material';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserDialogComponent } from '../../shared/cards/user-dialog/user-dialog.component';
+import { AuthService } from '../../shared/auth/auth.service';
+import { FormControl } from '@angular/forms';
+import { startWith, map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-search-page',
@@ -16,9 +19,30 @@ import { UserDialogComponent } from '../../shared/cards/user-dialog/user-dialog.
 export class SearchPageComponent implements OnInit {
 
     location: firestore.GeoPoint;
+    isAuth = false;
+    currentSearch: string;
     communities: ICommunity[];
-    currentAlert: IAlert;
-    searchResults;
+    locationAlert: IAlert;
+    authAlert: IAlert;
+    searchControl: FormControl;
+    filterResults;
+    searchResults: Observable<any[]>;
+    // fResults: Observable
+    options = [
+        {
+            name: 'test1'
+        },
+        {
+            name: 'test2'
+        },
+        {
+            name: 'another'
+        },
+        {
+            name: 'an other'
+        }
+    ];
+
     @ViewChild('searchInput') searchInput: ElementRef<MatInput>;
     /*
     communities: ICommunity[] = [
@@ -63,12 +87,46 @@ export class SearchPageComponent implements OnInit {
 
     constructor(private comsService: CommunitiesService,
         private alertService: AlertService,
+        private authService: AuthService,
+        private route: ActivatedRoute,
         private router: Router,
         private dialog: MatDialog) {
-        this.searchResults = comsService.getSearch();
+        // this.searchResults = comsService.getSearch();
+        this.authService.isAuthenticated().subscribe(isAuth => {
+            if (!isAuth)
+                this.authAlert = this.alertService.addAlert(Alerts.loginForFull);
+            else if (this.authAlert) {
+                this.alertService.removeAlert(this.authAlert);
+                if (this.currentSearch)
+                    this.search(this.currentSearch);
+            }
+            this.isAuth = isAuth;
+        });
     }
 
     ngOnInit() {
+        /*
+        this.fResults = this.fControl.valueChanges.pipe(
+            startWith(''),
+            map(val => this.)
+        )
+        */
+        this.searchControl = new FormControl();
+        this.searchControl.valueChanges.pipe(
+            startWith(''),
+            map(val => this.comsService.search(val, this.isAuth))
+        ).subscribe();
+        this.searchResults = this.comsService.getSearch().pipe();
+        this.searchResults.subscribe(res => {
+            console.log(res);
+        });
+        this.route.queryParams.subscribe(params => {
+            if (params['search']) {
+                const search = params['search'];
+                this.search(search);
+                this.searchInput.nativeElement.value = search;
+            }
+        });
         const watcher = navigator.geolocation.watchPosition(this.getPosition.bind(this), this.positionError.bind(this));
         setTimeout(() => {
             if (this.location === undefined)
@@ -88,20 +146,20 @@ export class SearchPageComponent implements OnInit {
     }
 
     getPosition(position: Position) {
-        if (this.currentAlert)
-            this.alertService.removeAlert(this.currentAlert);
+        if (this.locationAlert)
+            this.alertService.removeAlert(this.locationAlert);
         this.location = new firestore.GeoPoint(position.coords.latitude, position.coords.longitude);
         if (this.searchInput.nativeElement.value.length < 1)
             this.comsService.locationSearch(this.location, 1);
     }
     positionError(error: PositionError) {
         if (error.code === error.PERMISSION_DENIED)
-            this.currentAlert = this.alertService.addAlert(Alerts.locationError);
+            this.locationAlert = this.alertService.addAlert(Alerts.locationError);
     }
 
     search(search: string) {
-        console.log(search);
-        this.comsService.search(search);
+        this.currentSearch = search;
+        this.comsService.search(search, this.isAuth);
     }
 
     comClick(link: string) {
@@ -109,7 +167,12 @@ export class SearchPageComponent implements OnInit {
     }
 
     userClick(profile: IUser) {
-        const dialogRef = this.dialog.open(UserDialogComponent, { data: profile });
+        const dialogRef = this.dialog.open(UserDialogComponent, {
+            data: profile,
+            maxWidth: '65vw',
+            maxHeight: '100vh',
+            closeOnNavigation: true
+        });
         dialogRef.afterClosed().subscribe((result: any) => {
             if (result)
                 console.log(result);

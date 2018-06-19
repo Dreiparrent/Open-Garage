@@ -145,7 +145,7 @@ const enumAlerts: IAlert[] = [
         type: 'info',
     },
     {
-        msg: 'Login to view or join community',
+        msg: 'Please login for full access',
         type: 'info'
     },
     {

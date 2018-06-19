@@ -152,7 +152,12 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     }
 
     cardClick(profile: IUser) {
-        const dialogRef = this.dialog.open(UserDialogComponent, { data: profile });
+        const dialogRef = this.dialog.open(UserDialogComponent, {
+            data: profile,
+            maxWidth: '65vw',
+            maxHeight: '100vh',
+            closeOnNavigation: true
+        });
         dialogRef.afterClosed().subscribe((result: any) => {
             if (result)
                 console.log(result);

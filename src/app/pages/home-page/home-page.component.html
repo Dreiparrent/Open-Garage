@@ -11,7 +11,13 @@
                 <h1 class="display-4">Community</h1>
             </div>
             <mat-form-field class="col-md-12 text-white">
-                <input matInput placeholder="Search">
+                <input #searchInput matInput placeholder="Search" [formControl]="searchControl" [matAutocomplete]="auto"
+                 (keyup.enter)="onSelected(searchInput.value)">
+                <mat-autocomplete #auto="matAutocomplete" class="mat-elevation-z0 search-theme" (optionSelected)="onSelected(searchInput.value)">
+                    <mat-option *ngFor="let option of autoComplete | async" [value]="option.data.name">
+                        <span>{{ option.data.name }}</span>
+                    </mat-option>
+                </mat-autocomplete>
             </mat-form-field>
         </form>
     </div>
@@ -19,7 +25,7 @@
         <mat-icon class="cursor-pointer">keyboard_arrow_down</mat-icon>
     </a>
 </section>
-<section id="about" class="flex-row pt-2">
+<section id="about" class="flex-row pt-2 px-5 home-text text-justify">
     <h1 class="mx-auto text-center pb-2" style="width: auto">About</h1>
     <p class="col-12">
         Welcome to the wonderful world of Open Garage. What makes it wonderful is it’s your world – your communities. You’ve made
@@ -35,11 +41,11 @@
         to pursue your passions and exercise your skills. Let’s open that up and show our communities what we have to offer.
     </p>
 </section>
-<section class="flew-row home-theme">
+<section class="flew-row home-theme px-5 home-text">
     <h1 class="mx-auto text-center pb-2" style="width: auto">Get Started</h1>
     <div class="row px-1" id="startedList">
         <div *ngFor="let gettit of getStarted; let i=index" (click)="sClick(i)" [id]="gettit.id"
-        class="col-12 col-sm-6 col-md-3 text-center cursor-pointer" [class.active]="gettit.active">
+        class="col-12 col-sm-12 col-md-6 text-center cursor-pointer" [class.active]="gettit.active">
             <mat-icon class="w-100">{{gettit.icon}}</mat-icon>
             <h4>{{gettit.active ? gettit.h2 : gettit.h}}</h4>
             <div class="row">
@@ -55,12 +61,12 @@
 </section>
 <section class="flex-row pb-3">
     <h1 class="mx-auto text-center pb-2" style="width: auto">Values</h1>
-    <carousel>
+    <carousel class="px-5">
         <slide>
             <div class="text-center pb-5 pt-3 px-5 bg-dp text-white">
-                <div class="lead">
+                <div class="lead px-5">
                     <h3>Connect</h3>
-                    <p>
+                    <p class="col-12 col-sm-11 col-lg-10 col-md-11 mx-auto">
                         Open Garage was born out of a desire to connect people offline. As a result of living in such a perpetually connected world,
                         we have become some of the most disconnected people to the world around us.
                     </p>
@@ -69,9 +75,9 @@
         </slide>
         <slide>
             <div class="text-center pb-5 pt-3 px-5 bg-dp text-white">
-                <div class="lead">
+                <div class="lead px-5">
                     <h3>Contribute</h3>
-                    <p>
+                    <p class="col-12 col-sm-11 col-lg-10 col-md-11 mx-auto">
                         The premise of Open Garage is that everyone, BECAUSE of their race, creed, ethnicity, sexual orientation, gender, religion,
                         hair style, or music choice, has something to contribute to the greater good. Further, we believe
                         that it is precisely our differences that make such contributions meaningful and necessary.
@@ -81,9 +87,9 @@
         </slide>
         <slide>
             <div class="text-center pb-5 pt-3 px-5 bg-dp text-white">
-                <div class="lead">
+                <div class="lead px-5">
                     <h3>Respect</h3>
-                    <p>
+                    <p class="col-12 col-sm-11 col-lg-10 col-md-11 mx-auto">
                         We welcome everyone to the Open Garage community. We don’t require you to share the same beliefs and values as your community
                         members, but we do require you to respect them.
                     </p>
@@ -96,9 +102,10 @@
     <h1 class="mx-auto text-center pb-2" style="width: auto">Explore</h1>
     <div class="container">
         <div class="row">
-            <div class="col-12 col-md-6 col-lg-5">
+            <app-explore-card [users]="exploreUsers"></app-explore-card>
+            <!-- <div class="col-12 col-md-6 col-lg-5">
                 <app-profile-card name="Baxter Cochennet" location="Denver" connections="15" imgUrl="/assets/img/photos/baxter.jpg"></app-profile-card>
-            </div>
+            </div> -->
         </div>
     </div>
 </section>

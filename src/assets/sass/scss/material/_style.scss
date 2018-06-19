@@ -114,8 +114,7 @@ $search-warn: mat-palette($mat-red);
 
 $search-theme: mat-dark-theme($search-primary, $search-accent, $search-warn);
 
-.search-theme {
-    @include angular-material-theme($search-theme);
+%search-shared {
     background-color: transparent !important;
     .mat-icon {
         font-size: 16pt;
@@ -133,6 +132,14 @@ $search-theme: mat-dark-theme($search-primary, $search-accent, $search-warn);
             font-size: 12pt;
         }
     }
+}
+
+.search-theme {
+    @include angular-material-theme($search-theme);
+    @extend %search-shared;
+}
+.search-theme-dark {
+    @extend %search-shared
 }
 
 .com-theme {

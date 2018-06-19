@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { ICommunity, IProfile, ICommunityData, IUser } from './community-interfaces';
 import { INavigation } from './community-interfaces';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject, from } from 'rxjs';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 import { firestore } from 'firebase';
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
 import { DocumentReference } from '@firebase/firestore-types';
 import { CommunityService } from './community.service';
+import { map, pluck, mergeMap, filter } from 'rxjs/operators';
 
 @Injectable()
 export class CommunitiesService {
@@ -14,135 +16,181 @@ export class CommunitiesService {
     private _locationChange = 0.2;
     private _searchResults = new BehaviorSubject<ISearch<ICommunity | IUser>[]>([]);
     private _isSearch = false;
+    private _currentLocation: firestore.GeoPoint = null;
     get searchResults() {
         return this._searchResults.getValue();
     }
-    set searchResults(search) {
+    set searchResults(search: ISearch<ICommunity | IUser>[]) {
         this._searchResults.next(search);
     }
     private _searchCommunities: ICommunity[] = [];
-    get searchCommunities() {
+    private get searchCommunities() {
         return this._searchCommunities;
     }
-    set searchCommunities(coms: ICommunity[]) {
+    private set searchCommunities(coms: ICommunity[]) {
         this._searchCommunities = coms;
-        coms.forEach(com => this.searchResults.push({ community: true, data: com }));
-        console.log('set');
+        if (coms.length > 0)
+            coms.forEach(com => this.searchResults.push({ community: true, data: com}));
+        else
+            this.searchResults = this.searchResults.filter(res => res.community !== true);
     }
     private _searchUsers: IUser[] = [];
-    get searchUsers() {
+    private get searchUsers() {
         return this._searchUsers;
     }
-    set searchUsers(users: IUser[]) {
+    private set searchUsers(users: IUser[]) {
         this._searchUsers = users;
-        users.forEach(user => this.searchResults.push({ community: false, data: user }));
+        if (users.length > 0)
+            users.forEach(user => this.searchResults.push({ community: false, data: user }));
+        else
+            this.searchResults = this.searchResults.filter(res => res.community === true);
+    }
+
+    // Manual search
+    private fullSearch = false;
+    private _startAt = new Subject<string>();
+    private get startAt() {
+        return this._startAt.asObservable();
+    }
+    private _endAt = new Subject<string>();
+    private get endAt() {
+        return this._endAt.asObservable();
+    }
+
+    private addSearch(search: ISearch<ICommunity | IUser>) {
+        if (search.community)
+            this._searchCommunities.push(search.data as ICommunity);
+        else this._searchUsers.push(search.data as IUser);
+        this.searchResults.push(search);
     }
 
     constructor(private db: AngularFirestore, private comService: CommunityService) {
         this._locCollection = db.collection('location');
+        combineLatest(this.startAt, this.endAt).subscribe(val => {
+            this._search(val);
+        });
     }
-    locationSearch(pos: firestore.GeoPoint, locationAdd = 1): void { // void for now? make error?
-        if (!this._isSearch) {
-            if (locationAdd < 2)
+    locationSearch(pos = this._currentLocation, locationAdd = 1): Promise<ISearch<ICommunity | IUser>[]> { // void for now? make error?
+        if (!this._isSearch && pos !== null) {
+            this._currentLocation = pos;
             this.clearSearch();
             const change = this._locationChange + locationAdd * this._locationChange; // 0.2 TODO: add nothing found
             const greaterPoint: firestore.GeoPoint = new firestore.GeoPoint(pos.latitude + change, pos.longitude + change);
             const lesserPoint: firestore.GeoPoint = new firestore.GeoPoint(pos.latitude - change, pos.longitude - change);
-            this._locCollection.ref.where('nav', '<', greaterPoint).where('nav', '>', lesserPoint).get().then(snap => {
+            return this._locCollection.ref.where('nav', '<', greaterPoint).where('nav', '>', lesserPoint).get().then(snap => {
                 if (snap.empty)
-                return [];
-            else
-            return snap.docs;
-        }).then(docs => {
-            docs.forEach(doc => {
-                const locType = doc.data()['type'];
-                if (locType === 0)
-                doc.ref.collection('user').get().then(users => {
-                    users.forEach(user => {
-                            const ref: DocumentReference = user.data()['ref'];
-                            this.comService.getMember(user.id).then(userData => {
-                                this.searchUsers.push(userData);
-                                this.searchResults.push({ community: false, data: userData });
-                            });
-                        });
-                    });
-                    else if (locType === 1)
-                    doc.ref.collection('community').get().then(coms => {
-                        coms.forEach(com => {
-                            this.comService.getCommunity(com.id, true).then(comData => {
-                                this.searchCommunities.push(comData);
-                                this.searchResults.push({ community: true, data: comData });
-                                console.log(this.searchCommunities);
-                                console.log(this.searchResults);
-                            });
-                        });
-                    });
-                });
-            });
-        }
-    }
-
-    search(search: string) {
-        this._isSearch = true;
-        this.clearSearch();
-        this._searchResults.next([]);
-        this.searchUsers = [];
-        this.searchCommunities = [];
-        this.db.collection('community').ref.where('name', '>=', search).get().then(comSnap => {
-            if (comSnap.empty)
-                return [];
-            else
-                return comSnap.docs;
-        }).then(coms => {
-            coms.forEach(com => {
-                this.comService.getCommunity(com.id, true).then(comData => {
-                    this.searchCommunities.push(comData);
-                    this.searchResults.push({ community: true, data: comData });
-                    console.log(this.searchCommunities);
-                    console.log(this.searchResults);
-                });
-            });
-        }).then(() => {
-            this.db.collection('users').ref.where('name', '>=', search).get().then(userSnap => {
-                if (userSnap.empty)
                     return [];
                 else
-                    return userSnap.docs;
-            }).then(users => {
-                console.log(users);
-                users.forEach(user => {
-                    const ref: DocumentReference = user.data()['ref'];
-                    this.comService.getMember(user.id).then(userData => {
-                        this.searchUsers.push(userData);
-                        this.searchResults.push({ community: false, data: userData });
-                    });
+                    return snap.docs;
+            }).then(docs => {
+                docs.forEach(doc => {
+                    const locType = doc.data()['type'];
+                    if (locType === 0)
+                        doc.ref.collection('user').get().then(users => {
+                            users.forEach(user => {
+                                const ref: DocumentReference = user.data()['ref'];
+                                this.comService.getMember(user.id).then(userData => {
+                                    this.searchUsers.push(userData);
+                                    this.searchResults.push({ community: false, data: userData });
+                                });
+                            });
+                        });
+                    else if (locType === 1)
+                        doc.ref.collection('community').get().then(coms => {
+                            coms.forEach(com => {
+                                this.comService.getCommunity(com.id, true).then(comData => {
+                                    this.searchCommunities.push(comData);
+                                    this.searchResults.push({ community: true, data: comData });
+                                    console.log(this.searchCommunities);
+                                    console.log(this.searchResults);
+                                });
+                            });
+                        });
                 });
-            });
-        });
-        // this.clearSearch
+            }).then(() => this.searchResults);
+        }
+    }
+    search(search: string, fullSearch = false) {
+        console.log(search);
+        this.fullSearch = fullSearch;
+        this._isSearch = true;
+        this._startAt.next(search);
+        this._endAt.next(search + '\uf8ff');
+        return search;
+    }
+    private _search(search: [string, string]): Promise<ISearch<ICommunity | IUser>[]> {
+        this._isSearch = (search[0].length > 0 && search[1].length > 0) ? true : false;
+        this.clearSearch();
+        if (this._isSearch)
+            return this.db.collection('community').ref
+                .orderBy('name').limit(10).startAt(search[0]).endAt(search[1]).get().then(comSnap => {
+                    if (comSnap.empty)
+                        return [];
+                    else return comSnap.docs;
+                }).then(comDocs => {
+                    comDocs.forEach(doc => {
+                        if (!this.searchCommunities.some(sCom => sCom.link === doc.id))
+                            this.comService.getCommunity(doc.id, true).then(comData => {
+                                if (!this.searchCommunities.some(sCom => sCom.link === comData.link))
+                                    this.addSearch({ community: true, data: comData });
+                            });
+                    });
+                }).then(() => {
+                    if (this.fullSearch)
+                        return this.db.collection('users').ref
+                            .orderBy('name').limit(10).startAt(search[0]).endAt(search[1]).get().then(userSnap => {
+                                if (userSnap.empty)
+                                    return [];
+                                else return userSnap.docs;
+                            });
+                    else return [];
+                }).then(userDocs => {
+                    userDocs.forEach(doc => {
+                        if (!this.searchUsers.some(sUser => sUser.ref.id === doc.id))
+                            this.comService.getMember(doc.id).then(user => {
+                                if (!this.searchUsers.some(sUser => sUser.ref.id === user.ref.id))
+                                    this.addSearch({ community: false, data: user });
+                            });
+                    });
+                }).then(() => this.searchResults);
+        else this.locationSearch();
     }
 
     getSearch() {
         return this._searchResults.asObservable();
     }
-    clearSearch() {
-        this._searchCommunities = [];
-        this._searchUsers = [];
-        this._searchResults.next([]);
+
+    simpleFilter(val: string, useSearch = false) {
+        // let tmpOpts =
+        // if (useSearch)
     }
     /*
-    locationSearch(hype: number): Promise<ICommunity[]> {
-        const prom = new Promise<ICommunity[]>((resolve, reject) => {
-            setTimeout(() => {
-                if (hype > 9)
-                    resolve(testCommunities);
-                else
-                    reject('Navigation (lng + lat) hypotenuse is less than 10');
-            }, 200);
-        });
-        return prom;
+    getAutoComplete(fullSearch = false) {
+        this.fullSearch = fullSearch;
+        // const testCon = this._searchResults.pipe(map(res => res.map(ress => ress.data.name)));
+        /*
+            .pipe<string[]>(map(sResult => {
+        })).pipe(map(obs => {
+            console.log(obs);
+            return obs;
+        }));
+        */
+        // return testCon;
+        /*
+        )).pipe(map(searches => {
+            console.log(searches);
+            return searches;
+            // return searches.map(s => s.data.name);
+        }));
+        // console.log(testCon);
+        // return this._searchResults.asObservable
+        *//*
     }
     */
+    clearSearch() {
+        this.searchCommunities = [];
+        this.searchUsers = [];
+    }
 }
 export interface ISearch<T> {
     community: boolean;
@@ -230,3 +278,24 @@ const testCommunities: ICommunity[] = [
         link: 'testlink'
     }
 ];
+/*
+export const SimpleFilter = function (val: string) {
+    return this.options.filter(option => option.name.toLowerCase().indexOf(val.toLowerCase()) === 0).slice(0, 5);
+}
+*/
+export const SimpleFilter = function (type = 0, slice = 5) {
+    switch (type) {
+        case 1:
+            return function (val: string): {name: string, type: number} {
+                console.log(val, this.options);
+                return this.options.filter(option => option.name.toLowerCase().indexOf(val.toLowerCase()) === 0).slice(0, slice);
+            };
+        case 0:
+        default:
+            const options = (this._searchResults as BehaviorSubject<any>).getValue();
+            return function (val: string) {
+                console.log(val, this.options);
+                return options.filter(option => option.data.name.toLowerCase().indexOf(val.toLowerCase()) === 0).slice(0, slice);
+            };
+    }
+};

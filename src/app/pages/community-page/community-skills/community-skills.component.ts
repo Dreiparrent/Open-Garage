@@ -63,7 +63,7 @@ export class CommunitySkillsComponent implements OnInit, OnDestroy {
 
     sortSkills(members: IUser[]) {
         this.skills = [];
-        console.log('sort', members);
+        // console.log('sort', members);
         const comSkills: number[] = [];
         const inSkills = [];
         members.forEach(member => {

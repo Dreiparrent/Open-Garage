@@ -7,18 +7,20 @@ import { HomePagesRoutingModule } from './home-pages-routing.module';
 import { HomePageComponent } from './home-page.component';
 import { SharedModule } from '../../shared/shared.module';
 import { MaterialImports } from '../../shared/imports/material-imports.module';
+import { CommunitiesService } from '../../shared/community/communities.service';
 
 @NgModule({
     imports: [
         CommonModule,
         HomePagesRoutingModule,
         SharedModule,
-        MaterialImports,
-        FormsModule,
-        ReactiveFormsModule
+        MaterialImports
     ],
     declarations: [
         HomePageComponent
+    ],
+    providers: [
+        CommunitiesService
     ]
 })
 export class HomePagesModule { }

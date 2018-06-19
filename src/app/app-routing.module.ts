@@ -21,7 +21,7 @@ const appRoutes: Routes = [
         pathMatch: 'full',
     },
     { path: '', component: MainComponent, data: { title: 'Home', side: false }, children: HOME_ROUTES},
-    { path: '', component: MainComponent, data: { title: 'Search', side: false }, children: SEARCH_ROUTES, canActivate: [AuthGuard] },
+    { path: '', component: MainComponent, data: { title: 'Search', side: false }, children: SEARCH_ROUTES },
     { path: '', component: LoginComponent, data: { title: 'Login', side: false }, children: LOGIN_ROUTES },
     { path: '', component: RegisterComponent, data: { title: 'Login', side: false }, children: REGISTER_ROUTES },
     { path: '', component: MainComponent, data: { title: 'Community', side: true }, children: COMMUNITY_ROUTES },

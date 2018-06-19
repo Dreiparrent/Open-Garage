@@ -62,6 +62,13 @@ export class IUser<T> {
     imgUrl?: DocumentReference | string;
 }
 */
+export interface IfbComData extends DocumentData {
+    desc: string;
+    img: DocumentReference;
+    location: DocumentReference;
+    members: number;
+    name: string;
+}
 export interface IMessage {
     name: string;
 }

@@ -51,5 +51,8 @@
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button mat-dialog-close>Close</button>
-    <button mat-button [disabled]="false" placement="bottom" [tooltip]="connectTip" container="body" [mat-dialog-close]="connectUser()">Connect</button>
+    <div placement="bottom" [tooltip]="connectTip">
+        <button mat-button [disabled]="userType !== 1" [mat-dialog-close]="connectUser()">Connect</button>
+    </div>
+    <!-- <button mat-button [disabled]="false" placement="bottom" [tooltip]="connectTip" container="body" [mat-dialog-close]="connectUser()">Connect</button>     -->
 </mat-dialog-actions>

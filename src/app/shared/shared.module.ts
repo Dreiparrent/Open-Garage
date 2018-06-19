@@ -29,6 +29,7 @@ import { UpdateProfileDialogComponent } from './cards/update-profile-dialog/upda
 import { NavChatComponent } from './navigation/nav-chat/nav-chat.component';
 import { AlertsComponent } from './alerts/alerts.component';
 import { UserDialogComponent } from './cards/user-dialog/user-dialog.component';
+import { ExploreCardComponent } from './cards/explore-card/explore-card.component';
 
 @NgModule({
     exports: [
@@ -46,7 +47,8 @@ import { UserDialogComponent } from './cards/user-dialog/user-dialog.component';
         MatchHeightDirective,
         FormsModule,
         ReactiveFormsModule,
-        AlertsComponent
+        AlertsComponent,
+        ExploreCardComponent
     ],
     imports: [
         RouterModule,
@@ -73,7 +75,8 @@ import { UserDialogComponent } from './cards/user-dialog/user-dialog.component';
         UpdateProfileDialogComponent,
         NavChatComponent,
         AlertsComponent,
-        UserDialogComponent
+        UserDialogComponent,
+        ExploreCardComponent
     ],
     entryComponents: [
         YourProfileDialogComponent,

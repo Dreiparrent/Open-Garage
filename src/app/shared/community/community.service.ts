@@ -5,7 +5,8 @@ import {
     IUserData,
     ITags,
     IImg,
-    placeholderUrl
+    placeholderUrl,
+    IfbComData
 } from './community-interfaces';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { AngularFirestore, AngularFirestoreCollection, DocumentSnapshot } from 'angularfire2/firestore';
@@ -344,23 +345,9 @@ export class CommunityService {
         return this._navSmall.asObservable();
     }
 }
-interface IfbComData extends DocumentData {
-    desc: string;
-    img: DocumentReference;
-    location: DocumentReference;
-    members: number;
-    name: string;
-}
 // Names
 const blankData: ICommunityData = {
     name: '',
     members: [],
     messages: []
 };
-interface IfbComData extends DocumentData {
-    desc: string;
-    img: DocumentReference;
-    location: DocumentReference;
-    members: number;
-    name: string;
-}
