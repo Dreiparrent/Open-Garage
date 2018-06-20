@@ -1,20 +1,32 @@
-<div class="row">
-    <div *ngFor="let user of users; index as i; odd as isOdd" class="col-12 flex-row">
-        <mat-card class="mat-elevation-z0 bg-transparent col-8 col-sm-6 col-md-7 col-lg-6 mt-5" [ngClass]="{'float-right': isOdd}">
-        <mat-card-content>
-            <div class="row text-center">
-                <div class="col-5" [ngClass]="{'order-last': isOdd}">
-                    <img class="rounded-circle img-fluid" [src]="user.imgUrl" role="figure" alt="profile photo">
+<div class="row pb-5 mb-5">
+    <div *ngFor="let user of users; index as i; odd as isOdd" class="col-12 flex-row pb-5" id="parent-{{i}}">
+        <mat-card class="mat-elevation-z0 col-11 col-sm-9 col-md-8 col-lg-6 z-depth" 
+            id="card-{{i}}" [ngClass]="{'float-right': isOdd}">
+            <mat-card-content>
+                <div class="row text-center">
+                    <div class="col-5" [ngClass]="{'order-last': isOdd}">
+                        <img class="rounded-circle img-fluid" [src]="user.imgUrl" role="figure" alt="profile photo">
+                    </div>
+                    <div class="row col-7" [ngClass]="(isOdd)?'card-offset-odd':'card-offset'">
+                        <h5 class="col-12 my-auto px-0" [ngClass]="(isOdd)?'text-right':'text-left'">{{user.name}}</h5>
+                        <blockquote class="blockquote col-12 my-auto" [ngClass]="(isOdd)?'text-left':'text-right'">
+                            <h4 id="skpa-{{i}}">
+                                <mat-icon *ngIf="isOdd" placement="bottom" [tooltip]="user.type ? 'Shared Passion' : 'Shared Skill'" 
+                                 id="ic-{{i}}" class="align-bottom cursor-pointer">{{user.type ? 'directions_bike' : 'build'}}</mat-icon>
+                                {{user.skpa}}
+                                <mat-icon *ngIf="!isOdd" placement="bottom" [tooltip]="user.type ? 'Shared Passion' : 'Shared Skill'"
+                                 id="ic-{{i}}" class="align-bottom cursor-pointer">{{user.type ? 'directions_bike' : 'build'}}</mat-icon>
+                            </h4>
+                        </blockquote>
+                        
+                        <h6 class="col-12 my-auto text-muted px-0" [ngClass]="(isOdd)?'text-right':'text-left'">
+                            <mat-icon *ngIf="isOdd && user.type !== -1" placement="bottom" tooltip="Shared Community" class="align-bottom cursor-pointer">people</mat-icon>
+                            {{user.com}}
+                            <mat-icon *ngIf="!isOdd && user.type !== -1" placement="bottom" tooltip="Shared Community" class="align-bottom cursor-pointer">people</mat-icon>
+                        </h6>
+                    </div>
                 </div>
-                <div class="row col-7 card-offset">
-                    <h4 class="col-12 my-auto px-0 py-auto" [ngClass]="(isOdd)?'text-right':'text-left'">{{user.name}}</h4>
-                    <blockquote class="blockquote col-12 justify-content-center py-auto" [ngClass]="(isOdd)?'text-left':'text-right'">
-                        <h4 class="align-middle">{{user.skpa}}</h4>
-                    </blockquote>
-                    <h6 class="col-12 my-auto text-muted py-auto" [ngClass]="(isOdd)?'text-right':'text-left'">{{user.com}}</h6>
-                </div>
-            </div>
-        </mat-card-content>
+            </mat-card-content>
         <!-- <mat-card-footer>
             <div class="row text-center mb-2">
                 <div class="col-6">
@@ -31,4 +43,10 @@
         </mat-card-footer> -->
         </mat-card>
     </div>
+    <svg *ngFor="let user of users | slice:0:users.length-1; index as i" class="explore-svg">
+        <!-- <line id="line-{{i}}" stroke="black" stroke-width="3" class="explore-line"
+         [attr.x1]="getX(i)" [attr.y1]="getY(i)" [attr.x2]="getX(i, true)" [attr.y2]="getY(i, true)"
+        /> -->
+        <path id="line-{{i}}" [attr.d]="getLine(i)" stroke="black" stroke-width="3" class="explore-line" />
+    </svg>
 </div>

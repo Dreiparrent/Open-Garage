@@ -8,6 +8,7 @@ import { HomePageComponent } from './home-page.component';
 import { SharedModule } from '../../shared/shared.module';
 import { MaterialImports } from '../../shared/imports/material-imports.module';
 import { CommunitiesService } from '../../shared/community/communities.service';
+import { HomeHeightDirective } from '../../shared/directives/home-height.directive';
 
 @NgModule({
     imports: [
@@ -17,7 +18,8 @@ import { CommunitiesService } from '../../shared/community/communities.service';
         MaterialImports
     ],
     declarations: [
-        HomePageComponent
+        HomePageComponent,
+        HomeHeightDirective
     ],
     providers: [
         CommunitiesService

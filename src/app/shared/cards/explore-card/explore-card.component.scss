@@ -1,3 +1,27 @@
+@import "../../../../assets/sass/scss/variables";
 .card-offset {
+    transform: translateX(-10%);
+}
+.card-offset-odd {
     transform: translateX(10%);
+}
+.explore-svg {
+    position: absolute; 
+    overflow: visible;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+.explore-line {
+    position: relative;
+}
+.z-depth {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0);
+    &:hover {
+        box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12) !important;
+        background-color: rgba(255, 255, 255, 1);
+        transform: translate3d(0,0,0);
+        transition: background .4s cubic-bezier(.25,.8,.25,1),box-shadow 280ms cubic-bezier(.4,0,.2,1);
+    }
 }

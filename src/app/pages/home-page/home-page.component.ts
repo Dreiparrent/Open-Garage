@@ -1,11 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommunitiesService, ISearch, SimpleFilter } from '../../shared/community/communities.service';
 import { Router } from '@angular/router';
-import { map, flatMap, mapTo, reduce, switchMap, concatAll, catchError, startWith, mergeMap } from 'rxjs/operators';
-import { forkJoin } from 'rxjs/observable/forkJoin';
-import { ICommunity, IUser } from '../../shared/community/community-interfaces';
-import { Observable, Subject, pipe, from, of } from 'rxjs';
-// import { mergeMap } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { IExploreUser } from '../../shared/cards/explore-card/explore-card.component';
 
@@ -87,20 +84,36 @@ export class HomePageComponent implements OnInit {
     autoComplete: Observable<any[]>;
     filterOptions: (val?: string) => any;
 
+    @ViewChild('exploreSec') exploreSec: ElementRef<HTMLElement>;
+
     exploreUsers: IExploreUser[] = [
         {
             name: 'Baxter Cochennet',
             imgUrl: '/assets/img/photos/baxter.jpg',
-            skpa: 'Cycling',
+            skpa: 'Fly Fishing',
+            com: 'Test Community',
+            type: 1
+        },
+        {
+            name: 'Andrei Parrent',
+            imgUrl: '/assets/img/photos/andrei.jpg',
+            skpa: 'Web Design',
             com: 'Test Community',
             type: 0
         },
         {
             name: 'Baxter Cochennet',
-            imgUrl: '/assets/img/photos/baxter.jpg',
-            skpa: 'Cycling',
+            imgUrl: '/assets/img/photos/placeholder.gif',
+            skpa: 'Finance',
             com: 'Test Community',
             type: 0
+        },
+        {
+            name: 'Andrei Parrent',
+            imgUrl: '/assets/img/photos/placeholder.gif',
+            skpa: '',
+            com: '',
+            type: -1
         }
     ];
 
@@ -118,6 +131,7 @@ export class HomePageComponent implements OnInit {
         $('.bounce').on('click', event => {
             event.preventDefault();
         });
+        // window.addEventListener('scroll', this.onScroll.bind(this));
     }
 
     scrollTo(elem) {
@@ -126,6 +140,15 @@ export class HomePageComponent implements OnInit {
         }, 800, () => {
             window.location.hash = elem;
         });
+    }
+
+    onScroll() {
+        console.log(this, this.exploreSec);
+        if (document.documentElement.scrollTop + document.documentElement.clientHeight > this.exploreSec.nativeElement.offsetTop)
+            $(this.exploreSec.nativeElement).animate({
+                backgroundColor: '#000000'
+            }, 1000);
+        else $(this.exploreSec.nativeElement).css('background-color', 'white');
     }
 
     onSelected(search: string) {
