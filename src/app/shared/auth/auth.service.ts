@@ -10,6 +10,7 @@ import { environment } from '../../../environments/environment';
 import { AngularFireStorage } from 'angularfire2/storage';
 import { AlertService, Alerts } from '../alerts/alert.service';
 import { CommunityService } from '../community/community.service';
+import { IChat } from '../community/chat.service';
 
 @Injectable()
 export class AuthService {
@@ -56,7 +57,23 @@ export class AuthService {
     public get communities() {
         return this._userCommunities.asObservable();
     }
-
+    public _userChats = new BehaviorSubject<DocumentReference[]>([]);
+    /*
+    private set userChats(chats: DocumentReference[]) {
+        this._userChats.next(chats);
+    }
+    private get userChats() {
+        return this._userChats.getValue();
+    }
+    */
+    public _newChat = new Subject<DocumentReference>();
+    private set chats(chat: DocumentReference) {
+        const chats = this._userChats.getValue();
+        if (!chats.includes(chat))
+            this._newChat.next(chat);
+        chats.push(chat);
+        this._userChats.next(chats);
+    }
     constructor(private alertService: AlertService,
         private db: AngularFirestore,
         private fireAuth: AngularFireAuth,
@@ -381,6 +398,17 @@ export class AuthService {
     private noProfileError() {
         this.alertService.addAlert(Alerts.incomelete); // TODO: add restriction here or in servvice
         this.isAuth = false;
+    }
+
+    getChats() {
+        this.userRef.collection('messages').get().then(mesSnap => {
+            if (!mesSnap.empty)
+                mesSnap.forEach(mes => {
+                    const chatRef: DocumentReference = mes.data()['ref'];
+                    // this.userChats.push(chatRef);
+                    this.chats = chatRef;
+                });
+        });
     }
 //#endregion
 }

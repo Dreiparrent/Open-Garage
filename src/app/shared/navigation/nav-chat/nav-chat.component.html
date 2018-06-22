@@ -14,14 +14,14 @@
             </form>
             <div class="f-auto">
                 <mat-list>
-                    <mat-list-item *ngFor="let chat of filteredChats | async" class="cursor-pointer" (click)="tabChat()">
-                        <img matListAvatar [src]="chat.user.imgUrl" alt="profile img">
+                    <mat-list-item *ngFor="let chat of filteredChats | async" class="cursor-pointer" (click)="tabChat(chat)">
+                        <img matListAvatar [src]="chat.user?.imgUrl" alt="profile img">
                         <h3 matLine>
-                            {{chat.user.name}}
+                            {{chat.user?.name}}
                         </h3>
                         <h3 matLine>
                             <span> {{chat.subject}} </span>
-                            <small class="text-muted"> {{chat.lastMessage.text}} </small>
+                            <small class="text-muted"> {{chat.last}} </small>
                         </h3>
                     </mat-list-item>
                 </mat-list>
@@ -38,22 +38,22 @@
                 <small class="text-muted">&gt; {{messageName}}</small>
             </h5>
             <div class="f-auto">
-                <mat-list>
+                <mat-list class="nav-chat">
                     <mat-list-item *ngFor="let message of messages | async">
-                        <!-- <img matListAvatar [src]="chat.user.imgUrl" alt="profile img"> -->
+                        <img matListAvatar [src]="message.imgUrl" alt="profile img">
                         <!-- <h3 matLine>
                             {{chat.user.name}}
                         </h3> -->
-                        <h3 matLine class="hide-lg">
-                            <small class="text-muted">{{message.user}}</small>
+                        <h3 matLine>
+                            <small class="text-muted">{{message.userName}}</small>
                         </h3>
-                        <h3 matLine class="hide-lg">
+                        <h3 matLine>
                             {{message.text}}
                         </h3>
-                        <div id="hide">
-                            <h6 class="flex-row w-100 h-auto">
+                        <div class="hide-lg">
+                            <h6 class="row w-100 h-auto pl-3">
                                 <small class="col-12 col-lg-auto text-muted">
-                                    {{message.user}}
+                                    {{message.userName}}
                                 </small>
                                 <span class="col-12 col-lg-auto">
                                     {{message.text}}

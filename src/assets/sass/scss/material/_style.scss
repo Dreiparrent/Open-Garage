@@ -106,6 +106,20 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
     }
 }
 
+.nav-chat {
+    .mat-list-text {
+        display: none !important;
+        @media screen and (min-width: 992px) {
+            display: inherit !important;
+        }
+    }
+    .mat-list-avatar {
+        display: none !important;
+        @media screen and (min-width: 992px) {
+            display: inherit !important;
+        }
+    }
+}
 
 // Search Theme
 $search-primary: mat-palette($material-primary);

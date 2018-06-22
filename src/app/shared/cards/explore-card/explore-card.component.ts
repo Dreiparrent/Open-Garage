@@ -1,9 +1,9 @@
-import { Component, OnInit, Input, AfterViewInit, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit, ElementRef, OnDestroy, ChangeDetectorRef } from '@angular/core';
 
 @Component({
     selector: 'app-explore-card',
     templateUrl: './explore-card.component.html',
-    styleUrls: ['./explore-card.component.scss']
+    styleUrls: ['./explore-card.component.scss'],
 })
 export class ExploreCardComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -11,7 +11,7 @@ export class ExploreCardComponent implements OnInit, AfterViewInit, OnDestroy {
     oLeft: number;
     oTop: number;
 
-    constructor(private el: ElementRef<HTMLElement>) { }
+    constructor(private el: ElementRef<HTMLElement>, private cd: ChangeDetectorRef) { }
 
     ngOnInit() {
         this.oLeft = this.el.nativeElement.offsetLeft;
@@ -58,15 +58,24 @@ export class ExploreCardComponent implements OnInit, AfterViewInit, OnDestroy {
     getLine(index: number): string {
         const $icon1 = $(`#ic-${index}`);
         const $icon2 = $(`#ic-${index + 1}`);
-        let w1 = $icon1.offset().left;
-        let w2 = $icon2.offset().left;
+        let x1 = $icon1.offset().left;
+        let x2 = $icon2.offset().left;
         if (index % 2 !== 0)
-            w2 += $icon2.width();
-        else w1 += $icon1.width();
-        const h1 = $icon1.offset().top + $icon1.height();
-        const h2 = $icon2.offset().top;
-
-        return `M${w1} ${h1} L${w2} ${h2}`;
+            x2 += $icon2.width();
+        else x1 += $icon1.width();
+        let y1, y2;
+        y1 = $icon1.offset().top + $icon1.height();
+        y2 = $icon2.offset().top;
+        /*
+        setTimeout(() => {
+            y1 = $icon1.offset().top + $icon1.height();
+            y2 = $icon2.offset().top;
+        });
+        */
+        return `M${x1} ${y1}
+            Q ${x1} ${y2 + ((y1 - y2) / 2)}
+            ${x2} ${y2}`;
+        // return `M${w1} ${h1} L${w2} ${h2}`;
     }
 
     createScroll(index: number) {
@@ -85,6 +94,7 @@ export class ExploreCardComponent implements OnInit, AfterViewInit, OnDestroy {
         */
         const newI = index + 1;
         window.addEventListener('scroll', scrollListener.bind(icon1, newI, length));
+        // window.addEventListener('scroll', scrollIn.bind(icon1, index));
     }
 
 }
@@ -93,11 +103,24 @@ const scrollListener = function (index: number, len: number) {
     const oTop = $(`#ic-${index}`).offset().top;
     let scrollPerc = (document.documentElement.scrollTop + document.documentElement.clientHeight - oTop)
         / ((document.documentElement.clientHeight / 3));
-    if (scrollPerc > 1)
-        scrollPerc = 1;
+    // console.log(index, scrollPerc);
+    if (scrollPerc <= 0) {
+        const multiplier = (index % 2 === 0) ? 50 : -50;
+        $(`#parent-${index}`).css('transform', `translateX(${scrollPerc * multiplier}%)`);
+        return;
+    } else {
+        $(`#parent-${index}`).css('transform', `translateX(0)`);
+        if (scrollPerc > 1)
+            scrollPerc = 1;
+    }
     const draw = len * scrollPerc;
     // Reverse the drawing (when scrolling upwards)
     this.style.strokeDashoffset = len - draw;
+};
+const scrollIn = function (index: number) {
+    const oTop = $(`#card-${index}`).offset().top;
+    const scroller = document.documentElement.scrollTop + document.documentElement.clientHeight + 10 - oTop;
+    console.log(scroller);
 };
 export interface IExploreUser {
     name: string;
@@ -105,4 +128,5 @@ export interface IExploreUser {
     com: string;
     skpa: string;
     type: -1 | 0 | 1;
+    state: 'inactive' | 'inactive-true' | 'inactive-false' | 'active';
 }

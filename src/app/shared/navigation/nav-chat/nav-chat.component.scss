@@ -10,12 +10,8 @@
     width: 50vw;
 };
 .hide-lg {
-    display: none;
+    display: initial !important;
 }
-#hide {
-    display: initial;
-}
-
 @media screen and (min-width: 768px) {
     .mat-list {
         width: 40vw;
@@ -26,10 +22,7 @@
         width: 30vw;
     }
     .hide-lg {
-        display: inherit;
-    }
-    #hide {
-        display: none;
+        display: none !important;
     }
 }
 @media screen and (min-width: 1200px) {

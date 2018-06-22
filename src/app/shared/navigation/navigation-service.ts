@@ -14,6 +14,15 @@ export class NavigationService {
     set isOpen(open: boolean) {
         this._isOpen.next(open);
     }
+    previousTab = 0;
+    private _currentTab = new BehaviorSubject<number>(0);
+    set currentTab(index: number) {
+        this.previousTab = this._currentTab.getValue();
+        this._currentTab.next(index);
+    }
+    get currentTab() {
+        return this._currentTab.getValue();
+    }
     private _communityPre = new Subject<boolean>();
     private _communityOpen = new Subject<boolean>();
     private _navProfile = new BehaviorSubject<INavProfile>(null);
@@ -42,6 +51,9 @@ export class NavigationService {
     }
     setOpen(isOpen: boolean) {
         this._isOpen.next(isOpen);
+    }
+    getTab() {
+        return this._currentTab.asObservable();
     }
 }
 interface INavProfile {

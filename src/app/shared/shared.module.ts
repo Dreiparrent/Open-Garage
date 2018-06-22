@@ -30,6 +30,7 @@ import { NavChatComponent } from './navigation/nav-chat/nav-chat.component';
 import { AlertsComponent } from './alerts/alerts.component';
 import { UserDialogComponent } from './cards/user-dialog/user-dialog.component';
 import { ExploreCardComponent } from './cards/explore-card/explore-card.component';
+import { AppearDirective } from './directives/appear.directive';
 
 @NgModule({
     exports: [
@@ -45,6 +46,7 @@ import { ExploreCardComponent } from './cards/explore-card/explore-card.componen
         AlertModule,
         CommunitiesCardComponent,
         MatchHeightDirective,
+        AppearDirective,
         FormsModule,
         ReactiveFormsModule,
         AlertsComponent,
@@ -70,6 +72,7 @@ import { ExploreCardComponent } from './cards/explore-card/explore-card.componen
         SkillsCardComponent,
         CommunitiesCardComponent,
         MatchHeightDirective,
+        AppearDirective,
         YourProfileCardComponent,
         YourProfileDialogComponent,
         UpdateProfileDialogComponent,

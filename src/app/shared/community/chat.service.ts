@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Payments, IUser } from './community-interfaces';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject, of, from, merge } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
+import { NavigationService } from '../navigation/navigation-service';
+import { DocumentReference } from '@firebase/firestore-types';
+import { CommunityService } from './community.service';
+import { map, concatMap } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -8,36 +13,134 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs';
 export class ChatService {
 
     // _sampleChat = new Subject<IChat[]>();
-    _sampleChat = new BehaviorSubject<IChat[]>(sampleChat);
-    _currentMessages: IMessage[];
-    _messages = new Subject<IMessage[]>();
-    set currentMessages(messages: IMessage[]) {
-        this._currentMessages = messages;
-        this._messages.next(messages);
+    private _currentTab = new BehaviorSubject<number>(0);
+    set currentTab(index: number) {
+        this._currentTab.next(index);
     }
-    get currentMessages() {
-        return this._currentMessages;
+    get currentTab() {
+        return this._currentTab.getValue();
+    }
+    private _userChatRefs: DocumentReference[] = [];
+    private get userChatRefs() {
+        return this._userChatRefs;
+    }
+    private set userChatRefs(refs: DocumentReference[]) {
+        const newRefs = refs.filter(ref => this._userChatRefs.includes(ref));
+        console.log(refs, newRefs);
+        this._userChatRefs = refs;
+        newRefs.forEach(ref => {
+            this.getChat(ref).then(chatData => this.currentChats.push(chatData));
+        });
+    }
+    // private _sampleChat = new BehaviorSubject<IChat[]>(sampleChat);
+    private _currentChats = new BehaviorSubject<IChat[]>([]);
+    private set currentChats(chats: IChat[]) {
+        this._currentChats.next(chats);
+    }
+    private get currentChats() {
+        return this._currentChats.getValue();
+    }
+    public get chats() {
+        return this._currentChats.asObservable();
+    }
+    private _currentMessages = new BehaviorSubject<IMessage[]>([]);
+    private set currentMessages(messages: IMessage[]) {
+        this._currentMessages.next(messages);
+    }
+    private get currentMessages() {
+        return this._currentMessages.getValue();
+    }
+    public get messages() {
+        return this._currentMessages.asObservable();
     }
 
-    constructor() {
-        // this._sampleChat.next(sampleChat);
+    constructor(private authService: AuthService, private comService: CommunityService, private navService: NavigationService) {
+        this.authService.getChats();
+        this.authService._newChat.subscribe(newChat => {
+            this.getChat(newChat).then(chatData => this.currentChats.push(chatData));
+        });
     }
 
-    getChats(): BehaviorSubject<IChat[]> {
-        return this._sampleChat;
+    getMessages(chat: IChat, reset = true) {
+        if (reset)
+            this.currentMessages = [];
+        return chat.ref.collection('messages').get().then(mesSnap => {
+            if (!mesSnap.empty) {
+                mesSnap.forEach(snap => {
+                    const snapData: IMessage = snap.data() as any;
+                    const userIndex = snapData.user;
+                    if (userIndex === chat.cUserIndex) {
+                        snapData.userName = 'You';
+                        snapData.imgUrl = this.authService.currentUser.imgUrl as string;
+                    } else {
+                        snapData.userName = chat.userData[userIndex].name;
+                        snapData.imgUrl = chat.userData[userIndex].imgUrl as string;
+                    }
+                    this.currentMessages.push(snapData);
+                });
+                return true;
+            } else return false;
+        });
+        // return this._currentMessages.asObservable();
     }
-    setMessages() {
-        this.currentMessages = this._sampleChat.getValue()[0].messages;
+
+    startNewChat(profile: IUser) {
+        if (this.authService.isAuth) {
+            this.navService.setOpen(true);
+            this.navService.currentTab = 1;
+            this.currentMessages = [];
+        }
     }
-    getMessages(): Observable<IMessage[]> {
-        return this._messages;
+
+    getChat(ref: DocumentReference, userChat = true): Promise<IChat> {
+        return ref.get().then(chatSnap => {
+            if (chatSnap.exists) {
+                const chatData: IChat = chatSnap.data() as any;
+                chatData.ref = chatSnap.ref;
+                const userRefs = chatData.users;
+                chatData.userData = [];
+                userRefs.forEach(userRef => {
+                    if (userRef.id === this.authService.token)
+                        chatData.cUserIndex = userRefs.indexOf(userRef);
+                    else
+                        this.comService.getMember(userRef.id).then(user => {
+                            chatData.userData.push(user);
+                            chatData.user = user;
+                        });
+                });
+                return chatData;
+            }
+        }).then().then().catch(error => {
+            throw new Error(error);
+        });
     }
+
+    newMessage() {
+        console.log('newMessage');
+    }
+
+    /*
+    private getMessages(messageId: DocumentReference, userChat = true) {
+        messageId.get().then(chatSnap => {
+            if (!chatSnap.exists)
+                return chatSnap.data() as any;
+            else throw new Error('Cannot get messages');
+        }).then((chat: IChat) => {
+            this.userChats.push(chat);
+        });
+    }
+    */
+    private setMessages() {
+        // this.currentMessages = this._sampleChat.getValue()[0].messages;
+    }
+
     sendMessage(message: string): Promise<boolean> {
         const tmpPromise = new Promise<boolean>((resolve, reject) => {
             setTimeout(() => {
                 this.currentMessages.push({
                     text: message,
-                    user: 'You'
+                    user: null,
+                    userName: 'You'
                 });
                 const rands = [false, true, true, true];
                 const random = Math.floor(Math.random() * rands.length);
@@ -49,48 +152,17 @@ export class ChatService {
 }
 export interface IMessage {
     text: string;
-    user: string;
+    user: number;
+    imgUrl?: string;
+    userName?: string;
 }
 export interface IChat {
-    user: IUser;
+    user?: IUser;
+    cUserIndex?: number;
+    users: DocumentReference[];
+    userData?: IUser[];
     subject: string;
-    messages: IMessage[];
-    id: string;
-    lastMessage?: IMessage;
+    messages?: IMessage[];
+    ref?: DocumentReference;
+    last?: string;
 }
-const me: IUser = {
-    name: 'Andrei Parrent',
-    location: 'Denver',
-    connections: 9,
-    imgUrl: '/assets/img/photos/andrei.jpg'
-};
-const you: IUser = {
-    name: 'you',
-    location: 'Denver',
-    connections: 9,
-    imgUrl: '/assets/img/photos/andrei.jpg'
-};
-const sampleChat: IChat[] = [
-    {
-        id: 'fake auto id',
-        subject: 'A message',
-        messages: [
-            {
-                text: 'I wanted to talk to you about a bunch of stuff',
-                user: 'Andrei Parrent'
-            }
-        ],
-        user: me
-    },
-    {
-        id: 'fake id 2',
-        subject: 'test2',
-        messages: [
-            {
-                text: 'test',
-                user: 'user'
-            }
-        ],
-        user: you
-    }
-];

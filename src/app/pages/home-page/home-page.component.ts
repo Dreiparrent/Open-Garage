@@ -5,11 +5,26 @@ import { map, startWith } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { IExploreUser } from '../../shared/cards/explore-card/explore-card.component';
+import { state, trigger, style, transition, animate } from '@angular/animations';
 
 @Component({
     selector: 'app-home-page',
     templateUrl: './home-page.component.html',
-    styleUrls: ['./home-page.component.scss']
+    styleUrls: ['./home-page.component.scss'],
+    animations: [
+        trigger('heroState', [
+            state('inactive', style({
+                backgroundColor: 'rgba(0, 0, 0, 0)',
+                // color: 'black'
+            })),
+            state('active', style({
+                backgroundColor: 'rgba(58, 30, 46, 1)',
+                color: '#c88aaf'
+            })),
+            transition('inactive => active', animate('500ms ease-in')),
+            transition('active => inactive', animate('500ms ease-out'))
+        ])
+    ]
 })
 export class HomePageComponent implements OnInit {
 
@@ -81,6 +96,9 @@ export class HomePageComponent implements OnInit {
     preMaxWidth: string;
     searchControl: FormControl;
 
+    // state = 'inactive';
+    state = 'inactive';
+
     autoComplete: Observable<any[]>;
     filterOptions: (val?: string) => any;
 
@@ -92,28 +110,32 @@ export class HomePageComponent implements OnInit {
             imgUrl: '/assets/img/photos/baxter.jpg',
             skpa: 'Fly Fishing',
             com: 'Test Community',
-            type: 1
+            type: 1,
+            state: 'inactive-true'
         },
         {
             name: 'Andrei Parrent',
             imgUrl: '/assets/img/photos/andrei.jpg',
             skpa: 'Web Design',
             com: 'Test Community',
-            type: 0
+            type: 0,
+            state: 'inactive-false'
         },
         {
             name: 'Baxter Cochennet',
             imgUrl: '/assets/img/photos/placeholder.gif',
             skpa: 'Finance',
             com: 'Test Community',
-            type: 0
+            type: 0,
+            state: 'inactive-true'
         },
         {
             name: 'Andrei Parrent',
             imgUrl: '/assets/img/photos/placeholder.gif',
             skpa: '',
             com: '',
-            type: -1
+            type: -1,
+            state: 'inactive-false'
         }
     ];
 
@@ -145,10 +167,14 @@ export class HomePageComponent implements OnInit {
     onScroll() {
         console.log(this, this.exploreSec);
         if (document.documentElement.scrollTop + document.documentElement.clientHeight > this.exploreSec.nativeElement.offsetTop)
+            // $(this.exploreSec.nativeElement).css('background-color', 'black');
             $(this.exploreSec.nativeElement).animate({
-                backgroundColor: '#000000'
+                backgroundColor: '#FFF000'
             }, 1000);
         else $(this.exploreSec.nativeElement).css('background-color', 'white');
+    }
+    onAppear(evt: boolean) {
+        this.state = evt ? 'active' : 'inactive';
     }
 
     onSelected(search: string) {

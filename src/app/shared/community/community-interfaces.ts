@@ -43,6 +43,7 @@ export interface IUser {
     connections: number;
     imgUrl?: DocumentReference | string;
     ref?: DocumentReference;
+    userClick?: boolean;
 }
 
 /*

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input, EventEmitter, AfterViewInit } from '@angular/core';
 import * as $ from 'jquery';
 import { NavigationService } from './navigation-service';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -8,17 +8,26 @@ import { CommunityService } from '../community/community.service';
 import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { Observable, Subscription, of, BehaviorSubject, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ChatService } from '../community/chat.service';
 
 @Component({
   selector: 'app-nav',
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss']
 })
-export class NavigationComponent implements OnInit {
+export class NavigationComponent implements OnInit, AfterViewInit {
 
     @Input('sidenav') sidenav: MatSidenav;
     isAuth: boolean;
     navLinks: INavLinks[];
+    prevIndex = 0;
+    get selectIndex() {
+        return this.navService.currentTab;
+    }
+    set selectIndex(index: number) {
+        this.navService.currentTab = index;
+    }
+    isMessage = false;
     /*
     get navLinks() {
         return this._navLinks.asObservable();
@@ -29,11 +38,20 @@ export class NavigationComponent implements OnInit {
     navSubscribe: Subscription;
     comSubscribe: Subscription;
 
-    constructor(private navService: NavigationService, private authService: AuthService, private comService: CommunityService) {
+    constructor(private navService: NavigationService, private authService: AuthService) {
         this.navService.navProfile.subscribe(prof => {
             if (prof) {
                 this.navLinks = authLinks;
                 this.isAuth = prof.auth;
+                /*
+                $('.mat-tab-label').click(() => {
+                    console.log('change', this.isMessage);
+                    if (!!this.selectIndex !== (this.prevIndex === 1))
+                        this.isMessage = false;
+                    console.log('change', this.isMessage);
+                    this.prevIndex = this.selectIndex;
+                });
+                */
             } else
                 this.navLinks = noAuthLinks;
         });
@@ -55,6 +73,10 @@ export class NavigationComponent implements OnInit {
         });
         */
         // closedStart | onPositionChanged | openedStart
+    }
+
+    ngAfterViewInit() {
+
     }
 
     trackByIndex(index: number, value: number) {

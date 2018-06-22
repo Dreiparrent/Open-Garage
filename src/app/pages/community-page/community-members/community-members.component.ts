@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 import { UserDialogComponent } from '../../../shared/cards/user-dialog/user-dialog.component';
 import { MatDialog } from '@angular/material';
 import { AuthService } from '../../../shared/auth/auth.service';
+import { ChatService } from '../../../shared/community/chat.service';
 
 @Component({
     selector: 'app-community-members',
@@ -44,9 +45,10 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     tmpMembers: IUser[] = [];
     communityMembers: IUser[] = [];
     topMembers: IUser[] = [];
+    clickIndex = -1;
 
     constructor(private cd: ChangeDetectorRef, private dialog: MatDialog, private authService: AuthService,
-        private comService: CommunityService, private navService: NavigationService,
+        private comService: CommunityService, private navService: NavigationService, private chatService: ChatService,
         private changeDetectorRef: ChangeDetectorRef, private media: MediaMatcher) {
         comService.members.subscribe(members => {
             if (members.filter(user => user.ref.id === this.authService.token).length > 0)
@@ -151,17 +153,23 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
             return 8;
     }
 
-    cardClick(profile: IUser) {
-        const dialogRef = this.dialog.open(UserDialogComponent, {
-            data: profile,
-            maxWidth: '65vw',
-            maxHeight: '100vh',
-            closeOnNavigation: true
-        });
-        dialogRef.afterClosed().subscribe((result: any) => {
-            if (result)
-                console.log(result);
-        });
+    cardClick(index: number, profile: IUser) {
+        // console.log($(`#card-${index}`).children[0].children[0]);
+        if (this.clickIndex === index) {
+            const dialogRef = this.dialog.open(UserDialogComponent, {
+                data: profile,
+                maxWidth: '65vw',
+                maxHeight: '100vh',
+                closeOnNavigation: true
+            });
+            dialogRef.afterClosed().subscribe((result: any) => {
+                if (result)
+                    this.chatService.startNewChat(profile);
+            });
+        }
+        this.clickIndex = index;
+        // profile.userClick = true;
+
         this.comService.updateSearch([profile.name], profile.skills, profile.name, CommunitySearchType.communityMember);
     }
 

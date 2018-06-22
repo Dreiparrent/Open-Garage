@@ -59,6 +59,7 @@ export class UserDialogComponent implements OnInit {
     }
 
     connectUser() {
+        return true;
         // console.log('not yet completed');
     }
 

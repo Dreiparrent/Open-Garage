@@ -284,7 +284,7 @@ export class CommunityService {
         pass: [],
         skill: [],
         paym: null,
-        img: ''
+        img: placeholderUrl
     }) {
         return this.db.collection('users').doc(id).ref.get().then(m => {
             if (m.exists) {
@@ -294,8 +294,6 @@ export class CommunityService {
                 return (memberData.imgUrl as DocumentReference).get().then(img => {
                     if (img.exists)
                         usrData.img = img.data()['else'] as string;
-                    else
-                        usrData.img = placeholderUrl;
                     return usrData;
                 }).then(newData => {
                     return <IUser>{

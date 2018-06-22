@@ -1,10 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, ValidatorFn } from '@angular/forms';
 import { IProfile } from '../../community/community-interfaces';
 import { IChat, ChatService, IMessage } from '../../community/chat.service';
 import { Observable, } from 'rxjs';
 import { MyErrorStateMatcher } from '../../../pages/register-page/ragister-validator';
 import { startWith, map } from 'rxjs/operators';
+import { DocumentReference } from '@firebase/firestore-types';
+import { NavigationService } from '../navigation-service';
 
 @Component({
     selector: 'app-nav-chat',
@@ -23,7 +25,12 @@ export class NavChatComponent implements OnInit, OnDestroy {
 
     filteredOptions: Observable<any[]>;
     options: string[];
-    selectIndex: number;
+    get selectIndex() {
+        return this.chatService.currentTab;
+    }
+    set selectIndex(index: number) {
+        this.chatService.currentTab = index;
+    }
     messageName = '';
 
     searchBuf = 100;
@@ -35,13 +42,23 @@ export class NavChatComponent implements OnInit, OnDestroy {
     chatCol = 'primary';
 
     @ViewChild('messageInput') messageInput: ElementRef<HTMLInputElement>;
+    @Output() isMessageChange = new EventEmitter();
+    private _isMessage = false;
+    @Input('isMessage')
+    get isMessage() {
+        return this.selectIndex === 1;
+    }
+    set isMessage(isMessage: boolean) {
+        this.selectIndex = isMessage ? 1 : 0;
+        this.isMessageChange.emit(isMessage);
+    }
 
     _messages: IMessage[];
     get messages(): Observable<IMessage[]> {
-        return this.chat.getMessages();
+        return this.chatService.messages;
     }
 
-    constructor(private chat: ChatService) {
+    constructor(private chatService: ChatService, private navService: NavigationService) {
         this.filteredOptions = this.searchControl.valueChanges.pipe(
             startWith(''),
             map(param => param ? this.filterOptions(param) : [])
@@ -65,7 +82,15 @@ export class NavChatComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.chat.getChats().subscribe(chats => {
+        this.chatService.chats.subscribe(chats => {
+            this.userChats = chats;
+            this.options = chats.map(chat => chat.user.name); // TODO: make this more capable search
+        });
+        this.navService.getTab().subscribe(tab => {
+            console.log(tab);
+        });
+        /*
+        this.chatService.getChats().subscribe(chats => {
             if (!this.userChats) {
                 this.userChats = [];
                 this.options = [];
@@ -82,6 +107,7 @@ export class NavChatComponent implements OnInit, OnDestroy {
                 this.options.push(chat.user.name);
             });
         });
+        */
     }
 
     filterOptions(param: string) {
@@ -114,10 +140,11 @@ export class NavChatComponent implements OnInit, OnDestroy {
         });
     }
 
-    tabChat() {
-        this.messageName = this.userChats[0].user.name;
+    tabChat(chat: IChat) {
+        this.messageName = chat.user.name;
         this.selectIndex = 1;
-        this.chat.setMessages();
+        this.chatService.getMessages(chat);
+        // this.chatService.setMessages();
     }
 
     tabMessage() {
@@ -132,7 +159,7 @@ export class NavChatComponent implements OnInit, OnDestroy {
         setTimeout(() => {
             this.chatBuf = 50;
         }, 1000);
-        this.chat.sendMessage(message).then(success => {
+        this.chatService.sendMessage(message).then(success => {
             this.chatProg = 100;
             this.chatBuf = 0;
             if (success) {

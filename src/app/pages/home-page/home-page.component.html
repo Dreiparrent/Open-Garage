@@ -1,3 +1,4 @@
+<div [@heroState]="state">
 <picture>
     <source srcset="assets/img/photos/fish.webp">
     <source srcset="assets/img/photos/fish.jpf">
@@ -98,7 +99,7 @@
         </slide>
     </carousel>
 </section>
-<section #exploreSec>
+<section class="explore-sec" #exploreSec (appAppear)="onAppear($event)">
     <h1 class="mx-auto text-center pb-2" style="width: auto">Explore</h1>
     <div class="container">
         <div class="row">
@@ -109,3 +110,4 @@
         </div>
     </div>
 </section>
+</div>

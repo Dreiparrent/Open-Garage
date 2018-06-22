@@ -9,6 +9,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { MaterialImports } from '../../shared/imports/material-imports.module';
 import { CommunitiesService } from '../../shared/community/communities.service';
 import { HomeHeightDirective } from '../../shared/directives/home-height.directive';
+import { AppearDirective } from '../../shared/directives/appear.directive';
 
 @NgModule({
     imports: [

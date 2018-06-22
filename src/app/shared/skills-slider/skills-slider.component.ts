@@ -75,7 +75,7 @@ export class SkillsSliderComponent implements OnDestroy {
         const mLength = this.topSkills.length >= this.skillsNumber ? this.topSkills.length : this.skillsNumber;
         this.topSkills.forEach(skill => {
             const width = (frequencyList[skill] / totalSkills) * (mLength / this.skillsNumber) * 100;
-            freqArray[skill] = width;
+            freqArray[skill] = width > 15 ? width : 15;
         });
         this.skillsArray = freqArray;
     }

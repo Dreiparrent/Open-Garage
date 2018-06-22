@@ -1,5 +1,5 @@
 <div class="h-100 nav-theme">
-    <mat-tab-group [ngClass]="{'hide-nav': !isAuth}">
+    <mat-tab-group [ngClass]="{'hide-nav': !isAuth}" [(selectedIndex)]="selectIndex">
         <mat-tab label="Navigation">
             <div class="h-100 w-100 d-flex flex-column" [ngClass]="{'pt-5': !isAuth}">
                 <div class="f-auto">
@@ -26,9 +26,9 @@
                 </div>
             </div>
         </mat-tab>
-        <mat-tab label="Messages" *ngIf="isAuth">
-            <div class="w-100 h-100">
-                <app-nav-chat class="w-100 h-100"></app-nav-chat>
+        <mat-tab label="Messages" [hidden]="isAuth">
+            <div class="w-100 h-100" *ngIf="isAuth">
+                <app-nav-chat class="w-100 h-100" [(isMessage)]="isMessage"></app-nav-chat>
             </div>
         </mat-tab>
         <!-- <mat-tab label="Profile">Profile</mat-tab> -->

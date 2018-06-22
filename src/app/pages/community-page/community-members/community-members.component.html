@@ -1,7 +1,8 @@
 <div class="card-body row col-12 mx-auto" [class.p-0]="cardNumber == 3">
     <ng-container *ngIf="hasMembers; else noMemberTemplate">
-        <div *ngFor="let profile of topMembers" class="col-12 col-md-6 col-lg-4 col-xl-3 py-1">
-            <app-profile-card [name]="profile.name" [location]="profile.location" [connections]="profile.connections" [imgUrl]="profile.imgUrl" (click)="cardClick(profile)"></app-profile-card>
+        <div *ngFor="let profile of topMembers; index as i" class="col-12 col-md-6 col-lg-4 col-xl-3 py-1">
+            <app-profile-card [name]="profile.name" [location]="profile.location" [connections]="profile.connections"
+             [imgUrl]="profile.imgUrl" id="card-{{i}}" [overlay]="true" (click)="cardClick(i, profile)"></app-profile-card>
         </div>
     </ng-container>
     <ng-template #noMemberTemplate>
