@@ -17,7 +17,10 @@
                     <mat-list-item *ngFor="let chat of filteredChats | async" class="cursor-pointer" (click)="tabChat(chat)">
                         <img matListAvatar [src]="chat.user?.imgUrl" alt="profile img">
                         <h3 matLine>
-                            {{chat.user?.name}}
+                            <mat-chip-list class="chat-chip">
+                                <mat-chip *ngIf="chat.newMessage" color="primary" selected="true">1</mat-chip>
+                                {{chat.user?.name}}
+                            </mat-chip-list>
                         </h3>
                         <h3 matLine>
                             <span> {{chat.subject}} </span>
@@ -39,7 +42,7 @@
             </h5>
             <div class="f-auto">
                 <mat-list class="nav-chat">
-                    <mat-list-item *ngFor="let message of messages | async">
+                    <mat-list-item *ngFor="let message of currentChat?.messages | async">
                         <img matListAvatar [src]="message.imgUrl" alt="profile img">
                         <!-- <h3 matLine>
                             {{chat.user.name}}
@@ -61,6 +64,9 @@
                             </h6>
                         </div>
                         <mat-divider></mat-divider>
+                    </mat-list-item>
+                    <mat-list-item *ngIf="currentChat?.hasExtra" (click)="currentChat.loadMore()">
+                        Load More
                     </mat-list-item>
                 </mat-list>
             </div>

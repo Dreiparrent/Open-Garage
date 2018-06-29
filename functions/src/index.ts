@@ -1,7 +1,10 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 admin.initializeApp();
-import { DocumentReference, GeoPoint, CollectionReference, WriteResult, FieldValue } from '@google-cloud/firestore';
+import { DocumentReference, GeoPoint } from '@google-cloud/firestore';
+// import { FieldValue } from 'firebase-admin';
+// var FieldValue = require('firebase-admin').firestore.FieldValue;
+
 
 /* ** INTERFACES ** */
 interface ITags {
@@ -34,11 +37,20 @@ interface ICommunityMembers {
     founder: DocumentReference;
     members: DocumentReference[];
 }
-interface ICommunityData {
-    members: ICommunityMembers;
-    messages: {
-        ref: DocumentReference;
-    }
+interface IMessage {
+    text: string;
+    user: number;
+    uuid?: string;
+    index: number;
+}
+interface IChat {
+    last: string;
+    subject: string;
+    users: DocumentReference[];
+    newChat?: boolean;
+    newMessage?: IMessage;
+    currentIndex: number;
+    timestamp: any;
 }
 // export const helloWorld = functions.https.onRequest((request, response) => {
 //  response.send("Hello from Firebase!");
@@ -261,4 +273,69 @@ export const joinCommunity = functions.firestore.document('community/{communityI
             return comData.userRef.collection('communities').doc(communityId).set({ ref: comData.comRef.parent.parent });
         else return null;
     })
+});
+
+export const startChat = functions.firestore.document('message/users/chats/{chat}').onCreate((create, context): Promise<any> => {
+    // const prevVal: ICommunity = <any>change.before.data();
+    const newVal: IChat = <any>create.data();
+    return new Promise<boolean>(resolve => {
+        if (newVal.newChat) {
+            newVal.users.forEach(newUser => {
+                const mesUp: { ref: DocumentReference, newMessage?: string } = {
+                    ref: create.ref
+                }
+                if (newVal.users.indexOf(newUser) !== 0)
+                    mesUp.newMessage = newVal.subject;
+                return newUser.collection('messages').doc(create.id).set(mesUp);
+            });
+            resolve(true);
+        }
+        else resolve(false);
+    }).then(res => {
+        if (res)
+            return create.ref.set({
+                subject: newVal.subject,
+                last: newVal.subject,
+                users: newVal.users,
+                index: 0,
+                start: admin.firestore.FieldValue.serverTimestamp()
+            });
+        else return null;
+    });
+});
+export const newMessage = functions.firestore.document('message/users/chats/{chat}').onUpdate((change, context): Promise<any> => {
+    const prevVal: IChat = <any>change.before.data();
+    const newVal: IChat = <any>change.after.data();
+    if (newVal.newMessage && newVal.newMessage !== prevVal.newMessage) {
+        const mesCollection = change.after.ref.collection('messages');
+        if (prevVal.users[newVal.newMessage.user].id === newVal.newMessage.uuid)
+            return mesCollection.get().then(mesSnap => {
+                return mesCollection.doc(prevVal.currentIndex.toString()).set(<IMessage>{
+                    text: newVal.newMessage.text,
+                    user: newVal.newMessage.user,
+                    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                    index: prevVal.currentIndex
+                }).then(ref => {
+                    return admin.firestore().doc(change.before.ref.path).set(<IChat>{
+                        last: newVal.newMessage.text,
+                        subject: prevVal.subject,
+                        users: prevVal.users,
+                        currentIndex: prevVal.currentIndex - 1,
+                        timestamp: admin.firestore.FieldValue.serverTimestamp()
+                    });
+                }).then(() => {
+                    prevVal.users.forEach(user => {
+                        if (user.id !== newVal.newMessage.uuid)
+                            return user.collection('messages').doc(change.after.id).set(
+                                {
+                                    newMessage: newVal.newMessage.text
+                                }, { merge: true });
+                        else return null;
+                    });
+                })
+            })
+        else
+            console.error('Failed secondary security authentication');
+        return null;
+    } else return null;
 });

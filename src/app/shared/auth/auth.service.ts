@@ -10,7 +10,6 @@ import { environment } from '../../../environments/environment';
 import { AngularFireStorage } from 'angularfire2/storage';
 import { AlertService, Alerts } from '../alerts/alert.service';
 import { CommunityService } from '../community/community.service';
-import { IChat } from '../community/chat.service';
 
 @Injectable()
 export class AuthService {
@@ -57,7 +56,7 @@ export class AuthService {
     public get communities() {
         return this._userCommunities.asObservable();
     }
-    public _userChats = new BehaviorSubject<DocumentReference[]>([]);
+    public _userChats = new BehaviorSubject<[DocumentReference, boolean][]>([]);
     /*
     private set userChats(chats: DocumentReference[]) {
         this._userChats.next(chats);
@@ -66,12 +65,12 @@ export class AuthService {
         return this._userChats.getValue();
     }
     */
-    public _newChat = new Subject<DocumentReference>();
-    private set chats(chat: DocumentReference) {
+    public _newChat = new Subject<[DocumentReference, boolean]>();
+    private set chats(chat: [DocumentReference, boolean]) {
         const chats = this._userChats.getValue();
-        if (!chats.includes(chat))
-            this._newChat.next(chat);
+        this._newChat.next(chat);
         chats.push(chat);
+        console.log('chat', chat);
         this._userChats.next(chats);
     }
     constructor(private alertService: AlertService,
@@ -84,6 +83,7 @@ export class AuthService {
             if (user) {
                 this.userRef = this.db.collection('users').doc(user.uid).ref;
                 this.user = user;
+                this.getChats();
                 this.fireAuth.auth.fetchProvidersForEmail(user.email).then(provider => {
                     this.userProvider = provider;
                 });
@@ -401,6 +401,21 @@ export class AuthService {
     }
 
     getChats() {
+        this.userRef.collection('messages').onSnapshot(mesSnap => {
+            const mesChanges = mesSnap.docChanges();
+            mesChanges.forEach(mes => {
+                const chatRef: DocumentReference = mes.doc.data()['ref'];
+                let hasNew = false;
+                if (mes.doc.data()['newMessage']) {
+                    console.log('newMessage', mes.doc.data()['newMessage']);
+                    this.alertService.addAlert(Alerts.message);
+                    hasNew = true;
+                }
+                // this.userChats.push(chatRef);
+                this.chats = [chatRef, hasNew];
+            });
+        });
+        /*
         this.userRef.collection('messages').get().then(mesSnap => {
             if (!mesSnap.empty)
                 mesSnap.forEach(mes => {
@@ -409,6 +424,7 @@ export class AuthService {
                     this.chats = chatRef;
                 });
         });
+        */
     }
 //#endregion
 }

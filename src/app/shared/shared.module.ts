@@ -31,6 +31,7 @@ import { AlertsComponent } from './alerts/alerts.component';
 import { UserDialogComponent } from './cards/user-dialog/user-dialog.component';
 import { ExploreCardComponent } from './cards/explore-card/explore-card.component';
 import { AppearDirective } from './directives/appear.directive';
+import { NewChatDialogComponent } from './cards/new-chat-dialog/new-chat-dialog.component';
 
 @NgModule({
     exports: [
@@ -79,12 +80,14 @@ import { AppearDirective } from './directives/appear.directive';
         NavChatComponent,
         AlertsComponent,
         UserDialogComponent,
-        ExploreCardComponent
+        ExploreCardComponent,
+        NewChatDialogComponent
     ],
     entryComponents: [
         YourProfileDialogComponent,
         UpdateProfileDialogComponent,
-        UserDialogComponent
+        UserDialogComponent,
+        NewChatDialogComponent
     ],
     providers: [
         CommunityGuardService,

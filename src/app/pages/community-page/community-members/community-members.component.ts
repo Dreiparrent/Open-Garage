@@ -11,6 +11,7 @@ import { UserDialogComponent } from '../../../shared/cards/user-dialog/user-dial
 import { MatDialog } from '@angular/material';
 import { AuthService } from '../../../shared/auth/auth.service';
 import { ChatService } from '../../../shared/community/chat.service';
+import { NewChatDialogComponent } from '../../../shared/cards/new-chat-dialog/new-chat-dialog.component';
 
 @Component({
     selector: 'app-community-members',
@@ -163,8 +164,20 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
                 closeOnNavigation: true
             });
             dialogRef.afterClosed().subscribe((result: any) => {
+                if (result) {
+                    const newChatRef = this.dialog.open(NewChatDialogComponent, {
+                        maxWidth: '65vw',
+                        maxHeight: '100vh',
+                        data: profile.name
+                    });
+                    newChatRef.afterClosed().subscribe((chatSubject: string) => {
+                        this.chatService.startNewChat(profile, chatSubject);
+                    });
+                }
+                /*
                 if (result)
                     this.chatService.startNewChat(profile);
+                    */
             });
         }
         this.clickIndex = index;

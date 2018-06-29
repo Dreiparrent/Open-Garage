@@ -26,6 +26,10 @@ export class AlertService {
                 // this.router.navigate(['./']);
                 this.alerts.push(enumAlerts[Alerts.comJoinSuccess]);
             }
+            if (params['newMessage']) {
+                console.log('new message');
+                this.removeAlert(enumAlerts[Alerts.message]);
+            }
             if (params['userSearch']) {
                 this.removeAlert(enumAlerts[Alerts.noCommunity]);
                 this.router.navigate(['/search']);
@@ -122,7 +126,15 @@ const enumAlerts: IAlert[] = [
     },
     {
         msg: 'New message',
-        type: 'success'
+        type: 'success',
+        link: {
+            msg: 'view',
+            route: ['./'],
+            params: {
+                newMessage: true
+            },
+            skipChange: true
+        }
     },
     { // 5
         msg: 'Successfully logged in',

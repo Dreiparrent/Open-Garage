@@ -121,6 +121,15 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
     }
 }
 
+.chat-chip {
+    .mat-chip-list-wrapper {
+        padding: 0 5px;
+    }
+    .mat-chip {
+        padding: 1px 6px;
+    }
+}
+
 // Search Theme
 $search-primary: mat-palette($material-primary);
 $search-accent:  mat-palette($material-secondary, A200, A100, A400);

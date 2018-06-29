@@ -10,6 +10,7 @@ export class ExploreCardComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input('users') users: IExploreUser[];
     oLeft: number;
     oTop: number;
+    listeners: any[] = [];
 
     constructor(private el: ElementRef<HTMLElement>, private cd: ChangeDetectorRef) { }
 
@@ -24,10 +25,10 @@ export class ExploreCardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         // TODO: remove scroll listenerss
-        /*
-        for (let i = 0; i < this.users.length - 1; i++)
-            // this.createScroll(i);
-            */
+        this.listeners.forEach(listener => {
+            window.removeEventListener('scroll', listener);
+
+        });
     }
 
     drawLink(index: number) {
@@ -93,14 +94,24 @@ export class ExploreCardComponent implements OnInit, AfterViewInit, OnDestroy {
         else if (document.documentElement.scrollTop)
         */
         const newI = index + 1;
-        window.addEventListener('scroll', scrollListener.bind(icon1, newI, length));
+        // $(window).scroll(scrollListener.bind(icon1, newI, length));
+        const listener = scrollListener.bind(icon1, newI, length);
+        this.listeners.push(listener);
+        window.addEventListener('scroll', listener);
+        // window.removeEventListener('scroll', scrollListener.bind(icon1, newI, length));
         // window.addEventListener('scroll', scrollIn.bind(icon1, index));
     }
 
 }
 // TODO: make this a single listener
 const scrollListener = function (index: number, len: number) {
-    const oTop = $(`#ic-${index}`).offset().top;
+    let oTop: number;
+    try {
+        oTop = $(`#ic-${index}`).offset().top;
+    } catch (error) {
+        console.log(error);
+        return;
+    }
     let scrollPerc = (document.documentElement.scrollTop + document.documentElement.clientHeight - oTop)
         / ((document.documentElement.clientHeight / 3));
     // console.log(index, scrollPerc);
