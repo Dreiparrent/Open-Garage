@@ -2,12 +2,14 @@ import { Component, OnInit, ViewChild, ElementRef, OnDestroy, Input, Output, Eve
 import { FormControl, ValidatorFn } from '@angular/forms';
 import { IProfile } from '../../community/community-interfaces';
 import { ChatService, IMessage } from '../../community/chat.service';
-import { Observable, Subscription, BehaviorSubject, interval, } from 'rxjs';
+import { Observable, Subscription, BehaviorSubject, interval, of } from 'rxjs';
+import { fromPromise } from 'rxjs/observable/fromPromise';
 import { MyErrorStateMatcher } from '../../../pages/register-page/ragister-validator';
-import { startWith, map, mapTo, take } from 'rxjs/operators';
+import { startWith, map, mapTo, take, mergeMap } from 'rxjs/operators';
 import { DocumentReference } from '@firebase/firestore-types';
 import { NavigationService } from '../navigation-service';
 import { IChat } from '../../community/ichat';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
     selector: 'app-nav-chat',
@@ -31,10 +33,10 @@ export class NavChatComponent implements OnInit, OnDestroy {
         return this.userChats.slice().map(chat => chat.user.name);
     }
     get selectIndex() {
-        return this.chatService.currentTab;
+        return this.navService.navTab;
     }
     set selectIndex(index: number) {
-        this.chatService.currentTab = index;
+        this.navService.navTab = index;
     }
     messageName = '';
 
@@ -64,14 +66,19 @@ export class NavChatComponent implements OnInit, OnDestroy {
     }
     */
 
-    constructor(private chatService: ChatService, private navService: NavigationService) {
+    constructor(private authService: AuthService, private navService: NavigationService) {
         this.filteredOptions = this.searchControl.valueChanges.pipe(
             startWith(''),
             map(param => param ? this.filterOptions(param) : [])
         );
         this.filteredChats = this.searchControl.valueChanges.pipe(
             startWith(''),
-            map(param => param ? this.filterChats(param) : this.userChats)
+            mergeMap(param => {
+                if (param)
+                    return fromPromise(this.filterChats(param));
+                else return of(this.userChats);
+            })
+            // map(param => param ? this.filterChats(param) : this.userChats)
         );
         /*    .toPromise().then(chats => {
             this.searchBuf = 0;
@@ -88,67 +95,36 @@ export class NavChatComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        // this.options =
-        /*
-        this.chatService.chats.pipe(
-            map(chats => {
-                return chats.map(chat => chat.user.name);
-            })
-        ).subscribe(val => console.log(val));
-        */
-        this.chatService.chats.subscribe(chats => {
-            this.userChats = chats;
-        });
+        this.authService.chats.subscribe(chats => this.userChats = chats);
         this.navService.getTab().subscribe(tab => {
             console.log(tab);
         });
-        /*
-        this.chatService.getChats().subscribe(chats => {
-            if (!this.userChats) {
-                this.userChats = [];
-                this.options = [];
-            }
-            chats.forEach(chat => {
-                const lm = chat.messages.slice(-1)[0];
-                this.userChats.push({
-                    id: chat.id,
-                    subject: chat.subject,
-                    messages: chat.messages,
-                    user: chat.user,
-                    lastMessage: lm
-                });
-                this.options.push(chat.user.name);
-            });
-        });
-        */
     }
 
     filterOptions(param: string) {
         return this.options.filter(option => option.toLowerCase().indexOf(param.toLowerCase()) === 0).slice(0, 5);
     }
-    filterChats(param: string) {
-        const chats = this.userChats.filter(chat => {
-            console.log(chat);
-            let findMesage = false;
-            try {
-                console.log(chat.messages);
-            } catch (error) {
-                console.log(error);
-            }
-            /*
-            const leng = chat.messages.length;
-            for (let i = 0; i < leng; i++) {
-                this.searchBuf = ((i + 1) / leng) * 100;
-                if (chat.messages[i].text.toLowerCase().indexOf(param.toLowerCase()) !== -1)
-                    findMesage = true;
-            }
-            */
-            if (chat.user.name.toLowerCase().indexOf(param.toLowerCase()) === 0 || findMesage)
-                return true;
-            else return false;
-        }).slice();
-        this.searchBuf = 100;
-        return chats;
+    filterChats(param: string): Promise<IChat[]> {
+        this.searchBuf = 0;
+        const tmpChats: IChat[] = this.userChats.slice();
+        return tmpChats.map(us => us.loadMore()).reduce((p: Promise<IChat[]>, val, index) => {
+            return p.then(hasVal => {
+                // return val.loadMore(index);
+                return val.then(messages => {
+                    let findMessage = false;
+                    messages.forEach(message => {
+                        if (message.text.toLowerCase().indexOf(param.toLowerCase()) !== -1)
+                            findMessage = true;
+                    });
+                    return findMessage;
+                }).then(messageFound => {
+                    if (tmpChats[index].user.name.toLowerCase().indexOf(param.toLowerCase()) === 0 || messageFound)
+                        hasVal.push(tmpChats[index]);
+                    this.searchBuf = (index + 2) / tmpChats.length * 100;
+                    return hasVal;
+                });
+            });
+        }, Promise.resolve([]));
     }
 
     searchKeyup(value: string) {

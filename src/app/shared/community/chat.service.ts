@@ -75,6 +75,7 @@ export class ChatService {
         private navService: NavigationService, private db: AngularFirestore, private alertService: AlertService) {
         this._dbChatRef = db.collection('message').doc('users').collection('chats');
         console.log('ahh');
+        /*
         this.authService._userChats.subscribe(newChats => {
             newChats.forEach(chat => {
                 this.getChat(chat).then((chatData: IChat) => {
@@ -84,6 +85,7 @@ export class ChatService {
                 });
             });
         });
+        */
         /*
         this.authService._newChat.subscribe(newChat => {
             console.log('newChat', newChat);

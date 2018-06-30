@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { IProfile, Payments, IUser, IUserData, ITags, ICommunityData, ICommunity, placeholderUrl } from '../community/community-interfaces';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore, DocumentSnapshot } from 'angularfire2/firestore';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { DocumentReference } from '@firebase/firestore-types';
 import { auth, firestore, User } from 'firebase/app';
@@ -10,6 +10,7 @@ import { environment } from '../../../environments/environment';
 import { AngularFireStorage } from 'angularfire2/storage';
 import { AlertService, Alerts } from '../alerts/alert.service';
 import { CommunityService } from '../community/community.service';
+import { IChat, IChatInterface } from '../community/ichat';
 
 @Injectable()
 export class AuthService {
@@ -56,15 +57,8 @@ export class AuthService {
     public get communities() {
         return this._userCommunities.asObservable();
     }
-    public _userChats = new BehaviorSubject<[DocumentReference, boolean][]>([]);
     /*
-    private set userChats(chats: DocumentReference[]) {
-        this._userChats.next(chats);
-    }
-    private get userChats() {
-        return this._userChats.getValue();
-    }
-    */
+    public _userChats = new BehaviorSubject<[DocumentReference, boolean][]>([]);
     public _newChat = new Subject<[DocumentReference, boolean]>();
     private set chats(chat: [DocumentReference, boolean]) {
         const chats = this._userChats.getValue();
@@ -72,6 +66,11 @@ export class AuthService {
         chats.push(chat);
         console.log('chat', chat);
         this._userChats.next(chats);
+    }
+    */
+    private _userChats = new BehaviorSubject<IChat[]>([]);
+    public get chats() {
+        return this._userChats.asObservable();
     }
     constructor(private alertService: AlertService,
         private db: AngularFirestore,
@@ -400,31 +399,54 @@ export class AuthService {
         this.isAuth = false;
     }
 
-    getChats() {
+    private getChats() {
         this.userRef.collection('messages').onSnapshot(mesSnap => {
             const mesChanges = mesSnap.docChanges();
             mesChanges.forEach(mes => {
                 const chatRef: DocumentReference = mes.doc.data()['ref'];
                 let hasNew = false;
+                const tmpChats = this._userChats.getValue();
                 if (mes.doc.data()['newMessage']) {
-                    console.log('newMessage', mes.doc.data()['newMessage']);
-                    this.alertService.addAlert(Alerts.message);
+                    this.alertService.addAlert(Alerts.newMessage);
                     hasNew = true;
                 }
-                // this.userChats.push(chatRef);
-                this.chats = [chatRef, hasNew];
-            });
-        });
-        /*
-        this.userRef.collection('messages').get().then(mesSnap => {
-            if (!mesSnap.empty)
-                mesSnap.forEach(mes => {
-                    const chatRef: DocumentReference = mes.data()['ref'];
-                    // this.userChats.push(chatRef);
-                    this.chats = chatRef;
+                const tmpIndex = tmpChats.map(tc => tc.ref.id).indexOf(chatRef.id);
+                const Prom = new Promise<IChat[]>((resolve, reject) => {
+                    if (tmpIndex > -1) {
+                        tmpChats[tmpIndex].newMessage = hasNew;
+                        resolve(tmpChats);
+                    } else
+                        resolve(
+                            this.getChat(chatRef, hasNew).catch(error => {
+                                this.alertService.addAlert(Alerts.messageError);
+                                console.error(error);
+                                reject(error);
+                            }).then(chat => {
+                                if (chat)
+                                    tmpChats.push(chat);
+                            }).then(() => tmpChats)
+                        );
+                }).then(tChat => {
+                    this._userChats.next(tChat);
                 });
+            });
+        }, error => {
+            this.alertService.addAlert(Alerts.messageError);
+            console.log(error);
         });
-        */
+    }
+
+    getChat(ref: DocumentReference, hasNew = false): Promise<IChat> {
+        return ref.get().then(chatSnap => {
+            if (chatSnap.exists)
+                return new IChat(this.db, this, this.comService,
+                    chatSnap as DocumentSnapshot<IChatInterface>, hasNew);
+            else return null;
+        }).catch(error => {
+            this.alertService.addAlert(Alerts.messageError);
+            throw new Error(error);
+            // console.error(error);
+        });
     }
 //#endregion
 }

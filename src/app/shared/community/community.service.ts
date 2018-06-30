@@ -9,9 +9,11 @@ import {
     IfbComData
 } from './community-interfaces';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
-import { AngularFirestore, AngularFirestoreCollection, DocumentSnapshot } from 'angularfire2/firestore';
+import { AngularFirestore, AngularFirestoreCollection, DocumentSnapshot, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { DocumentReference, DocumentData } from '@firebase/firestore-types';
 import { AlertService, Alerts } from '../alerts/alert.service';
+import { IChat, IChatInterface } from './ichat';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class CommunityService {
@@ -25,7 +27,8 @@ export class CommunityService {
     private _skills = new BehaviorSubject<ICommunitySkills[]>([]);
     private _showWeb = new Subject<boolean>();
     private _members = new BehaviorSubject<IUser[]>([]);
-    private _messages = new Subject<IMessage[]>();
+    // private _messages = new Subject<IMessage[]>();
+    private _messageRef = new BehaviorSubject<DocumentReference>(null);
 
     private _searchValue = new BehaviorSubject<string>('');
     private _searchType = new BehaviorSubject<number>(-1);
@@ -43,7 +46,7 @@ export class CommunityService {
         // this. _communityName = new BehaviorSubject('');
         this._skills.next([]);
         this._members.next([]);
-        this._messages.next([]);
+        this._messageRef.next(null);
     }
     // Main calls
     init(id: string): BehaviorSubject<string> {
@@ -69,8 +72,8 @@ export class CommunityService {
     // Init pt 3 called when all data loaded to prevent errors
     set community(community: ICommunityData) {
         this.communityData = community;
-        this._members.next(community.members); // Remove this (its here for tests)?
-        this._messages.next(community.messages);
+        this._members.next(community.members); // TODO: Remove this (its here for tests)?
+        this._messageRef.next(community.messageRef);
     }
     get community(): ICommunityData {
         return this._communityData.getValue();
@@ -91,8 +94,8 @@ export class CommunityService {
         return this._members.getValue();
     }
     // Messages
-    get messages(): Observable<IMessage[]> {
-        return this._messages;
+    get messageRef(): Observable<DocumentReference> {
+        return this._messageRef.asObservable();
     }
     set showWeb(show: boolean) {
         this._showWeb.next(show);
@@ -175,41 +178,24 @@ export class CommunityService {
     getCommunityData(id?: string) {
         const currentID = id ? id : this._communityID.getValue();
         this.getCommunity(currentID).then(val => {
-            // this.communityData = val;
             return this._communityCollection.doc(currentID).collection('communityData')
                 .doc('members').ref.get().then(memberSnap => {
                 if (memberSnap.exists)
-                    return this.setMembers(memberSnap.data()).then(mems => mems);
+                    return this.setMembers(memberSnap.data());
                 else
                     throw new Error('Community members not found');
             }).then(users => {
-                return this._communityCollection.doc(currentID).collection('communityData')
-                    .doc('messages').ref.get().then(messageSnap => {
-                    // tslint:disable-next-line:curly
-                    if (messageSnap.exists) {
-                        /*
-                        (messageSnap as DocumentReference).get().then(mess => {
-                            if (mess.exists)
-                            mess.data()
-                        })
-                        */
-                        // (messageSnap.data()['ref'] as DocumentReference).get().then()
-                        return { usr: users, msg: [] };
-                    } else {
-                        console.log('else');
-                        throw new Error('messages DNE');
-                    }
-                });
+                return { usr: users, msg: this.db.collection('message/community/chats').doc(currentID).ref };
             }).then(newData => {
                 // this is temporary
                 const testMembers: IUser[] = [];
-                newData.usr.forEach(memb => testMembers.push(memb, memb, memb, memb));
+                newData.usr.forEach(memb => testMembers.push(memb));
                 // end temp use the newData.urs in the return
                 return {
                     link: currentID,
                     members: testMembers,
                     // members: newData.usr,
-                    messages: newData.msg,
+                    messageRef: newData.msg,
                     name: val.name
                 };
             });
@@ -242,7 +228,7 @@ export class CommunityService {
                         pass: tags.passions,
                         skill: tags.skills,
                         paym: tags.paymentForm,
-                        img: '',
+                        img: placeholderUrl,
                     };
                 } else throw new Error('Cannot get user tags');
             }).then(usrData => {
@@ -347,5 +333,5 @@ export class CommunityService {
 const blankData: ICommunityData = {
     name: '',
     members: [],
-    messages: []
+    messageRef: undefined
 };

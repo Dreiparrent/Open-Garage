@@ -19,6 +19,18 @@ export interface IChatInterface {
     currentIndex?: number;
     hasExtra: boolean;
 }
+/*
+currentIndex
+last
+subject
+users
+*/
+/*
+index
+text
+timestamp
+user
+*/
 export class IChat implements IChatInterface {
 
     // Extras
@@ -33,8 +45,6 @@ export class IChat implements IChatInterface {
     }
     public limit = 10;
 
-    private bleh = 1;
-
     // Chat Interface
     public user: IUser;
     public cUserIndex: number;
@@ -42,22 +52,19 @@ export class IChat implements IChatInterface {
     public readonly userData: IUser[] = [];
     public readonly subject: string;
     get messages() {
-        if (this._getMessage) {
-            this._getMessage = false;
+        if (this._getMessage)
             this.loadMore();
-        }
         return this._messages.asObservable();
     }
+    public currentIndex = 1;
     public readonly ref: DocumentReference;
     public readonly last: string;
     public get hasExtra() {
         return this._endAt <= this.limit;
     }
 
-    constructor(private db: AngularFirestore,
-        private _authService: AuthService,
-        private _comService: CommunityService,
-        private _dataSnap: DocumentSnapshot<IChatInterface>,
+    constructor(private db: AngularFirestore, private _authService: AuthService,
+        private _comService: CommunityService, private _dataSnap: DocumentSnapshot<IChatInterface>,
         public newMessage = false) {
         const data = _dataSnap.data();
         // Set Interface
@@ -65,25 +72,33 @@ export class IChat implements IChatInterface {
         this._startAt = data.currentIndex;
         this.subject = data.subject;
         this.last = data.last;
-        this.users = data.users;
-        this.sortUsers();
+        if (data.users) {
+            console.log('hasUsers');
+            this.users = data.users;
+            this.sortUsers();
+        } else {
+            this.users = _comService.getMembers('fake').map(mem => mem.ref);
+            this.sortUsers(_comService.getMembers('fake'));
+        }
     }
-    private sortUsers() {
-        this.users.forEach(userRef => {
+    private sortUsers(comMembers?: IUser[]) {
+        this.users.forEach((userRef, i) => {
             if (userRef.id === this._authService.token) {
                 this.cUserIndex = this.users.indexOf(userRef);
                 this.userData.push(this._authService.currentUser);
             } else
-                this._comService.getMember(userRef.id).then(user => {
-                    this.user = user;
-                    this.userData.push(user);
-                });
+                if (comMembers)
+                    this.userData.push(comMembers[i]);
+                else
+                    this._comService.getMember(userRef.id).then(user => {
+                        this.user = user;
+                        this.userData.push(user);
+                    });
         });
     }
 
     private getMessages(mesSnap: DocumentChange<any>[], index = true): Promise<any> {
-        console.log('get messages', this._startAt, this._endAt);
-        return new Promise<void>(resolve => {
+        return new Promise<any>(resolve => {
             mesSnap.forEach(snap => {
                 const snapData: IMessage = snap.doc.data() as any;
                 const userIndex = snapData.user;
@@ -98,33 +113,33 @@ export class IChat implements IChatInterface {
                 }
                 const curMes = this._messages.getValue();
                 if (index)
-                this._startAt += 1;
-                if (snapData.index < this.bleh) {
-                    this.bleh = snapData.index;
+                    this._startAt += 1;
+                if (snapData.index < this.currentIndex) {
+                    this.currentIndex = snapData.index;
                     curMes.push(snapData);
                 } else
                     curMes.unshift(snapData);
-                // console.log(this._messages.getValue(), curMes);
                 this._messages.next(curMes);
-                console.log('get messages', this._startAt, this._endAt);
             });
             resolve();
         });
     }
 
-    public loadMore() {
+    public loadMore(): Promise<IMessage[]> {
+        this._getMessage = false;
+        // TODO: use timestamp instead
+        // Although maybe keep it for delete?
         return this.ref.collection('messages').orderBy('index').startAt(this._startAt).endAt(this._endAt)
-            .get().then(mesSnap => this.getMessages(mesSnap.docChanges()));
+            .get().then(mesSnap => this.getMessages(mesSnap.docChanges())).then(() => this._messages.getValue());
     }
 
     public listen() {
-        if (this._getMessage) {
-            this._getMessage = false;
+        if (this._getMessage)
             this.loadMore().then(() => {
                 this.listen();
             });
-        } else
-            this._snapListener = this.ref.collection('messages').orderBy('index').endBefore(this.bleh)
+        else
+            this._snapListener = this.ref.collection('messages').orderBy('index').endBefore(this.currentIndex)
                 .onSnapshot(mesSnap => { this.getMessages(mesSnap.docChanges(), false); });
     }
 

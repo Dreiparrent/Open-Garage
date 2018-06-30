@@ -42,6 +42,9 @@
             </h5>
             <div class="f-auto">
                 <mat-list class="nav-chat">
+                    <mat-list-item *ngIf="currentChat?.hasExtra" (click)="currentChat.loadMore()">
+                        Load More
+                    </mat-list-item>
                     <mat-list-item *ngFor="let message of currentChat?.messages | async">
                         <img matListAvatar [src]="message.imgUrl" alt="profile img">
                         <!-- <h3 matLine>
@@ -64,9 +67,6 @@
                             </h6>
                         </div>
                         <mat-divider></mat-divider>
-                    </mat-list-item>
-                    <mat-list-item *ngIf="currentChat?.hasExtra" (click)="currentChat.loadMore()">
-                        Load More
                     </mat-list-item>
                 </mat-list>
             </div>

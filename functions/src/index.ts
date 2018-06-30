@@ -297,7 +297,7 @@ export const startChat = functions.firestore.document('message/users/chats/{chat
                 subject: newVal.subject,
                 last: newVal.subject,
                 users: newVal.users,
-                index: 0,
+                currentIndex: 1,
                 start: admin.firestore.FieldValue.serverTimestamp()
             });
         else return null;
@@ -306,21 +306,22 @@ export const startChat = functions.firestore.document('message/users/chats/{chat
 export const newMessage = functions.firestore.document('message/users/chats/{chat}').onUpdate((change, context): Promise<any> => {
     const prevVal: IChat = <any>change.before.data();
     const newVal: IChat = <any>change.after.data();
+    const newIndex = prevVal.currentIndex - 1;
     if (newVal.newMessage && newVal.newMessage !== prevVal.newMessage) {
         const mesCollection = change.after.ref.collection('messages');
         if (prevVal.users[newVal.newMessage.user].id === newVal.newMessage.uuid)
             return mesCollection.get().then(mesSnap => {
-                return mesCollection.doc(prevVal.currentIndex.toString()).set(<IMessage>{
+                return mesCollection.doc(newIndex.toString()).set(<IMessage>{
                     text: newVal.newMessage.text,
                     user: newVal.newMessage.user,
                     timestamp: admin.firestore.FieldValue.serverTimestamp(),
-                    index: prevVal.currentIndex
+                    index: newIndex
                 }).then(ref => {
                     return admin.firestore().doc(change.before.ref.path).set(<IChat>{
                         last: newVal.newMessage.text,
                         subject: prevVal.subject,
                         users: prevVal.users,
-                        currentIndex: prevVal.currentIndex - 1,
+                        currentIndex: newIndex,
                         timestamp: admin.firestore.FieldValue.serverTimestamp()
                     });
                 }).then(() => {

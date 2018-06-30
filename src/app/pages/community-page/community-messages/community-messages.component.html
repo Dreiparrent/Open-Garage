@@ -3,12 +3,12 @@
 </ng-template>
 <div class="card-body px-4" *ngIf="isMember; else elseTemplate">
     <mat-list class="row d-flex">
-        <mat-list-item class="col-12 ml-auto" *ngFor="let message of messages; let i = index">
+        <mat-list-item class="col-12 ml-auto" *ngFor="let message of currentChat?.messages | async; index as i">
             <h6 matLine class="my-0 row-fluid d-flex">
-                <ng-container *ngIf="message.sender !== ownName; then thenTemplate; else elseTemplate"></ng-container>
+                <ng-container *ngIf="message.userName !== 'You'; then thenTemplate; else elseTemplate"></ng-container>
                 <ng-template #thenTemplate>
                     <!--mb-2-->
-                    <span *ngIf="message.sender !== ownName" class="col-8 col-md-9 col-lg-10 text-right">{{ message.message }}</span>
+                    <span *ngIf="message.userName !== 'You'" class="col-8 col-md-9 col-lg-10 text-right">{{ message.text }}</span>
                     <!--my-2-->
                     <!--
                     <small  placement="top" triggers="mouseenter:mouseleave" [popover]="profileContainer" container="body"
@@ -20,13 +20,13 @@
                     -->
                     <small class="display-block col-4 col-md-3 col-lg-2 text-left cursor-pointer" style="padding-top: 3px" 
                         [ngClass]="{ 'text-primary' : i === hoverNumber }"
-                        (mouseover)="mouseOver(i, message.sender)" (mouseout)="mouseOut(i)" (click)="nameClick(message.sender)">
-                        {{ message.sender }}
+                        (mouseover)="mouseOver(i, message.userName)" (mouseout)="mouseOut(i)" (click)="nameClick(message.userName)">
+                        {{ message.userName }}
                     </small>
                 </ng-template>
                 <ng-template #elseTemplate>
-                    <small class="display-block col-1 text-right" style="padding-top: 3px">You</small>
-                    <span class="col-11 text-left text-left">{{ message.message }}</span>
+                    <small class="display-block col-1 text-right" style="padding-top: 3px">{{ message.userName }}</small>
+                    <span class="col-11 text-left text-left">{{ message.text }}</span>
                 </ng-template>                
             </h6>
             <div matLine *ngIf="false"></div>

@@ -84,7 +84,8 @@ export interface IImg {
 export interface ICommunityData {
     name: string;
     members: IUser[];
-    messages: IMessage[];
+    // messages: IMessage[];
+    messageRef: DocumentReference;
     skills?: ICommunitySkills[];
 }
 export interface INavigation {

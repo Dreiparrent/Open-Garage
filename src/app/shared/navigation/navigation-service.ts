@@ -23,6 +23,13 @@ export class NavigationService {
     get currentTab() {
         return this._currentTab.getValue();
     }
+    private _navTab = new BehaviorSubject<number>(0);
+    set navTab(index: number) {
+        this._navTab.next(index);
+    }
+    get navTab() {
+        return this._navTab.getValue();
+    }
     private _communityPre = new Subject<boolean>();
     private _communityOpen = new Subject<boolean>();
     private _navProfile = new BehaviorSubject<INavProfile>(null);

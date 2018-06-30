@@ -28,7 +28,7 @@ export class AlertService {
             }
             if (params['newMessage']) {
                 console.log('new message');
-                this.removeAlert(enumAlerts[Alerts.message]);
+                this.removeAlert(enumAlerts[Alerts.newMessage]);
             }
             if (params['userSearch']) {
                 this.removeAlert(enumAlerts[Alerts.noCommunity]);
@@ -82,7 +82,8 @@ export enum Alerts {
     incomeleteAutoAlert,
     noPhoto,
     noCommunity,
-    message,
+    newMessage,
+    messageError,
     login,
     logout,
     loginToAccess,
@@ -136,6 +137,10 @@ const enumAlerts: IAlert[] = [
             skipChange: true
         }
     },
+    {
+        msg: 'An Error occured while retrieving messages',
+        type: 'danger'
+    },
     { // 5
         msg: 'Successfully logged in',
         type: 'success'
@@ -177,3 +182,5 @@ const enumAlerts: IAlert[] = [
         type: 'warning'
     }
 ];
+
+// TODO: make this a class then use the typings or something to create overloads for each alert
