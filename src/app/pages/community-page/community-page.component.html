@@ -62,11 +62,17 @@
                     </p>
                 </ng-container>
                 <ng-template #elseTemplate>
-                    <app-community-messages class="w-100"></app-community-messages>
+                    <!-- <app-community-messages class="w-100"></app-community-messages> -->
+                    <app-chat *ngIf="isMember && currentChat; else noMemberTemp" [currentChat]="currentChat"
+                     [isLarge]="true" (userClick)="chatClick($event)" class="w-100"></app-chat>
+                    <ng-template #noMemberTemp>
+                        Not a member
+                    </ng-template>
                 </ng-template>
             </div>
+            
             <!-- TODO: make this a message bar activated with joined community -->
-            <button mat-raised-button>Message input placeholder</button>
+            <!-- <button mat-raised-button>Message input placeholder</button> -->
         </app-community-card>
     </div>
 </section>

@@ -1,14 +1,13 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, ValidatorFn } from '@angular/forms';
 import { IProfile } from '../../community/community-interfaces';
-import { ChatService, IMessage } from '../../community/chat.service';
 import { Observable, Subscription, BehaviorSubject, interval, of } from 'rxjs';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { MyErrorStateMatcher } from '../../../pages/register-page/ragister-validator';
 import { startWith, map, mapTo, take, mergeMap } from 'rxjs/operators';
 import { DocumentReference } from '@firebase/firestore-types';
 import { NavigationService } from '../navigation-service';
-import { IChat } from '../../community/ichat';
+import { Chat } from '../../community/chat';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
@@ -23,8 +22,8 @@ export class NavChatComponent implements OnInit, OnDestroy {
 
     matcher = new MyErrorStateMatcher();
 
-    userChats: IChat[];
-    filteredChats: Observable<IChat[]>;
+    userChats: Chat[];
+    filteredChats: Observable<Chat[]>;
 
     filteredOptions: Observable<any[]>;
     // options = new Observable<string[]>();
@@ -59,7 +58,7 @@ export class NavChatComponent implements OnInit, OnDestroy {
         this.selectIndex = isMessage ? 1 : 0;
         this.isMessageChange.emit(isMessage);
     }
-    currentChat: IChat;
+    currentChat: Chat;
     /*
     get messages(): Observable<IMessage[]> {
         return this.chatService.messages;
@@ -104,10 +103,10 @@ export class NavChatComponent implements OnInit, OnDestroy {
     filterOptions(param: string) {
         return this.options.filter(option => option.toLowerCase().indexOf(param.toLowerCase()) === 0).slice(0, 5);
     }
-    filterChats(param: string): Promise<IChat[]> {
+    filterChats(param: string): Promise<Chat[]> {
         this.searchBuf = 0;
-        const tmpChats: IChat[] = this.userChats.slice();
-        return tmpChats.map(us => us.loadMore()).reduce((p: Promise<IChat[]>, val, index) => {
+        const tmpChats: Chat[] = this.userChats.slice();
+        return tmpChats.map(us => us.loadMore()).reduce((p: Promise<Chat[]>, val, index) => {
             return p.then(hasVal => {
                 // return val.loadMore(index);
                 return val.then(messages => {
@@ -137,7 +136,7 @@ export class NavChatComponent implements OnInit, OnDestroy {
         });
     }
 
-    tabChat(chat: IChat) {
+    tabChat(chat: Chat) {
         this.messageName = chat.user.name;
         this.selectIndex = 1;
         // const messages = chat.messages;
@@ -204,36 +203,6 @@ export class NavChatComponent implements OnInit, OnDestroy {
                 console.log('val', val);
             });
         });
-        /*
-        this.chatService.sendMessage(message).then(success => {
-            this.chatBuf = 50;
-            this.chatCol = 'primary';
-            let finishSub: Subscription;
-            return new Promise<boolean>(resolve => {
-                finishSub = success.subscribe(val => {
-                    switch (val) {
-                        case 1:
-                            this.chatProg = 100;
-                            this.messageControl.updateValueAndValidity();
-                            resolve(true);
-                            break;
-                        case 0:
-                            this.chatBuf = 100;
-                            break;
-                        case -1:
-                            this.chatBuf = 0;
-                            this.messageInput.nativeElement.value = mesVal;
-                            this.chatCol = 'warn';
-                            this.messageControl.updateValueAndValidity();
-                            resolve(false);
-                            break;
-                    }
-                });
-            }).then(val => {
-                finishSub.unsubscribe();
-            });
-        });
-        */
     }
 
     ngOnDestroy(): void {

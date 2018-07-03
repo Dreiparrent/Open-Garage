@@ -12,7 +12,7 @@ import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { AngularFirestore, AngularFirestoreCollection, DocumentSnapshot, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { DocumentReference, DocumentData } from '@firebase/firestore-types';
 import { AlertService, Alerts } from '../alerts/alert.service';
-import { IChat, IChatInterface } from './ichat';
+import { Chat, IChat } from './chat';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable()

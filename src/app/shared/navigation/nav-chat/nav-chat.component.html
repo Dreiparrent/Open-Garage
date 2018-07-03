@@ -36,10 +36,14 @@
     </mat-tab>
     <mat-tab>
         <div class="w-100 h-100 d-flex flex-column">
-            <h5 (click)="tabMessage()" matTooltip="Back?" matTooltipPosition="right" class="p-2 cursor-pointer">
+            <h5 (click)="tabMessage()" matTooltip="Back?" matTooltipPosition="right" class="p-2 cursor-pointer" style="flex: 0 1 auto">
                 Message
                 <small class="text-muted">&gt; {{messageName}}</small>
             </h5>
+            <app-chat [currentChat]="currentChat" style="flex: 1 1 auto"></app-chat>
+            <!-- <div style="flex: 1 1 auto">
+            </div> -->
+            <!--
             <div class="f-auto">
                 <mat-list class="nav-chat">
                     <mat-list-item *ngIf="currentChat?.hasExtra" (click)="currentChat.loadMore()">
@@ -47,9 +51,6 @@
                     </mat-list-item>
                     <mat-list-item *ngFor="let message of currentChat?.messages | async">
                         <img matListAvatar [src]="message.imgUrl" alt="profile img">
-                        <!-- <h3 matLine>
-                            {{chat.user.name}}
-                        </h3> -->
                         <h3 matLine>
                             <small class="text-muted">{{message.userName}}</small>
                         </h3>
@@ -79,6 +80,7 @@
                 </mat-form-field>
                 <mat-progress-bar mode="buffer" [value]="chatProg" [bufferValue]="chatBuf" [color]="chatCol"></mat-progress-bar>
             </form>
+        -->
         </div>
     </mat-tab>
 </mat-tab-group>

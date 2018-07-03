@@ -32,6 +32,7 @@ import { UserDialogComponent } from './cards/user-dialog/user-dialog.component';
 import { ExploreCardComponent } from './cards/explore-card/explore-card.component';
 import { AppearDirective } from './directives/appear.directive';
 import { NewChatDialogComponent } from './cards/new-chat-dialog/new-chat-dialog.component';
+import { ChatComponent } from './community/chat/chat.component';
 
 @NgModule({
     exports: [
@@ -51,7 +52,8 @@ import { NewChatDialogComponent } from './cards/new-chat-dialog/new-chat-dialog.
         FormsModule,
         ReactiveFormsModule,
         AlertsComponent,
-        ExploreCardComponent
+        ExploreCardComponent,
+        ChatComponent
     ],
     imports: [
         RouterModule,
@@ -81,7 +83,8 @@ import { NewChatDialogComponent } from './cards/new-chat-dialog/new-chat-dialog.
         AlertsComponent,
         UserDialogComponent,
         ExploreCardComponent,
-        NewChatDialogComponent
+        NewChatDialogComponent,
+        ChatComponent
     ],
     entryComponents: [
         YourProfileDialogComponent,

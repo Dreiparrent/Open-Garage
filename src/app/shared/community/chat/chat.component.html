@@ -1,0 +1,41 @@
+<div class="w-100 h-100 d-flex flex-column">
+    <div class="f-auto">
+        <mat-list class="nav-chat">
+            <mat-list-item *ngIf="currentChat?.hasExtra" (click)="currentChat.loadMore()">
+                Load More
+            </mat-list-item>
+            <mat-list-item *ngFor="let message of currentChat?.messages | async">
+            <img matListAvatar [src]="message.imgUrl" alt="profile img" [style.order]="(isLarge && message.userName === 'You') ? 3 : 0">
+            <!-- <h3 matLine>
+                {{chat.user.name}}
+            </h3> -->
+            <h3 matLine [ngClass]="{'text-right pr-3 pl-0': isLarge && message.userName === 'You'}">
+                <small class="text-muted" [ngClass]="{'cursor-pointer': true}" (click)="nameClick(message.userName)">{{message.userName}}</small>
+            </h3>
+            <h3 matLine [ngClass]="{'text-right pr-3 pl-0': isLarge && message.userName === 'You'}">
+                {{message.text}}
+            </h3>
+            <div class="hide-lg w-100">
+                <h6 class="row w-100 h-auto pl-3" [ngClass]="{'text-right': isLarge && message.userName === 'You'}">
+                    <small class="col-12 col-lg-auto text-muted" [ngClass]="{'cursor-pointer': true}" (click)="nameClick(message.userName)">
+                        {{message.userName}}
+                    </small>
+                    <span class="col-12 col-lg-auto">
+                        {{message.text}}
+                    </span>
+                </h6>
+            </div>
+            <mat-divider></mat-divider>
+            </mat-list-item>
+        </mat-list>
+    </div>
+    <form class="w-100 f-bottom">
+        <mat-form-field class="w-100 p-2">
+            <textarea #messageInput matInput placeholder="Your message" class="w-100" (keydown.control.enter)="sendMessage(messageInput.value)"
+            cdkAutosizeTextarea [formControl]="messageControl" [errorStateMatcher]="matcher"></textarea>
+            <mat-error *ngIf="messageControl.hasError('messageSend')">Message failed to send</mat-error>
+            <mat-icon matSuffix (click)="sendMessage(messageInput.value)" [color]="chatCol">send</mat-icon>
+        </mat-form-field>
+        <mat-progress-bar [hidden]="isLarge && chatProg === 100" mode="buffer" [value]="chatProg" [bufferValue]="chatBuf" [color]="chatCol"></mat-progress-bar>
+    </form>
+</div>

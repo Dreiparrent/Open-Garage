@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 import { AngularFireStorage } from 'angularfire2/storage';
 import { AlertService, Alerts } from '../alerts/alert.service';
 import { CommunityService } from '../community/community.service';
-import { IChat, IChatInterface } from '../community/ichat';
+import { Chat, IChat } from '../community/chat';
 
 @Injectable()
 export class AuthService {
@@ -68,7 +68,7 @@ export class AuthService {
         this._userChats.next(chats);
     }
     */
-    private _userChats = new BehaviorSubject<IChat[]>([]);
+    private _userChats = new BehaviorSubject<Chat[]>([]);
     public get chats() {
         return this._userChats.asObservable();
     }
@@ -348,7 +348,8 @@ export class AuthService {
                     msg: error,
                     type: 'warning'
                 });
-            throw new Error(error);
+            console.log(error);
+            return null;
         });
     }
 
@@ -391,7 +392,11 @@ export class AuthService {
                     isInc = true;
             });
             return isInc;
-        }).then(isInc => isInc);
+        }).then(isInc => isInc).catch(error => {
+            this.alertService.addAlert(Alerts.custom, error);
+            console.log(error);
+            return null;
+        });
     }
 
     private noProfileError() {
@@ -400,10 +405,11 @@ export class AuthService {
     }
 
     private getChats() {
-        this.userRef.collection('messages').onSnapshot(mesSnap => {
+        this.userRef.collection('messages').orderBy('timestamp').onSnapshot(mesSnap => {
             const mesChanges = mesSnap.docChanges();
             mesChanges.forEach(mes => {
                 const chatRef: DocumentReference = mes.doc.data()['ref'];
+                const timestamp = mes.doc.data()['timestamp'];
                 let hasNew = false;
                 const tmpChats = this._userChats.getValue();
                 if (mes.doc.data()['newMessage']) {
@@ -411,13 +417,14 @@ export class AuthService {
                     hasNew = true;
                 }
                 const tmpIndex = tmpChats.map(tc => tc.ref.id).indexOf(chatRef.id);
-                const Prom = new Promise<IChat[]>((resolve, reject) => {
+                const Prom = new Promise<Chat[]>((resolve, reject) => {
                     if (tmpIndex > -1) {
                         tmpChats[tmpIndex].newMessage = hasNew;
+                        tmpChats[tmpIndex].timestamp = timestamp;
                         resolve(tmpChats);
                     } else
                         resolve(
-                            this.getChat(chatRef, hasNew).catch(error => {
+                            this.getChat(chatRef, timestamp, hasNew).catch(error => {
                                 this.alertService.addAlert(Alerts.messageError);
                                 console.error(error);
                                 reject(error);
@@ -427,6 +434,9 @@ export class AuthService {
                             }).then(() => tmpChats)
                         );
                 }).then(tChat => {
+                    const sorted = tChat.sort((a, b) => {
+                        return b.timestamp.seconds - a.timestamp.seconds;
+                    });
                     this._userChats.next(tChat);
                 });
             });
@@ -436,16 +446,17 @@ export class AuthService {
         });
     }
 
-    getChat(ref: DocumentReference, hasNew = false): Promise<IChat> {
+    getChat(ref: DocumentReference, timestamp: firestore.Timestamp = null, hasNew = false): Promise<Chat> {
         return ref.get().then(chatSnap => {
             if (chatSnap.exists)
-                return new IChat(this.db, this, this.comService,
-                    chatSnap as DocumentSnapshot<IChatInterface>, hasNew);
+                return new Chat(this.db, this, this.comService,
+                    chatSnap as DocumentSnapshot<IChat>, timestamp, hasNew);
             else return null;
         }).catch(error => {
             this.alertService.addAlert(Alerts.messageError);
-            throw new Error(error);
-            // console.error(error);
+            // throw new Error(error);
+            console.log(ref, this.token, error);
+            return null;
         });
     }
 //#endregion

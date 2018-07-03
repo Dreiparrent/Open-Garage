@@ -1,0 +1,38 @@
+:host {
+    height: 100%;
+    overflow: hidden;
+    flex-direction: column !important;
+    display: flex !important;
+}
+.mat-tab-header {
+    display: none;
+}
+.position-absolute {
+    left: 0;
+    bottom: 0;
+}
+// .mat-list {
+//     overflow-y: hidden;
+//     width: 50vw;
+// };
+.hide-lg {
+    display: initial !important;
+}
+@media screen and (min-width: 768px) {
+    // .mat-list {
+    //     width: 40vw;
+    // }
+}
+@media screen and (min-width: 992px) {
+    // .mat-list {
+    //     width: 30vw;
+    // }
+    .hide-lg {
+        display: none !important;
+    }
+}
+@media screen and (min-width: 1200px) {
+    // .mat-list {
+    //     width: 20vw;
+    // }
+}

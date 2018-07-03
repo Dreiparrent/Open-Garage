@@ -1,12 +1,21 @@
 import { IUser } from './community-interfaces';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { IMessage } from './chat.service';
 import { AngularFirestoreCollection, AngularFirestore, DocumentSnapshot, DocumentChange } from 'angularfire2/firestore';
 import { AuthService } from '../auth/auth.service';
 import { CommunityService } from './community.service';
 import { DocumentReference } from '@firebase/firestore-types';
+import { firestore } from 'firebase';
 
-export interface IChatInterface {
+export interface IMessage {
+    text: string;
+    user: number;
+    imgUrl?: string;
+    userName?: string;
+    timestamp: firestore.Timestamp;
+    ref: DocumentReference;
+}
+
+export interface IChat {
     user?: IUser;
     cUserIndex?: number;
     users: DocumentReference[];
@@ -16,7 +25,8 @@ export interface IChatInterface {
     ref?: DocumentReference;
     last?: string;
     newMessage?: boolean;
-    currentIndex?: number;
+    timestamp?: firestore.Timestamp;
+    count?: number;
     hasExtra: boolean;
 }
 /*
@@ -31,18 +41,15 @@ text
 timestamp
 user
 */
-export class IChat implements IChatInterface {
+export class Chat implements IChat {
 
     // Extras
     private _messages = new BehaviorSubject<IMessage[]>([]);
     private _getMessage = true;
-    private _dbChatRef: AngularFirestoreCollection;
     private _snapListener: () => void;
     private _messageAwaiter = new BehaviorSubject<number>(-1);
-    private _startAt: number;
-    private get _endAt() {
-        return this._startAt + this.limit;
-    }
+    private _startAfter = firestore.Timestamp.now();
+    private _endBefore = firestore.Timestamp.now();
     public limit = 10;
 
     // Chat Interface
@@ -56,24 +63,21 @@ export class IChat implements IChatInterface {
             this.loadMore();
         return this._messages.asObservable();
     }
-    public currentIndex = 1;
+    public count = 0;
     public readonly ref: DocumentReference;
-    public readonly last: string;
     public get hasExtra() {
-        return this._endAt <= this.limit;
+        return this._messages.getValue().length < this.count;
     }
 
     constructor(private db: AngularFirestore, private _authService: AuthService,
-        private _comService: CommunityService, private _dataSnap: DocumentSnapshot<IChatInterface>,
-        public newMessage = false) {
+        private _comService: CommunityService, private _dataSnap: DocumentSnapshot<IChat>,
+        public timestamp: firestore.Timestamp, public newMessage = false) {
         const data = _dataSnap.data();
         // Set Interface
         this.ref = _dataSnap.ref;
-        this._startAt = data.currentIndex;
         this.subject = data.subject;
-        this.last = data.last;
+        this.count = data.count;
         if (data.users) {
-            console.log('hasUsers');
             this.users = data.users;
             this.sortUsers();
         } else {
@@ -102,6 +106,8 @@ export class IChat implements IChatInterface {
             mesSnap.forEach(snap => {
                 const snapData: IMessage = snap.doc.data() as any;
                 const userIndex = snapData.user;
+                const timestamp = snapData.timestamp;
+                snapData.ref = snap.doc.ref;
                 if (userIndex === this.cUserIndex) {
                     snapData.userName = 'You';
                     snapData.imgUrl = this._authService.currentUser.imgUrl as string;
@@ -112,13 +118,14 @@ export class IChat implements IChatInterface {
                     snapData.imgUrl = this.userData[userIndex].imgUrl as string;
                 }
                 const curMes = this._messages.getValue();
-                if (index)
-                    this._startAt += 1;
-                if (snapData.index < this.currentIndex) {
-                    this.currentIndex = snapData.index;
-                    curMes.push(snapData);
-                } else
+                if (this._startAfter > timestamp) {
+                    this._startAfter = timestamp;
                     curMes.unshift(snapData);
+                } else {
+                    this.count += 1;
+                    this._endBefore = timestamp;
+                    curMes.push(snapData);
+                }
                 this._messages.next(curMes);
             });
             resolve();
@@ -127,10 +134,12 @@ export class IChat implements IChatInterface {
 
     public loadMore(): Promise<IMessage[]> {
         this._getMessage = false;
-        // TODO: use timestamp instead
-        // Although maybe keep it for delete?
-        return this.ref.collection('messages').orderBy('index').startAt(this._startAt).endAt(this._endAt)
-            .get().then(mesSnap => this.getMessages(mesSnap.docChanges())).then(() => this._messages.getValue());
+        return this.ref.collection('messages').orderBy('timestamp', 'desc').startAfter(this._startAfter).limit(this.limit)
+            .get().then(mesSnap => this.getMessages(mesSnap.docChanges())).then(() => this._messages.getValue())
+            .catch(error => {
+                console.log(error);
+                return null;
+            });
     }
 
     public listen() {
@@ -139,8 +148,8 @@ export class IChat implements IChatInterface {
                 this.listen();
             });
         else
-            this._snapListener = this.ref.collection('messages').orderBy('index').endBefore(this.currentIndex)
-                .onSnapshot(mesSnap => { this.getMessages(mesSnap.docChanges(), false); });
+            this._snapListener = this.ref.collection('messages').orderBy('timestamp', 'desc').endBefore(this._endBefore)
+                .onSnapshot(mesSnap => { this.getMessages(mesSnap.docChanges(), false); }, error => console.log(error));
     }
 
     public unsubscribe() {
@@ -164,17 +173,3 @@ export class IChat implements IChatInterface {
         });
     }
 }
-
-/*
-export interface IChat {
-    user?: IUser;
-    cUserIndex?: number;
-    users: DocumentReference[];
-    userData?: IUser[];
-    subject: string;
-    messages?: IMessage[];
-    ref?: DocumentReference;
-    last?: string;
-    newMessage?: boolean;
-}
-*/

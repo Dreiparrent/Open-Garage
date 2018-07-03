@@ -95,7 +95,7 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
     }
     .mat-list {
         padding-top: 0;
-        overflow-y: scroll;
+        // overflow-y: scroll;
     }
     .mat-form-field-suffix {
         font-size: 100%;

@@ -41,16 +41,22 @@ interface IMessage {
     text: string;
     user: number;
     uuid?: string;
-    index: number;
+    // index: number;
 }
 interface IChat {
     last: string;
     subject: string;
-    users: DocumentReference[];
+    users?: DocumentReference[];
     newChat?: boolean;
     newMessage?: IMessage;
-    currentIndex: number;
+    count: number;
+    // currentIndex: number;
     timestamp: any;
+}
+interface IUserMessage {
+    ref?: DocumentReference;
+    timestamp: any;
+    newMessage?: string;
 }
 // export const helloWorld = functions.https.onRequest((request, response) => {
 //  response.send("Hello from Firebase!");
@@ -281,8 +287,9 @@ export const startChat = functions.firestore.document('message/users/chats/{chat
     return new Promise<boolean>(resolve => {
         if (newVal.newChat) {
             newVal.users.forEach(newUser => {
-                const mesUp: { ref: DocumentReference, newMessage?: string } = {
-                    ref: create.ref
+                const mesUp: IUserMessage = {
+                    ref: create.ref,
+                    timestamp: admin.firestore.FieldValue.serverTimestamp()
                 }
                 if (newVal.users.indexOf(newUser) !== 0)
                     mesUp.newMessage = newVal.subject;
@@ -297,42 +304,47 @@ export const startChat = functions.firestore.document('message/users/chats/{chat
                 subject: newVal.subject,
                 last: newVal.subject,
                 users: newVal.users,
-                currentIndex: 1,
                 start: admin.firestore.FieldValue.serverTimestamp()
             });
         else return null;
     });
 });
-export const newMessage = functions.firestore.document('message/users/chats/{chat}').onUpdate((change, context): Promise<any> => {
+export const newMessage = functions.firestore.document('message/{parent}/chats/{chat}').onUpdate((change, context): Promise<any> => {
     const prevVal: IChat = <any>change.before.data();
     const newVal: IChat = <any>change.after.data();
-    const newIndex = prevVal.currentIndex - 1;
+    // const newIndex = prevVal.currentIndex - 1;
+    // TODO: make this account for the multiple calls
+    const userChat = (context.params.parent === 'users');
     if (newVal.newMessage && newVal.newMessage !== prevVal.newMessage) {
         const mesCollection = change.after.ref.collection('messages');
-        if (prevVal.users[newVal.newMessage.user].id === newVal.newMessage.uuid)
+        if (!userChat || prevVal.users[newVal.newMessage.user].id === newVal.newMessage.uuid)
             return mesCollection.get().then(mesSnap => {
-                return mesCollection.doc(newIndex.toString()).set(<IMessage>{
+                const mesCount = mesSnap.size + 1;
+                return mesCollection.add(<IMessage>{
                     text: newVal.newMessage.text,
                     user: newVal.newMessage.user,
                     timestamp: admin.firestore.FieldValue.serverTimestamp(),
-                    index: newIndex
                 }).then(ref => {
-                    return admin.firestore().doc(change.before.ref.path).set(<IChat>{
+                    const chatData: IChat = {
                         last: newVal.newMessage.text,
                         subject: prevVal.subject,
-                        users: prevVal.users,
-                        currentIndex: newIndex,
+                        count: mesCount,
                         timestamp: admin.firestore.FieldValue.serverTimestamp()
-                    });
-                }).then(() => {
-                    prevVal.users.forEach(user => {
-                        if (user.id !== newVal.newMessage.uuid)
-                            return user.collection('messages').doc(change.after.id).set(
-                                {
-                                    newMessage: newVal.newMessage.text
-                                }, { merge: true });
+                    }
+                    if (userChat)
+                        chatData.users = prevVal.users;
+                    return admin.firestore().doc(change.before.ref.path).set(chatData);
+                    }).then(() => {
+                        if (userChat)
+                            prevVal.users.forEach(user => {
+                                const userMessage: IUserMessage = {
+                                    timestamp: admin.firestore.FieldValue.serverTimestamp()
+                                }
+                                if (user.id !== newVal.newMessage.uuid)
+                                    userMessage.newMessage = newVal.newMessage.text;
+                                return user.collection('messages').doc(change.after.id).set(userMessage, { merge: true });
+                            });
                         else return null;
-                    });
                 })
             })
         else

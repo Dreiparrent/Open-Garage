@@ -7,7 +7,7 @@ import { DocumentReference } from '@firebase/firestore-types';
 import { CommunityService } from './community.service';
 import { AngularFirestore, AngularFirestoreCollection, QuerySnapshot, DocumentSnapshot } from 'angularfire2/firestore';
 import { AlertService, Alerts } from '../alerts/alert.service';
-import { IChat } from './ichat';
+import { Chat, IMessage } from './chat';
 
 @Injectable({
     providedIn: 'root'
@@ -43,8 +43,8 @@ export class ChatService {
     messageAwaiter = new BehaviorSubject<number>(-1);
     private _cUserIndex: number;
     // private _sampleChat = new BehaviorSubject<IChat[]>(sampleChat);
-    private _currentChats = new BehaviorSubject<IChat[]>([]);
-    private set currentChats(chats: IChat[]) {
+    private _currentChats = new BehaviorSubject<Chat[]>([]);
+    private set currentChats(chats: Chat[]) {
         this._currentChats.next(chats);
     }
     private get currentChats() {
@@ -98,7 +98,7 @@ export class ChatService {
         */
     }
 
-    getMessages(chat: IChat, reset = true, limit: number = null) {
+    getMessages(chat: Chat, reset = true, limit: number = null) {
         if (reset)
             this.resetChat();
         /*
@@ -139,7 +139,7 @@ export class ChatService {
             this.navService.setOpen(true);
             this.navService.currentTab = 1;
             this.resetChat();
-            this._dbChatRef.add(<IChat><any>{
+            this._dbChatRef.add(<Chat><any>{
                 users: [this.authService.userRef, profile.ref],
                 newChat: true,
                 subject: subject
@@ -152,11 +152,11 @@ export class ChatService {
         }
     }
 
-    getChat(ref: [DocumentReference, boolean], userChat = true): Promise<IChat> {
+    getChat(ref: [DocumentReference, boolean], userChat = true): Promise<Chat> {
         if (this._userChatRefs.map(uRef => uRef.id).includes(ref[0].id)) {
             const currentI = this.currentChats.map(ch => ch.ref.id).indexOf(ref[0].id);
             this.currentChats[currentI].newMessage = ref[1];
-            return new Promise<IChat>(resolve => resolve(null));
+            return new Promise<Chat>(resolve => resolve(null));
         // tslint:disable-next-line:curly
         } else {
             this._userChatRefs.push(ref[0]);
@@ -164,8 +164,8 @@ export class ChatService {
                 if (chatSnap.exists) {
                     // const chatData: IChat = chatSnap.data() as any;
                     // chatData();
-                    const chatData = new IChat(this.db, this.authService, this.comService,
-                        chatSnap as DocumentSnapshot<IChat>, ref[1]);
+                    const chatData = new Chat(this.db, this.authService, this.comService,
+                        chatSnap as DocumentSnapshot<Chat>, null, ref[1]);
                     // chatData = chatSnap.data();
                     // chatData.ref = chatSnap.ref;
                     // chatData.newMessage = ref[1];
@@ -217,11 +217,4 @@ export class ChatService {
         this._cUserIndex = null;
         this.currentMessages = [];
     }
-}
-export interface IMessage {
-    text: string;
-    user: number;
-    imgUrl?: string;
-    userName?: string;
-    index: number;
 }
