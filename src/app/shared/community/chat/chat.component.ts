@@ -36,7 +36,6 @@ export class ChatComponent implements OnInit {
     constructor() { }
 
     ngOnInit() {
-        console.log('init');
     }
 
     nameClick(name: string) {

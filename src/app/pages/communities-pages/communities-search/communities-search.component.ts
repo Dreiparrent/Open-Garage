@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angu
 import { MatAccordion } from '@angular/material';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { IPin } from '../communities-page.component';
+import { Observable } from '@firebase/util';
+import { CommunitiesService } from '../../../shared/community/communities.service';
 
 @Component({
     selector: 'app-communities-search',
@@ -22,6 +24,41 @@ import { IPin } from '../communities-page.component';
         ])
     ]
 })
+export class CommunitiesSearchComponent implements OnInit {
+    aState = 'showing';
+    get pins() {
+        return this.comsService.pins.asObservable();
+    }
+    // @Input('pins') pins: Observable<IPin[]>;
+    // @Output('change') change = new EventEmitter<[boolean, string]>();
+    constructor(private comsService: CommunitiesService) { }
+    ngOnInit() {
+
+    }
+
+    pannelOpen(isOpen: boolean, open: boolean, link: string) {
+        console.log('OC2', isOpen, link);
+        this.comsService.pinChange(isOpen, link);
+    }
+
+    searchClick() {
+        console.log('search');
+    }
+
+    aClick() {
+        console.log('aaa');
+        if (this.aState === 'showing') {
+            this.aState = 'hidden';
+            $('#pannels').css({ 'position': 'fixed' });
+            $('#pannels').addClass(['col-12 col-sm-7 col-md-6 col-lg-5 col-xl-4']);
+        } else {
+            this.aState = 'showing';
+            $('#pannels').css({ 'position': 'static' });
+            $('#pannels').removeClass(['col-12 col-sm-7 col-md-6 col-lg-5 col-xl-4']);
+        }
+    }
+}
+/*
 export class CommunitiesSearchComponent implements OnInit {
 
     @ViewChild('pannels') pannels: MatAccordion;
@@ -69,7 +106,7 @@ export class CommunitiesSearchComponent implements OnInit {
             lat: pin.com.nav.lat - 0.2 / this.mainMap.zoom,
             lng: pin.com.nav.lng
         };
-        */
+        */ /*
         // if (this.mainMap.zoom < 12) this.navigation.lat -= 3;
         // this.mainMap.triggerResize(true);
         };
@@ -78,7 +115,7 @@ export class CommunitiesSearchComponent implements OnInit {
             pin.expanded = true;
             pin.open = true;
         };
-        */
+        *//*
     }
     expClose(pin: IPin) {
         // pin.expanded = false;
@@ -100,3 +137,4 @@ export class CommunitiesSearchComponent implements OnInit {
         }
     }
 }
+*/

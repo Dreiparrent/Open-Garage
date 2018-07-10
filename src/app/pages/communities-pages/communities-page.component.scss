@@ -1,14 +1,11 @@
+@import "node_modules/bootstrap/scss/bootstrap";
+.agh {
+    height: calc(100%);
+    width: 100%;
+}
 ::-webkit-scrollbar {
     width: 0px;
     background: transparent;
-}
-body {
-    overflow: hidden;
-}
-section {
-    height: 100%;
-    width: 100%;
-    position: relative;
 }
 aside {
     // max-height: calc(100vh - 72px);
@@ -24,16 +21,9 @@ aside {
     left: 0;
     padding-left: 0;
 }
-
-@media screen and (min-width: 576px) {
+@include media-breakpoint-up(sm) {
     aside {
         top: 0;
         margin-left: 6px;
-    }
-}
-
-@media screen and (max-width: 576px) {
-    aside {
-        bottom: 0;
     }
 }

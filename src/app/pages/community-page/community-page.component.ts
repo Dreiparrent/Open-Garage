@@ -48,6 +48,7 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
         this._messageSub = comService.messageRef.subscribe(ref => {
             if (ref)
                 this.authService.getChat(ref).then(chat => {
+                    chat.listen();
                     this.currentChat = chat;
                 });
         });
@@ -124,5 +125,6 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
         this._searchSub.unsubscribe();
         this._membersSub.unsubscribe();
         this._messageSub.unsubscribe();
+        this.currentChat.unsubscribe();
     }
 }

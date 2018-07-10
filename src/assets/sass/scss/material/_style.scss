@@ -1,6 +1,7 @@
 @import '~@angular/material/theming';
 @import "material-colors";
 @include mat-core();
+@import "node_modules/bootstrap/scss/bootstrap";
 
 // Main theme (light)
 $app-primary: mat-palette($material-primary);
@@ -39,8 +40,9 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 .nav-theme {
     .mat-tab-label {
         padding: 0;
+        flex: 1 1 auto;
         // min-width: 100px;
-        width: auto !important;
+        // width: auto !important;
     }
     // .nav-button {
     //     width: 100% !important;
@@ -72,24 +74,42 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
         flex: none;
         width: 50vw;
     }
-    @media screen and (min-width: 768px) {
+    .mat-list {
+        width: 50vw;
+    }
+    @include media-breakpoint-up(sm) {
+        .mat-list {
+            width: 45vw;
+        }
         .f-bottom {
-            width: 40vw;
+            width: 45vw;
         }
     }
-    @media screen and (min-width: 992px) {
+    @include media-breakpoint-up(md) {
+        .mat-list {
+            width: 35vw;
+        }
+        .hide-lg {
+            display: none !important;
+        }
         .f-bottom {
-            width: 30vw;
+            width: 35vw;
+        }
+        .yourProfile-hide {
+            display: none !important;
         }
     }
-    @media screen and (min-width: 1200px) {
+    @include media-breakpoint-up(lg) {
+        .mat-list {
+            width: 25vw;
+        }
         .f-bottom {
-            width: 20vw;
+            width: 25vw;
         }
     }
 }
 
-.hide-nav {
+@mixin hide-nav {
     .mat-tab-header {
         display: none;
     }
@@ -103,6 +123,14 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
     .hide-lg.mat-line {
         white-space: normal !important;
         text-overflow: unset !important;
+    }
+}
+.hide-nav {
+    @include hide-nav;
+}
+ @include media-breakpoint-down(sm) {
+    .hide-nav-sm {
+        @include hide-nav
     }
 }
 

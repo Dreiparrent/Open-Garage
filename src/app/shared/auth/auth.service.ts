@@ -412,21 +412,20 @@ export class AuthService {
                 const timestamp = mes.doc.data()['timestamp'];
                 let hasNew = false;
                 const tmpChats = this._userChats.getValue();
-                if (mes.doc.data()['newMessage']) {
-                    this.alertService.addAlert(Alerts.newMessage);
+                if (mes.doc.data()['newMessage'])
                     hasNew = true;
-                }
                 const tmpIndex = tmpChats.map(tc => tc.ref.id).indexOf(chatRef.id);
                 const Prom = new Promise<Chat[]>((resolve, reject) => {
                     if (tmpIndex > -1) {
                         tmpChats[tmpIndex].newMessage = hasNew;
                         tmpChats[tmpIndex].timestamp = timestamp;
+                        if (hasNew)
+                            this.alertService.addAlert(Alerts.newMessage, tmpChats[tmpIndex]);
                         resolve(tmpChats);
                     } else
                         resolve(
                             this.getChat(chatRef, timestamp, hasNew).catch(error => {
-                                this.alertService.addAlert(Alerts.messageError);
-                                console.error(error);
+                                this.alertService.addAlert(Alerts.messageError, error);
                                 reject(error);
                             }).then(chat => {
                                 if (chat)
@@ -441,8 +440,7 @@ export class AuthService {
                 });
             });
         }, error => {
-            this.alertService.addAlert(Alerts.messageError);
-            console.log(error);
+            this.alertService.addAlert(Alerts.messageError, error);
         });
     }
 
@@ -453,7 +451,7 @@ export class AuthService {
                     chatSnap as DocumentSnapshot<IChat>, timestamp, hasNew);
             else return null;
         }).catch(error => {
-            this.alertService.addAlert(Alerts.messageError);
+            this.alertService.addAlert(Alerts.messageError, error);
             // throw new Error(error);
             console.log(ref, this.token, error);
             return null;

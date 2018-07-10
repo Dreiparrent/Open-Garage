@@ -63,10 +63,28 @@ export class Chat implements IChat {
             this.loadMore();
         return this._messages.asObservable();
     }
+    public connection = false;
     public count = 0;
     public readonly ref: DocumentReference;
     public get hasExtra() {
         return this._messages.getValue().length < this.count;
+    }
+
+    static startNewChat(db: AngularFirestore, auth: AuthService, _comService: CommunityService,
+        user: IUser, subject: string): Promise<Chat> {
+        if (auth.isAuth)
+            return db.collection('message/users/chats').add({
+                users: [auth.userRef, user.ref],
+                newChat: true,
+                subject: subject
+            }).then(ref => ref.get())
+                .then((snap: DocumentSnapshot<IChat>) => new Chat(db, auth, null, snap, firestore.Timestamp.now()))
+                .catch(error => {
+                    // this.alertService.addAlert(Alerts.custom, { msg: 'An error occured while starting new chat', type: 'warning' });
+                    console.log(error);
+                    return null;
+                });
+        else return null;
     }
 
     constructor(private db: AngularFirestore, private _authService: AuthService,
@@ -77,6 +95,7 @@ export class Chat implements IChat {
         this.ref = _dataSnap.ref;
         this.subject = data.subject;
         this.count = data.count;
+        this.connection = data.count > 4;
         if (data.users) {
             this.users = data.users;
             this.sortUsers();
@@ -156,7 +175,7 @@ export class Chat implements IChat {
         this._snapListener();
     }
 
-    sendMessage(message: string): Promise<Observable<number>> {
+    public sendMessage(message: string): Promise<Observable<number>> {
         this._messageAwaiter.next(-1);
         return this.ref.update({
             newMessage: {
@@ -172,4 +191,24 @@ export class Chat implements IChat {
             return this._messageAwaiter;
         });
     }
+
+    /*
+    startNewChat(profile: IUser, subject: string) {
+        if (this.authService.isAuth) {
+            this.navService.setOpen(true);
+            this.navService.currentTab = 1;
+            this.resetChat();
+            this._dbChatRef.add(<Chat><any>{
+                users: [this.authService.userRef, profile.ref],
+                newChat: true,
+                subject: subject
+            }).then(ref => {
+                this._currentChatRef = ref;
+            }).catch(error => {
+                this.alertService.addAlert(Alerts.custom, { msg: 'An error occured while starting new chat', type: 'warning' });
+                console.log(error);
+            });
+        }
+    }
+    */
 }

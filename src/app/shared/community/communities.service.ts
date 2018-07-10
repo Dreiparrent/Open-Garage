@@ -8,6 +8,7 @@ import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/fires
 import { DocumentReference } from '@firebase/firestore-types';
 import { CommunityService } from './community.service';
 import { map, pluck, mergeMap, filter } from 'rxjs/operators';
+import { IPin } from '../../pages/communities-pages/communities-page.component';
 
 @Injectable()
 export class CommunitiesService {
@@ -45,6 +46,7 @@ export class CommunitiesService {
         else
             this.searchResults = this.searchResults.filter(res => res.community === true);
     }
+    pins = new BehaviorSubject<IPin[]>([]);
 
     // Manual search
     private fullSearch = false;
@@ -191,91 +193,107 @@ export class CommunitiesService {
         this.searchCommunities = [];
         this.searchUsers = [];
     }
+    pinChange(isOpen: boolean, link: string) {
+        // const index = this.pins.map(p => p.com.link).indexOf(link);
+        // this.pins[index].expanded = isOpen;
+        const tmpPins = this.pins.getValue();
+        const index = tmpPins.map(p => p.com.link).indexOf(link);
+        if (tmpPins[index].open) {
+            tmpPins[index].expanded = true;
+            tmpPins[index].open = false;
+        } else
+            tmpPins[index].expanded = isOpen;
+        this.pins.next(tmpPins);
+    }
+    pinLocation(center: firestore.GeoPoint): Promise<IPin[]> {
+        const c0 = new firestore.GeoPoint(center.latitude - 1, center.longitude - 1);
+        const c1 = new firestore.GeoPoint(center.latitude + 1, center.longitude + 1);
+        console.log(c0, c1);
+        return this.db.collection('location').ref
+            .where('type', '==', 1).where('nav', '>=', c0).where('nav', '<=', c1).limit(10)
+            .orderBy('nav').get().then(snap => {
+                const tmpComs: Promise<ICommunity>[] = [];
+                for (const doc of snap.docs) {
+                    const ref: DocumentReference = doc.data()['ref'] as any;
+                    tmpComs.push(this.comService.getCommunity(ref.id, true));
+                }
+                return Promise.all(tmpComs);
+            }).then(coms => {
+                const tmpPins = this.pins.getValue();
+                const pinArray: IPin[] = [];
+                coms.forEach(c => {
+                    let op = false;
+                    const tindex = tmpPins.map(tp => tp.com.link).indexOf(c.link);
+                    if (tindex > -1)
+                        op = this.pins.getValue()[tindex].expanded || this.pins.getValue()[tindex].open;
+                    pinArray.push({ com: c, expanded: false, open: op });
+                });
+                this.pins.next(pinArray);
+                return pinArray;
+            }).catch(error => {
+                console.log(error);
+                return [];
+            });
+    }
 }
 export interface ISearch<T> {
     community: boolean;
     data: T;
 }
-const testCommunities: ICommunity[] = [
+const testPins = [
     {
-        name: 'Test Community',
-        desc: 'a short description about the community and such',
-        img: {
-            webp: '../../../assets/img/photos/eclipse.webp',
-            jpf: '../../../assets/img/photos/eclipse.jpf',
-            else: '../../../assets/img/photos/eclipse.jpg'
+        com: <ICommunity>{
+            desc: 'test desc',
+            img: { else: null },
+            link: 'link1',
+            location: 'Denver',
+            members: null,
+            name: 'Test Community',
+            nav: { latitude: 39.680, longitude: -104.963 }
         },
-        location: 'Denver',
-        nav: {
-            lat: 39.7392,
-            lng: -104.9903
-        },
-        members: 8,
-        link: 'testlink'
+        expanded: false,
+        open: false
     },
     {
-        name: 'Univeristy of Denver',
-        desc: 'The official communtiy of the University of Denver.',
-        img: {
-            webp: '../../../assets/img/photos/eclipse.webp',
-            jpf: '../../../assets/img/photos/eclipse.jpf',
-            else: '../../../assets/img/photos/eclipse.jpg'
+        com: <ICommunity>{
+            desc: 'test desc',
+            img: { else: null },
+            link: 'link2',
+            location: 'Denver',
+            members: null,
+            name: 'Test Community',
+            nav: { latitude: 39.681, longitude: -104.964 }
         },
-        location: 'Denver',
-        nav: {
-            lat: 39.682380,
-            lng: -104.964384
-        },
-        members: 8,
-        link: 'testlink'
+        expanded: false,
+        open: false
     },
     {
-        name: 'Local PD Community',
-        desc: 'The community for the Denver Police Department',
-        img: {
-            webp: '../../../assets/img/photos/fish.webp',
-            jpf: '../../../assets/img/photos/fish.jpf',
-            else: '../../../assets/img/photos/fish.jpg'
+        com: <ICommunity>{
+            desc: 'test desc',
+            img: {
+                else: null
+            },
+            link: 'link3',
+            location: 'Denver',
+            members: null,
+            name: 'Test Community',
+            nav: { latitude: 39.682, longitude: -104.965 }
         },
-        location: 'Denver',
-        nav: {
-            lat: 39.687380,
-            lng: -104.959384
-        },
-        members: 8,
-        link: 'testlink'
+        expanded: false,
+        open: false
     },
     {
-        name: 'Neighborhood Community',
-        desc: 'Just a small nieghborhood community',
-        img: {
-            webp: '../../../assets/img/photos/fish.webp',
-            jpf: '../../../assets/img/photos/fish.jpf',
-            else: '../../../assets/img/photos/fish.jpg'
+        com: <ICommunity>{
+            desc: 'test desc',
+            img: { else: null },
+            link: 'link4',
+            location: 'Denver',
+            members: null,
+            name: 'Test Community',
+            nav: { latitude: 39.683, longitude: -104.966 }
         },
-        location: 'Denver',
-        nav: {
-            lat: 39.684380,
-            lng: -104.969384
-        },
-        members: 8,
-        link: 'testlink'
-    },
-    {
-        name: 'One Observatory Park',
-        desc: 'The best appartments for DU students',
-        img: {
-            webp: '../../../assets/img/photos/fish.webp',
-            jpf: '../../../assets/img/photos/fish.jpf',
-            else: '../../../assets/img/photos/fish.jpg'
-        },
-        location: 'Denver',
-        nav: {
-            lat: 39.678210,
-            lng: -104.958884
-        },
-        members: 8,
-        link: 'testlink'
+        expanded: false,
+        open: false
     }
 ];
 /*

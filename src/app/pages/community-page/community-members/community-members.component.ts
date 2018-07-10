@@ -11,7 +11,9 @@ import { UserDialogComponent } from '../../../shared/cards/user-dialog/user-dial
 import { MatDialog } from '@angular/material';
 import { AuthService } from '../../../shared/auth/auth.service';
 import { ChatService } from '../../../shared/community/chat.service';
-import { NewChatDialogComponent } from '../../../shared/cards/new-chat-dialog/new-chat-dialog.component';
+import { NewChatDialogComponent, INewChatDialog } from '../../../shared/cards/new-chat-dialog/new-chat-dialog.component';
+import { Chat } from '../../../shared/community/chat';
+import { AngularFirestore } from 'angularfire2/firestore';
 
 @Component({
     selector: 'app-community-members',
@@ -48,8 +50,8 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     topMembers: IUser[] = [];
     clickIndex = -1;
 
-    constructor(private cd: ChangeDetectorRef, private dialog: MatDialog, private authService: AuthService,
-        private comService: CommunityService, private navService: NavigationService, private chatService: ChatService,
+    constructor(private dialog: MatDialog, private authService: AuthService,
+        private comService: CommunityService, private db: AngularFirestore, private navService: NavigationService,
         private changeDetectorRef: ChangeDetectorRef, private media: MediaMatcher) {
         comService.members.subscribe(members => {
             if (members.filter(user => user.ref.id === this.authService.token).length > 0)
@@ -165,13 +167,20 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
             });
             dialogRef.afterClosed().subscribe((result: any) => {
                 if (result) {
-                    const newChatRef = this.dialog.open(NewChatDialogComponent, {
+                    const newChatRef = this.dialog.open<NewChatDialogComponent, INewChatDialog>(NewChatDialogComponent, {
                         maxWidth: '65vw',
                         maxHeight: '100vh',
-                        data: profile.name
+                        data: {
+                            user: profile
+                        }
                     });
                     newChatRef.afterClosed().subscribe((chatSubject: string) => {
-                        this.chatService.startNewChat(profile, chatSubject);
+                        Chat.startNewChat(this.db, this.authService, this.comService, profile, chatSubject)
+                            .then(() => {
+                                this.navService.isOpen = true;
+                                this.navService.navTab = 1;
+                            });
+                        // this.chatService.startNewChat(profile, chatSubject);
                     });
                 }
                 /*

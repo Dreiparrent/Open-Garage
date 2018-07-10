@@ -9,13 +9,14 @@ import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-to
 import { Observable, Subscription, of, BehaviorSubject, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ChatService } from '../community/chat.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-nav',
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss']
 })
-export class NavigationComponent implements OnInit, AfterViewInit {
+export class NavigationComponent implements OnInit {
 
     @Input('sidenav') sidenav: MatSidenav;
     isAuth: boolean;
@@ -34,28 +35,20 @@ export class NavigationComponent implements OnInit, AfterViewInit {
     }
     */
     // communityLinks: string[];
-    communityLinks: Observable<ICommunity[]>;
+    get communityLinks(): Observable<ICommunity[]> {
+        return this.authService.communities;
+    }
     navSubscribe: Subscription;
     comSubscribe: Subscription;
 
-    constructor(private navService: NavigationService, private authService: AuthService) {
+    constructor(private navService: NavigationService, private authService: AuthService, ) {
         this.navService.navProfile.subscribe(prof => {
             if (prof) {
                 this.navLinks = authLinks;
                 this.isAuth = prof.auth;
-                /*
-                $('.mat-tab-label').click(() => {
-                    console.log('change', this.isMessage);
-                    if (!!this.selectIndex !== (this.prevIndex === 1))
-                        this.isMessage = false;
-                    console.log('change', this.isMessage);
-                    this.prevIndex = this.selectIndex;
-                });
-                */
             } else
                 this.navLinks = noAuthLinks;
         });
-        this.communityLinks = this.authService.communities;
     }
 
     ngOnInit() {
@@ -67,16 +60,6 @@ export class NavigationComponent implements OnInit, AfterViewInit {
         this.sidenav.position = 'end'; // remove to make start
         this.sidenav.mode = 'over'; // over | push | side
         this.sidenav.fixedInViewport = true;
-        /*
-        this.sidenav.openedChange.subscribe((m: boolean) => {
-            this.navService.toggle(m);
-        });
-        */
-        // closedStart | onPositionChanged | openedStart
-    }
-
-    ngAfterViewInit() {
-
     }
 
     trackByIndex(index: number, value: number) {

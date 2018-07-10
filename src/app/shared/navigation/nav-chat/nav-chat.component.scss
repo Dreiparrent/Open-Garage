@@ -1,3 +1,4 @@
+@import "node_modules/bootstrap/scss/bootstrap";
 .mat-tab-header {
     display: none;
 }
@@ -12,21 +13,21 @@
 .hide-lg {
     display: initial !important;
 }
-@media screen and (min-width: 768px) {
+@include media-breakpoint-up(sm) {
     .mat-list {
-        width: 40vw;
+        width: 45vw;
     }
 }
-@media screen and (min-width: 992px) {
+@include media-breakpoint-up(md) {
     .mat-list {
-        width: 30vw;
+        width: 35vw;
     }
     .hide-lg {
         display: none !important;
     }
 }
-@media screen and (min-width: 1200px) {
+@include media-breakpoint-up(lg) {
     .mat-list {
-        width: 20vw;
+        width: 25vw;
     }
 }

@@ -54,8 +54,6 @@
                             
                         ],
                         "styles": [
-                            "src/styles.scss",
-                            "src/assets/sass/app.scss",
                             {
                                 "input": "src/assets/css/bootstrap.min.css",
                                 "lazy": true
@@ -67,7 +65,9 @@
                             {
                                 "input": "node_modules/snazzy-info-window/dist/snazzy-info-window.css",
                                 "lazy": true
-                            }
+                            },
+                            "src/styles.scss",
+                            "src/assets/sass/app.scss"
                         ],
                         "scripts": [
                             "node_modules/jquery/dist/jquery.min.js",

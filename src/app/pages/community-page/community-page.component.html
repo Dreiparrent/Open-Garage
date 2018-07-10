@@ -55,7 +55,7 @@
         </app-community-card>
         <app-community-card>
             <h5 class="card-title col-12">Message Board</h5>
-            <div class="card-body row col-12">
+            <div class="card-body row col-12 nav-theme">
                 <ng-container *ngIf="!hasMessages; else elseTemplate">
                     <p class="col-12">
                         No messages
@@ -64,7 +64,7 @@
                 <ng-template #elseTemplate>
                     <!-- <app-community-messages class="w-100"></app-community-messages> -->
                     <app-chat *ngIf="isMember && currentChat; else noMemberTemp" [currentChat]="currentChat"
-                     [isLarge]="true" (userClick)="chatClick($event)" class="w-100"></app-chat>
+                     [isLarge]="true" (userClick)="chatClick($event)" class="w-100 app-chat"></app-chat>
                     <ng-template #noMemberTemp>
                         Not a member
                     </ng-template>

@@ -25,8 +25,8 @@ export class CommunitiesMapComponent implements OnInit {
                 };
                 */
                 this.navigation = {
-                    lat: this.ePin.com.nav.lat,
-                    lng: this.ePin.com.nav.lng
+                    lat: this.ePin.com.nav.latitude,
+                    lng: this.ePin.com.nav.longitude
                 };
                 this.mainMap.triggerResize(true);
                 console.log('moved');

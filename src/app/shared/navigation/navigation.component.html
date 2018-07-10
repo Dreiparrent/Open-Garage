@@ -1,5 +1,5 @@
 <div class="h-100 nav-theme">
-    <mat-tab-group [ngClass]="{'hide-nav': !isAuth}" [(selectedIndex)]="selectIndex">
+    <mat-tab-group class="hide-nav-sm" [ngClass]="{'hide-nav': !isAuth}" [(selectedIndex)]="selectIndex">
         <mat-tab label="Navigation">
             <div class="h-100 w-100 d-flex flex-column" [ngClass]="{'pt-5': !isAuth}">
                 <div class="f-auto">
@@ -11,6 +11,7 @@
                     <a mat-list-item class="cursor-pointer" routerLink="/community" routerLinkActive="mat-list-item-focus">
                         Communities
                     </a>
+                    <!-- <a mat-list-item class="cursor-pointer" *ngFor="let com of communityLinks | async" [href]="'community/'+com.link" routerLinkActive="mat-list-item-focus"> -->
                     <a mat-list-item class="cursor-pointer" *ngFor="let com of communityLinks | async" [routerLink]="['/community',com.link]" routerLinkActive="mat-list-item-focus">
                     {{ com.name }} </a>
                     </mat-nav-list>
@@ -19,9 +20,11 @@
                     <mat-nav-list>
                         <mat-divider></mat-divider>
                         <h3 matSubheader>Profile</h3>
-                        <div class="p-2">
+                        <div class="p-2 yourProfile">
                             <app-your-profile-card></app-your-profile-card>
                         </div>
+                        <a mat-list-item class="yourProfile-hide">Your Profile</a>
+                        <a mat-list-item class="yourProfile-hide">Messages</a>
                     </mat-nav-list>
                 </div>
             </div>

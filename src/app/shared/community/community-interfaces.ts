@@ -1,6 +1,7 @@
 import { DocumentReference, GeoPoint, DocumentData } from '@firebase/firestore-types';
 import { Reference } from '@firebase/storage-types';
 import { AngularFireStorage } from 'angularfire2/storage';
+import { firestore } from 'firebase';
 
 export function _coords_to_inavigate(coords: Coordinates): INavigation {
     const nav: INavigation = {
@@ -97,7 +98,7 @@ export interface ICommunity {
     desc: string;
     img: IImg | DocumentReference;
     location?: string;
-    nav?: INavigation;
+    nav?: firestore.GeoPoint;
     members: number;
     link: string;
 }

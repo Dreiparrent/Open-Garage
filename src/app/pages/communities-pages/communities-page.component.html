@@ -1,7 +1,23 @@
-<section>
-    <app-communities-map [height]="height" [pins]="mapPins" [moveMap]="moveMap" [zoom]="zoom === 3" [iPin]="mPin" (ePin)="mapIn($event)"
-    (center)="centerChange($event)"></app-communities-map>
+<section style="height: 100vh; width: 100vw;">
+    <agm-map #mainMap [latitude]="navigation?.latitude" [longitude]="navigation?.longitude" (mapReady)="mapReady($event)"
+        (centerChange)="centerChange($event)" [clickableIcons]="false" [zoom]="zoom" class="agh">
+        <!--backgroundColor-->
+        <agm-marker *ngFor="let pin of pins" [latitude]="pin.com.nav.latitude" [longitude]="pin.com.nav.longitude" [iconUrl]="comIcon">
+            <agm-snazzy-info-window maxWidth="90vw" [closeWhenOthersOpen]="true" [panOnOpen]="true" [isOpen]="pin.expanded" (isOpenChange)="openChange($event, pin.open, pin.com.link)">
+                <ng-template>
+                    <h5>{{ pin.com.name }}</h5>
+                    <div>{{ pin.com.desc }}</div>
+                    <!-- <a  [queryParams]="{reload: true}">View community</a> -->
+                    <a [routerLink]="['./', pin.com.link]">View community</a>
+                </ng-template>
+            </agm-snazzy-info-window>
+        </agm-marker>
+        <agm-info-window #errorWindow [hidden]="hasError">
+            {{errorContent}}
+        </agm-info-window>
+    </agm-map>
 </section>
-<aside class="col-12 col-sm-7 col-md-6 col-lg-5 col-xl-4 bg-transparent position-absolute com-theme">
-    <app-communities-search [pins]="listPins" [iPin]="lPin" (ePin)="listIn($event)"></app-communities-search>
+<aside class="col-12 col-sm-7 col-md-6 col-lg-5 col-xl-4 bg-transparent position-absolute com-theme"
+    style="position: absolute; left: 0; top: 0;">
+    <app-communities-search></app-communities-search>
 </aside>

@@ -156,6 +156,7 @@ export class CommunityService {
                                 img: imgData,
                                 link: currentID,
                                 location: locationSnap.data()['location'],
+                                nav: locationSnap.data()['nav'],
                                 members: comData.members,
                                 name: comData.name
                             };

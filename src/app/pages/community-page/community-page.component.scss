@@ -1,0 +1,7 @@
+@import "node_modules/bootstrap/scss/bootstrap";
+.app-chat {
+    max-height: inherit;
+    @include media-breakpoint-up(md) {
+        max-height: 90vh;
+    }
+}

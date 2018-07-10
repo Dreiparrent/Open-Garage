@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Chat } from '../community/chat';
 
 @Injectable({
     providedIn: 'root'
@@ -37,17 +38,31 @@ export class AlertService {
         });
     }
 
-    addAlert(alert: Alerts, customAlert?: IAlert): IAlert {
-        if (alert === Alerts.custom) {
-            this.alerts.push(customAlert);
-            return;
-        } else if (alert === Alerts.incomelete)
-            this.alerts.push(enumAlerts[Alerts.incomeleteAutoAlert]);
-        const newAlert = enumAlerts[alert];
-        if (alert === Alerts.comJoinSuccess) // TODO: fix this reload bs
-            this.router.navigate(['./'], { queryParams: { joinCom: true }, relativeTo: this.route }).then(() => {
-                this.router.navigate(['./'], { queryParams: { reload: true }, skipLocationChange: true });
-            });
+    addAlert(alert: Alerts.comJoinSuccess | Alerts.communityError | Alerts.incomelete | Alerts.locationError |
+        Alerts.login | Alerts.loginForFull | Alerts.loginToAccess | Alerts.logout | Alerts.noCommunity |
+        Alerts.noPhoto | Alerts.userError): IAlert;
+    addAlert(alert: Alerts.newMessage, message: Chat): IAlert;
+    addAlert(alert: Alerts.messageError, message: Chat | any): IAlert;
+    addAlert(alert: Alerts.custom, custom: IAlert): IAlert;
+    addAlert(alert: Alerts, customAlert?: IAlert | Chat): IAlert {
+        let newAlert: IAlert;
+        switch (alert) {
+            case Alerts.custom:
+                this.alerts.push(customAlert as IAlert);
+                break;
+            case Alerts.comJoinSuccess:
+                this.router.navigate(['./'], { queryParams: { joinCom: true }, relativeTo: this.route }).then(() => {
+                    this.router.navigate(['./'], { queryParams: { reload: true }, skipLocationChange: true });
+                });
+                newAlert = enumAlerts[alert];
+                break;
+            case Alerts.incomelete:
+                this.alerts.push(enumAlerts[Alerts.incomeleteAutoAlert]);
+            // tslint:disable-next-line:no-switch-case-fall-through
+            default:
+                newAlert = enumAlerts[alert];
+                break;
+        }
         if (!newAlert.multiple && this.alerts.includes(newAlert))
             return;
         this.alerts.push(newAlert);

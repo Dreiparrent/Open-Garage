@@ -1,11 +1,12 @@
 <h2 mat-dialog-title class="mb-2">
-    New Chat
+    Chat
 </h2>
 <mat-dialog-content>
-    <h3><small>Send message to: {{chatData}}</small></h3>
+    <h3><small>Send message to: {{chatData.user.name}}</small></h3>
     <mat-form-field class="col-md-12">
-        <input #chatSubject matInput type="email" placeholder="Subject">
+        <input #chatSubject matInput [(value)]="subject" type="email" placeholder="Subject">
     </mat-form-field>
+    <h3><small>Make a connection</small></h3>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button mat-dialog-close>Close</button>
