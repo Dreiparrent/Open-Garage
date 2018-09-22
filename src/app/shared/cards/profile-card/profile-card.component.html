@@ -5,7 +5,10 @@
     <mat-card-title class="mb-2">
         <div class="row text-center">
             <div class="col-7 mx-auto">
-                <img class="rounded-circle img-fluid" [src]="imgUrl" role="figure" alt="profile photo">
+                <picture>
+                    <source [srcset]="imgUrl.else">
+                    <img class="rounded-circle img-fluid" [src]="imgUrl.webp" role="figure" alt="profile photo">
+                </picture>
             </div>
         </div>
     </mat-card-title>

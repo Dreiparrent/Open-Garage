@@ -9,6 +9,7 @@ import { MaterialImports } from '../../shared/imports/material-imports.module';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler/src/core';
 import { MAT_CHIPS_DEFAULT_OPTIONS } from '@angular/material';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
+import { AgmCoreModule } from '../../../../node_modules/@agm/core';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { ENTER, COMMA } from '@angular/cdk/keycodes';
         CommonModule,
         RegisterPagesRoutingModule,
         SharedModule,
-        MaterialImports
+        MaterialImports,
+        AgmCoreModule
     ],
     declarations: [RegisterPageComponent],
     providers: [

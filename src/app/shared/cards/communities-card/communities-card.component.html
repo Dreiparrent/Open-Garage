@@ -1,8 +1,8 @@
 <mat-card class="pt-0">
     <picture>
-        <source [srcset]="$any(community.img).webp">
-        <source [srcset]="$any(community.img).jpf">
-        <img id="card-img" mat-card-image [src]="$any(community.img).else" alt="home background">
+        <source [srcset]="community.img.jpf">
+        <source [srcset]="image.webp">
+        <img id="card-img" mat-card-image [src]="image.else" alt="Community background">
     </picture>
     <mat-card-title>
         <!--

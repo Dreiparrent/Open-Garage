@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ICommunity } from '../../community/community-interfaces';
+import { ICommunity, IImg } from '../../community/community-interfaces';
 
 @Component({
     selector: 'app-communities-card',
@@ -9,6 +9,7 @@ import { ICommunity } from '../../community/community-interfaces';
 export class CommunitiesCardComponent implements OnInit {
 
     @Input('community') community: ICommunity;
+    @Input('image') image: IImg;
     constructor() {
     }
 

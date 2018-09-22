@@ -10,6 +10,7 @@ import { UserDialogComponent } from '../../shared/cards/user-dialog/user-dialog.
 import { AuthService } from '../../shared/auth/auth.service';
 import { FormControl } from '@angular/forms';
 import { startWith, map } from 'rxjs/operators';
+import { CreateCommunityDialogComponent } from '../../shared/cards/create-community-dialog/create-community-dialog.component';
 
 @Component({
     selector: 'app-search-page',
@@ -27,6 +28,8 @@ export class SearchPageComponent implements OnInit {
     searchControl: FormControl;
     filterResults;
     searchResults: Observable<any[]>;
+    clickCounter = 0;
+    clickClear: NodeJS.Timer;
     // fResults: Observable
     options = [
         {
@@ -178,6 +181,20 @@ export class SearchPageComponent implements OnInit {
                 console.log(result);
         });
         // here
+    }
+
+    createCommunity() {
+        if (this.clickCounter === 10)
+            this._createCommunity();
+        this.clickCounter += 1;
+        clearTimeout(this.clickClear);
+        this.clickClear = setTimeout(() => {
+            this.clickCounter = 0;
+        }, 1000);
+    }
+
+    private _createCommunity() {
+        const dialogRef = this.dialog.open(CreateCommunityDialogComponent, { data: 'test' }); 
     }
 
 }

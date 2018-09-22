@@ -1,10 +1,11 @@
 import { Component, OnInit, Inject, ViewChild, AfterViewInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatChipInputEvent, MatChipList } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA, MatChipInputEvent, MatChipList, MatDialog } from '@angular/material';
 import { IUser, Payments, IProfile, IUserData } from '../../community/community-interfaces';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MyErrorStateMatcher } from '../../../pages/register-page/ragister-validator';
 import { firestore } from 'firebase/app';
+import { ImageDialogComponent } from '../image-dialog/image-dialog.component';
 
 @Component({
     selector: 'app-your-profile-dialog',
@@ -26,7 +27,7 @@ export class YourProfileDialogComponent implements OnInit, AfterViewInit {
     constructor(
         private fb: FormBuilder,
         public dialogRef: MatDialogRef<YourProfileDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public profile: IUser) {
+        @Inject(MAT_DIALOG_DATA) public profile: IUser, private dialog: MatDialog) {
         const tags = (this.profile.userData as IUserData).tags;
         this.olds = {
             passions: tags.passions.slice(),
@@ -106,6 +107,13 @@ export class YourProfileDialogComponent implements OnInit, AfterViewInit {
     closeDialog() {
         this.dialogRef.close('test');
     }
+
+    openPhoto() {
+        const dialogRef = this.dialog.open(ImageDialogComponent, { data: { profile: this.profile, need: false } });
+        dialogRef.afterClosed().subscribe(result => {
+            console.log(result);
+        });
+}
 
     submitRegister(formValue): [IUser, boolean] {
         const formUser: IUser = this.profile;

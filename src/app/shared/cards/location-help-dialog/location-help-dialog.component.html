@@ -1,0 +1,75 @@
+<h2 mat-dialog-title>Location Services</h2>
+<mat-dialog-content>
+    <h4>Need Help?</h4>
+    <p>Here is how you enable location services for these common browsers</p>
+    <mat-accordion>
+
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Chrome
+                </mat-panel-title>
+                <mat-panel-description>
+                    Chrome site settings.
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            
+            <ol>
+                <li>1. Find and click the green area that says "Secure," in the top left, before the url</li>
+                <li>2. If the resulting dropdown shows a "location" option skip step 3</li>
+                <li>3. Click the bottom most option to open "site settings."</li>
+                <li>4. Next to the option for loction, select the dropdown and change it to be "always"</li>
+            </ol>
+        
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Safari
+                </mat-panel-title>
+                <mat-panel-description>
+                    Safari browsing options.
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            
+            <p>This is the primary content of the panel.</p>
+        
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Internet Explorer
+                </mat-panel-title>
+                <mat-panel-description>
+                    Why even bother...
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            
+            <p>This is the primary content of the panel.</p>
+        
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    I Refuse!
+                </mat-panel-title>
+                <mat-panel-description>
+                    My location is sacred!
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            <p>Open Garage is built on a premise of connecting with those around you.</p>
+            <p> While we understand that we live in an era of data uncertainty, 
+                we need your location to keep our communities centered around
+                the people closest to us.</p>
+            <p>While we prefer to make your life easier, {{refuseText}}</p>
+            <a (click)="changeRefuse()">Click here if you absolutely hate location services!</a>
+        
+        </mat-expansion-panel>
+    </mat-accordion>
+    <br>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button [mat-dialog-close]="onClose()">Close</button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button mat-button [mat-dialog-close]="onReload()">Reload</button>
+</mat-dialog-actions>

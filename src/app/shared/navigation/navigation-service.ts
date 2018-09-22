@@ -40,7 +40,9 @@ export class NavigationService {
     constructor(private authService: AuthService) {
         this.authService.isAuthenticated().subscribe(auth => {
             if (auth)
-                this.authService.getUser().then(user => {
+                this.authService.getUser().then(userResult => {
+                    const user = userResult;
+                    user.ref = this.authService.userRef;
                     this._navProfile.next({
                         user: user,
                         auth: auth,

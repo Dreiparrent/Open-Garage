@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Chat } from '../community/chat';
+import { MatDialog } from '../../../../node_modules/@angular/material';
+import { LocationHelpDialogComponent } from '../cards/location-help-dialog/location-help-dialog.component';
 
 @Injectable({
     providedIn: 'root'
@@ -16,7 +18,7 @@ export class AlertService {
         return this._alerts.getValue();
     }
 
-    constructor(private route: ActivatedRoute, private router: Router) {
+    constructor(private route: ActivatedRoute, private router: Router, private dialog: MatDialog) {
         route.queryParams.subscribe(params => {
             if (params['login'])
                 this.addAlert(Alerts.login);
@@ -35,29 +37,63 @@ export class AlertService {
                 this.removeAlert(enumAlerts[Alerts.noCommunity]);
                 this.router.navigate(['/search']);
             }
+            if (params['locationHelp']) {
+                const dialogRef = this.dialog.open(LocationHelpDialogComponent, {
+                    data: params['locationHelp'] === 'register', maxWidth: '65vw'
+                });
+                dialogRef.afterClosed().subscribe((result: {refused: boolean, reload: boolean}) => {
+                    console.log('result', result);
+                    // router.navigateByUrl(router.url, { queryParams: { locationHelp: false }, skipLocationChange: true });
+                    // this.router.navigate([''], { queryParams: { locationHelp: false }, skipLocationChange: false });
+                    const url: string = this.router.url.substring(0, this.router.url.indexOf('?'));
+                    if (result.refused)
+                        this.router.navigateByUrl(url + '?locationRefused=true');
+                    else this.router.navigateByUrl(url);
+                    if (result.reload)
+                        location.reload(true);
+                });
+            }
         });
     }
 
-    addAlert(alert: Alerts.comJoinSuccess | Alerts.communityError | Alerts.incomelete | Alerts.locationError |
+    addAlert(alert: Alerts.comJoinSuccess | Alerts.communityError |
         Alerts.login | Alerts.loginForFull | Alerts.loginToAccess | Alerts.logout | Alerts.noCommunity |
-        Alerts.noPhoto | Alerts.userError): IAlert;
+        Alerts.noPhoto | Alerts.userError | Alerts.googleError | Alerts.imageUploadError): IAlert;
+    addAlert(alert: Alerts.locationError | Alerts.incomplete, isRegister?: boolean): IAlert;
     addAlert(alert: Alerts.newMessage, message: Chat): IAlert;
     addAlert(alert: Alerts.messageError, message: Chat | any): IAlert;
     addAlert(alert: Alerts.custom, custom: IAlert): IAlert;
-    addAlert(alert: Alerts, customAlert?: IAlert | Chat): IAlert {
+    addAlert(alert: Alerts, customAlert?: IAlert | Chat | boolean): IAlert {
         let newAlert: IAlert;
         switch (alert) {
             case Alerts.custom:
                 this.alerts.push(customAlert as IAlert);
                 break;
+            case Alerts.incomplete:
+                newAlert = enumAlerts[alert];
+                // this.alerts.push(enumAlerts[Alerts.incomeleteAutoAlert]);
+                if (customAlert === true) {
+                    newAlert.msg = 'Profile already exists!';
+                    newAlert.link = {
+                        msg: 'Click to login',
+                        route: ['/login']
+                    };
+                }
+                break;
+            case Alerts.locationError:
+                newAlert = enumAlerts[alert];
+                if (customAlert === true) {
+                    newAlert.msg = 'Location service necessary to register';
+                    newAlert.link.params = {
+                        locationHelp: 'register'
+                    };
+                    newAlert.multiple = true;
+                }
+                break;
             case Alerts.comJoinSuccess:
                 this.router.navigate(['./'], { queryParams: { joinCom: true }, relativeTo: this.route }).then(() => {
-                    this.router.navigate(['./'], { queryParams: { reload: true }, skipLocationChange: true });
+                    this.router.navigate(['./'], { queryParams: { reload: true }, skipLocationChange: false });
                 });
-                newAlert = enumAlerts[alert];
-                break;
-            case Alerts.incomelete:
-                this.alerts.push(enumAlerts[Alerts.incomeleteAutoAlert]);
             // tslint:disable-next-line:no-switch-case-fall-through
             default:
                 newAlert = enumAlerts[alert];
@@ -93,7 +129,7 @@ export interface IAlert {
 }
 export enum Alerts {
     custom = -1,
-    incomelete,
+    incomplete,
     incomeleteAutoAlert,
     noPhoto,
     noCommunity,
@@ -106,7 +142,9 @@ export enum Alerts {
     userError,
     communityError,
     comJoinSuccess,
-    locationError
+    locationError,
+    googleError,
+    imageUploadError
 }
 const enumAlerts: IAlert[] = [
     {
@@ -194,6 +232,22 @@ const enumAlerts: IAlert[] = [
     },
     {
         msg: 'Location services not allowed',
+        type: 'warning',
+        link: {
+            msg: 'Need help?',
+            route: ['./'],
+            params: {
+                locationHelp: false
+            },
+            skipChange: true
+        }
+    },
+    {
+        msg: 'Google auth failed, try manually logging in',
+        type: 'warning'
+    },
+    {
+        msg: 'Failed to upload file',
         type: 'warning'
     }
 ];

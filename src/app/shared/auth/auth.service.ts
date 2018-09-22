@@ -105,15 +105,22 @@ export class AuthService {
             return true;
         }, (error: any) => {
             console.error(error);
+            if (error.message === 'The password is invalid or the user does not have a password.')
+                this.fireAuth.auth.fetchProvidersForEmail(email).then(providers => {
+                    if (providers.includes('google.com'))
+                        this.gAuth();
+                });
             return false;
         });
     }
     gAuth(): Promise<boolean> {
         return this.fireAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then((result: auth.UserCredential) => {
             this.userCred = result.credential;
+            this.userProvider = ['google.com'];
             return true;
         }, (error: any) => {
             console.log(error);
+            this.alertService.addAlert(Alerts.googleError);
             return false;
         });
     }
@@ -125,6 +132,19 @@ export class AuthService {
             console.log(error);
             return false;
         });
+    }
+    userExists(email: string, authType = 0): Promise<boolean> {
+        /*
+        return new Promise<boolean>(res => {
+            res(true);
+        });
+        */
+        if (authType === 0)
+            return this.fireAuth.auth.fetchSignInMethodsForEmail(email).then(signInMethods => {
+                return (signInMethods.length > 0);
+            });
+        else return this.db.collection('users').doc(this.user.uid).ref
+            .collection('userData').doc('profile').get().then(res => res.exists);
     }
     // logout
     logout(): Promise<boolean> {
@@ -143,76 +163,81 @@ export class AuthService {
 
 //#region register and update
     registerUser(reg: IRegister): Observable<number> {
-        const newUserData: IUserData = {
-            profile: {
-                about: reg.about,
-                email: '',
-                fName: reg.fName,
-                lName: reg.lName,
-                location: {
-                    location: reg.location,
-                    nav: new firestore.GeoPoint(39.738662, -104.992474)
-                }
-            },
-            tags: {
-                passions: reg.passions,
-                paymentForm: reg.payment,
-                skills: reg.skills
-            }
-        };
-        const newUser: IUser = {
-            connections: 0,
-            location: reg.location,
-            userData: newUserData
-        };
         const progress = new Subject<number>();
         progress.next(0);
-        new Promise<string>(res => {
-            if (reg.type === 0) {
-                newUserData.profile.email = reg.email;
-                res(this.fireAuth.auth.createUserWithEmailAndPassword(reg.email, reg.pass).then((userRef: auth.UserCredential) => {
-                    // TODO: userCred.additionalUserInfo.isNewUser
-                    this.user = userRef.user;
-                    return userRef.user.uid;
-                }, error => {
-                    throw new Error(error);
-                }));
+        this.userExists(reg.email, reg.type).then(doesExist => {
+            if (doesExist) {
+                this.alertService.addAlert(Alerts.incomplete, true);
+                progress.next(100);
             } else {
-                newUserData.profile.email = this.user.email;
-                res(this.user.uid);
+                const newUserData: IUserData = {
+                    profile: {
+                        about: reg.about,
+                        email: '',
+                        fName: reg.fName,
+                        lName: reg.lName,
+                        location: {
+                            location: reg.location,
+                            nav: new firestore.GeoPoint(reg.latlng.lat(), reg.latlng.lng())
+                        }
+                    },
+                    tags: {
+                        passions: reg.passions,
+                        paymentForm: reg.payment,
+                        skills: reg.skills
+                    }
+                };
+                const newUser: IUser = {
+                    connections: 0,
+                    location: reg.location,
+                    userData: newUserData
+                };
+                return new Promise<string>(res => {
+                    if (reg.type === 0) {
+                        newUserData.profile.email = reg.email;
+                        res(this.fireAuth.auth.createUserWithEmailAndPassword(reg.email, reg.pass).then((userRef: auth.UserCredential) => {
+                            // TODO: userCred.additionalUserInfo.isNewUser
+                            this.user = userRef.user;
+                            return userRef.user.uid;
+                        }, error => {
+                            throw new Error(error);
+                        }));
+                    } else {
+                        newUserData.profile.email = this.user.email;
+                        res(this.user.uid);
+                    }
+                }).then(uid => {
+                    progress.next(25);
+                    console.log(uid);
+                    this.userRef = this.db.collection('users').doc(uid).ref;
+                }).then(() => {
+                    return this.userRef.set({ new: true }).then(() => true, error => {
+                        throw new Error(error);
+                    }).then(res => {
+                        progress.next(30);
+                        return this.userRef.collection('userData').doc('tags').set({
+                            passions: [],
+                            paymentForm: [],
+                            skills: []
+                        }).then(() => true, error => { throw new Error(error); });
+                    }).then(res => {
+                        progress.next(25);
+                        return this.userRef.collection('userData').doc('profile').set({})
+                            .then(() => true, error => { throw new Error(error); });
+                    }).catch(error => {
+                        console.error('Error creating user', error);
+                        return false;
+                    }).then(created => {
+                        progress.next(40);
+                        if (created)
+                            return this.updateProfileInfo([newUser, true]);
+                    }).then(newProg => {
+                        newProg.subscribe(prog => progress.next(prog));
+                    });
+                });
             }
-        }).then(uid => {
-            progress.next(25);
-            console.log(uid);
-            this.userRef = this.db.collection('users').doc(uid).ref;
-        }).then(() => {
-            return this.userRef.set({ new: true }).then(() => true, error => {
-                throw new Error(error);
-            }).then(res => {
-                progress.next(30);
-                return this.userRef.collection('userData').doc('tags').set({
-                    passions: [],
-                    paymentForm: [],
-                    skills: []
-                }).then(() => true, error => { throw new Error(error); });
-            }).then(res => {
-                progress.next(25);
-                return this.userRef.collection('userData').doc('profile').set({})
-                    .then(() => true, error => { throw new Error(error); });
-            }).catch(error => {
-                console.error('Error creating user', error);
-                return false;
-            }).then(created => {
-                progress.next(40);
-                if (created)
-                    return this.updateProfileInfo([newUser, true]);
-            }).then(newProg => {
-                newProg.subscribe(prog => progress.next(prog));
-            });
         });
         return progress;
-        // TODO: make this an observable to track timing for load bar
-        // TODO: add update profile data (get email from account)
     }
     updateProfileInfo(update: [IUser, boolean]): Observable<number> {
         const progress = new Subject<number>();
@@ -225,7 +250,7 @@ export class AuthService {
             location: userData.profile.location
         }).then(() => true, error => { throw new Error(error); }).then(res => {
             if (res && update[1]) {
-                progress.next(30);
+                progress.next(50);
                 this.userRef.collection('userData').doc('tags').update(userData.tags).then(() => {
                     progress.next(100);
                 }, error => {
@@ -286,18 +311,32 @@ export class AuthService {
                         return (profileData.location as DocumentReference).get().then(locSnap => {
                             if (locSnap.exists)
                                 return <any>locSnap.data();
-                            else throw new Error('Cannot accquire profile location for profile');
+                            else {
+                                this.noProfileError('Cannot accquire profile location for profile');
+                                return { location: '<ERROR!>', nav: new firestore.GeoPoint(0, 0) };
+                            }
                         }).then((loc: { location: string, nav: firestore.GeoPoint }) => {
                             profileData.location = loc;
                             return profileData;
                         });
-                    } else throw new Error('Cannot accquire profile data');
-                    // return newUser;
+                    } else {
+                        this.noProfileError();
+                        return {
+                            about: 'ERROR',
+                            email: 'ERROR',
+                            fName: 'ERROR',
+                            lName: 'ERROR',
+                            location: { location: 'ERROR', nav: new firestore.GeoPoint(0, 0) }
+                        };
+                    }
                 }).then(user => {
                     return userSnap.ref.collection('userData').doc('tags').get().then(tagsSnap => {
                         if (tagsSnap.exists)
                             return { profile: user, tags: <ITags><any>tagsSnap.data() };
-                        else throw new Error('Cannot accquire profile tags');
+                        else {
+                            this.noProfileError('Cannot accquire profile location for profile');
+                            return { profile: user, tags: {passions: [], paymentForm: [], skills: []} };
+                        }
                     });
                     }).then(userData => {
                         const tmpUser: IUser = <any>userSnap.data();
@@ -305,6 +344,39 @@ export class AuthService {
                         tmpData.tags.skills = tmpUser.skills = userData.tags.skills ? userData.tags.skills : [];
                         tmpData.tags.passions = tmpUser.passions = userData.tags.passions ? userData.tags.passions : [];
                         tmpUser.userData = tmpData;
+                        // const storageRef = this.fireStorage.ref(`img/user/${this.userRef}/else.jpg`);
+                        if (!tmpUser.imgUrl) {
+                            tmpUser.imgUrl = { else: placeholderUrl };
+                            return tmpUser;
+                        }
+                        return this.fireStorage.storage
+                            .refFromURL(tmpUser.imgUrl as string)
+                            .getDownloadURL().then((url: string) => {
+                                // tmpUser.imgUrl = { else: url };
+                                return url;
+                            }, error => {
+                                if (error.code === 'storage/object-not-found')
+                                    this.alertService.addAlert(Alerts.noPhoto);
+                                tmpUser.imgUrl = { else: placeholderUrl };
+                                return null;
+                            }).then(elseUrl => {
+                                if (elseUrl) {
+                                    const getUrl = (tmpUser.imgUrl as string).split('.');
+                                    getUrl.pop();
+                                    getUrl.push('webp');
+                                    const webpUrl = getUrl.join('.');
+                                    return this.fireStorage.storage.refFromURL(webpUrl as string)
+                                        .getDownloadURL().then(url => {
+                                            tmpUser.imgUrl = { else: elseUrl, webp: url };
+                                            return tmpUser;
+                                        }, error => {
+                                            tmpUser.imgUrl = { else: elseUrl };
+                                            return tmpUser;
+                                        });
+                                }
+                                return tmpUser;
+                            });
+                        /*
                         if (tmpUser.imgUrl)
                             return (tmpUser.imgUrl as DocumentReference).get().then(imgSnap => {
                                 if (imgSnap.exists) {
@@ -323,6 +395,7 @@ export class AuthService {
                             tmpUser.imgUrl = placeholderUrl;
                             return tmpUser;
                         }
+                        */
                     }).then((user: IUser) => {
                         return {
                             connections: user.connections,
@@ -334,20 +407,14 @@ export class AuthService {
                             userData: user.userData
                         };
                     });
-            } else throw new Error('Cannot get current uesr');
+            } else throw new Error('Cannot get current user');
         }).then((user: IUser) => {
             this.currentUser = user;
             this.currentData = (user.userData as IUserData);
             this.getCommunities();
             return user;
         }).catch(error => {
-            if (error === 'Cannot accquire profile data' || error === 'Cannot get current uesr')
-                this.noProfileError();
-            else
-                this.alertService.addAlert(Alerts.custom, {
-                    msg: error,
-                    type: 'warning'
-                });
+            this.noProfileError();
             console.log(error);
             return null;
         });
@@ -399,9 +466,15 @@ export class AuthService {
         });
     }
 
-    private noProfileError() {
-        this.alertService.addAlert(Alerts.incomelete); // TODO: add restriction here or in servvice
-        this.isAuth = false;
+    private noProfileError(error?: string) {
+        if (!error) {
+            this.alertService.addAlert(Alerts.incomplete); // TODO: add restriction here or in servvice
+            this.isAuth = false;
+        } else
+            this.alertService.addAlert(Alerts.custom, {
+                msg: error,
+                type: 'warning'
+            });
     }
 
     private getChats() {
@@ -466,11 +539,12 @@ export interface IRegister {
     fName: string;
     lName: string;
     location: string;
+    latlng: google.maps.LatLng;
     skills: string[];
     passions: string[];
     payment: Payments[];
     about: string;
-    imgUrl?: string;
+    photo: boolean;
 }
 export interface IYourProfile {
     fName: string;

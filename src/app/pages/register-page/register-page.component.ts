@@ -1,12 +1,21 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, Validators, FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
 import { MyErrorStateMatcher } from './ragister-validator';
-import { MatChipInputEvent, MatChipList, MatChipListChange } from '@angular/material';
+import { MatChipInputEvent, MatChipList, MatChipListChange, MatSelect, MatOption } from '@angular/material';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { AuthService, IRegister } from '../../shared/auth/auth.service';
-import { Payments } from '../../shared/community/community-interfaces';
+import { Payments, INavigation } from '../../shared/community/community-interfaces';
 import { ActivatedRoute } from '@angular/router';
-
+import { firestore } from 'firebase';
+import { AlertService, Alerts, IAlert } from '../../shared/alerts/alert.service';
+import { MapsAPILoader } from '@agm/core';
+import { } from '@types/googlemaps';
+import { RegisterLocation } from './register-location';
+// declare var google: any;
+/*
+import { } from '@types/googlemaps';
+*/
+// import {} from 'googlemaps';
 @Component({
     selector: 'app-register-page',
     templateUrl: './register-page.component.html',
@@ -14,7 +23,6 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class RegisterPageComponent implements OnInit, AfterViewInit {
     payments: string[] = [];
-
     popovers = {
         skills: `What can you help people with? Look, you don't have to be certified or have a gold medal to
          help someone out. We're just looking for something you know a lot about.
@@ -23,23 +31,38 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
          skis? Maintenance your own car? I think you get the idea....`,
         passions: `What do you daydream about at work? What do you spend your weekends doing in your garage?`,
         payment: `What will you charge your community for sharing your knowledge? (quantity dependent on extent of knowledge shared)`,
-        about: `Who are you? What's your fun fact? What should your community know about you?`
+        about: `Who are you? What's your fun fact? What should your community know about you?`,
+        photo: `We believe that each profile needs a face`
     };
 
+    // Elements and variables
+    @ViewChild('locationInput') locationInput: ElementRef<HTMLInputElement>;
     @ViewChild('skillsList') skillsList: MatChipList;
     @ViewChild('passionsList') passionsList: MatChipList;
     inputSkills: string[] = [];
     inputPassions: string[] = [];
+
+    // Errors
+    userExists = -1;
     matcher = new MyErrorStateMatcher();
     rFormGroup: FormGroup;
     authType = 0;
     steps;
-    constructor(private fb: FormBuilder, private authService: AuthService, private route: ActivatedRoute) {
+
+    // Navigation
+    location: RegisterLocation;
+//#region Init
+    constructor(private fb: FormBuilder, private authService: AuthService,
+        private alertService: AlertService, private mapsAPILoader: MapsAPILoader, private route: ActivatedRoute) {
         for (const i in Payments)
             if (typeof Payments[i] === 'string')
                 this.payments.push(Payments[i]);
     }
 
+    /* start form and steps
+    * Create steps
+    * Check for auth
+    */
     ngOnInit() {
         this.buildForm();
         this.createSteps();
@@ -51,7 +74,7 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
                     this.authType = 2;
                     this.authService.isAuth = true;
                 } else if (this.authService.userProvider.includes('facebook')) { // TODO: this is not 'facebook'
-                    this.authType = 1;
+                    this.authType = 3;
                     this.authService.isAuth = true;
                 }
                 $('.icons-tab-steps').steps('next');
@@ -59,6 +82,21 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
         });
     }
 
+    // For passions and skills chips
+    ngAfterViewInit() {
+        this.skillsList.chips.changes.subscribe(() => {
+            if (this.skillsList.empty)
+                this.rFormGroup.get('skills').setErrors({ required: true });
+            // this.skills.setErrors({ required: true });
+        });
+        this.passionsList.chips.changes.subscribe(() => {
+            if (this.passionsList.empty)
+                this.rFormGroup.get('passions').setErrors({ required: true });
+            // this.passions.setErrors({ required: true });
+        });
+    }
+//#endregion
+//#region Form
     buildForm() {
         this.rFormGroup = this.fb.group({
             // Step 1
@@ -74,10 +112,11 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
             passions: '',
             payment: ['', Validators.required],
             // Step 4
-            about: ['', Validators.required]
+            about: ['', Validators.required],
+            photo: ['', Validators.required]
         });
     }
-
+    // Get form error
     getError(child: string, errType: string): boolean {
         const isRequired = this.rFormGroup.get(child).hasError('required');
         if (errType === 'required')
@@ -85,24 +124,8 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
         else
             return isRequired ? false : this.rFormGroup.get(child).hasError(errType);
     }
-
-    ngAfterViewInit() {
-        this.skillsList.chips.changes.subscribe(() => {
-            if (this.skillsList.empty)
-                this.rFormGroup.get('skills').setErrors({ required: true });
-            // this.skills.setErrors({ required: true });
-        });
-        this.passionsList.chips.changes.subscribe(() => {
-            if (this.passionsList.empty)
-                this.rFormGroup.get('passions').setErrors({ required: true });
-                // this.passions.setErrors({ required: true });
-        });
-    }
-
-    chipChange(changelist: MatChipListChange) {
-        console.log(changelist);
-    }
-
+//#endregion
+//#region Auth Check
     fAuth($event) {
         $event.preventDefault();
         // this.authType = 1;
@@ -119,7 +142,8 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
             }
         });
     }
-
+//#endregion
+//#region Steps
     createSteps() {
         $('.icons-tab-steps').steps({
             headerTag: 'h6',
@@ -131,10 +155,27 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
                 finish: 'Submit'
             },
             onInit: (event, currentIndex) => {
-                // test
+                this.mapsAPILoader.load().then(() => {
+                    this.location = new RegisterLocation(this.alertService, this.locationInput.nativeElement);
+                }, err => {
+                    console.error(err);
+                    // this.handleLocationError('mapsError');
+                    }).then(() => {
+                        if (navigator.geolocation)
+                            this.location.getLocation().then(res => {
+                                if (res) {
+                                    // this.locationInput.nativeElement.dispatchEvent(new Event('place_changed'));
+                                    this.formChildren('location').setValue(this.location.name);
+                                    this.formChildren('location').markAsDirty();
+                                } else this.handleLocationError('mapsError');
+                            });
+                        else this.handleLocationError('refused');
+                    });
             },
             onStepChanging: (event, currentIndex, newIndex) => {
                 if (currentIndex > newIndex)
+                    return true;
+                if (newIndex < 4)
                     return true;
                 switch (newIndex) {
                     case 1:
@@ -142,14 +183,25 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
                             this.formChildren('email').markAsDirty();
                             this.formChildren('pass1').markAsDirty();
                             this.formChildren('pass2').markAsDirty();
-                            return this.formChildren('email').valid && this.formChildren('pass1').valid && this.formChildren('pass2').valid;
+                            if (this.formChildren('email').valid && this.formChildren('pass1').valid && this.formChildren('pass2').valid) {
+                                this.authService.userExists(this.formChildren('email').value).then(doesExist => {
+                                    if (doesExist) {
+                                        this.userExists = 1;
+                                        this.alertService.addAlert(Alerts.incomplete, true);
+                                    } else this.userExists = 0;
+                                });
+                                return true;
+                            } else return false;
                         } else
-                            return true; // this.authService.isAith;
+                            return this.authService.isAuth;
+                            // */
                     case 2:
                         this.formChildren('fName').markAsDirty();
                         this.formChildren('lName').markAsDirty();
                         this.formChildren('location').markAsDirty();
-                        return this.formChildren('fName').valid && this.formChildren('lName').valid && this.formChildren('location').valid;
+                        if (this.formChildren('fName').valid && this.formChildren('lName').valid && this.formChildren('location').value)
+                            return this.checkLocation();
+                        return false;
                     case 3:
                         if (!this.formChildren('skills').dirty)
                             this.formChildren('skills').setErrors({ required: true });
@@ -168,10 +220,52 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
             onFinished: (event, currentIndex) => this.submitRegister(this.rFormGroup.value)
         });
     }
+//#endregion
+
+    handleLocationError(type: ILocationErrors): boolean {
+        switch (type) {
+            case 'refused':
+                this.alertService.addAlert(Alerts.locationError, false);
+                break;
+            case 'registered':
+                this.alertService.addAlert(Alerts.locationError, true);
+                break;
+            case 'invalid':
+                this.formChildren('location').setErrors({ invalid: true });
+                break;
+            case 'valid':
+                this.formChildren('location').setErrors({ invalid: false });
+                break;
+        }
+        return true;
+        // TODO: this
+        /*
+        if (this.locationRefused) {
+            if (this.locationAlert) {
+                this.alertService.removeAlert(this.locationAlert);
+                this.locationAlert = null;
+            }
+            return true;
+        } else this.locationAlert = this.alertService.addAlert(Alerts.locationError, true);
+        return false;
+        */
+    }
+
+    checkLocation() {
+        if (this.location.valid) {
+            this.handleLocationError('valid');
+            return true;
+        } else {
+            this.handleLocationError('invalid');
+            return false;
+        }
+    }
+
     formChildren(id: IFormChildren): AbstractControl {
         return this.rFormGroup.get(FormChildren[id]);
     }
 
+//#region chips
     addChip(event: MatChipInputEvent, type: number): void {
         const input = event.input;
         const value = event.value;
@@ -197,29 +291,37 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
                 this.inputSkills.splice(index, 1);
         console.log(index, this.inputPassions);
     }
+//#endregion
+//#region Submit
     submitRegister(formValues) {
-        const isValid = this.rFormGroup.valid;
-        const fPayments: number[] = [];
-        formValues.payment.forEach((payment: string) => {
-            fPayments.push(Payments[payment]);
-        });
-        const register: IRegister = {
-            type: this.authType,
-            fName: formValues.fName,
-            lName: formValues.lName,
-            location: formValues.location,
-            skills: this.inputSkills,
-            passions: this.inputPassions,
-            payment: fPayments,
-            about: formValues.about
-        };
-        if (this.authType === 0) {
-            register.email = formValues.email;
-            register.pass = formValues.pass1;
-        }
-        console.log(register);
-        this.authService.registerUser(register);
+        if (this.authType >= 0) {
+            const isValid = this.rFormGroup.valid;
+            const fPayments: number[] = [];
+            formValues.payment.forEach((payment: string) => {
+                fPayments.push(Payments[payment]);
+            });
+            const register: IRegister = {
+                type: this.authType,
+                fName: formValues.fName,
+                lName: formValues.lName,
+                location: this.location.name,
+                latlng: this.location.latlng,
+                skills: this.inputSkills,
+                passions: this.inputPassions,
+                payment: fPayments,
+                about: formValues.about,
+                photo: formValues.photo // TODO: here
+            };
+            if (this.authType === 0) {
+                register.email = formValues.email;
+                register.pass = formValues.pass1;
+            }
+            console.log(register);
+            if (isValid)
+                this.authService.registerUser(register);
+        } else this.alertService.addAlert(Alerts.userError);
     }
+//#endregion
 }
 enum FormChildren {
     email = 'email',
@@ -245,3 +347,5 @@ declare type IFormChildren =
     'pasions' |
     'payment' |
     'about';
+enum LocationErrors { 'refused', 'mapsError', 'registered', 'invalid' , 'valid'}
+declare type ILocationErrors = LocationErrors | 'refused' | 'mapsError' | 'registered' | 'invalid' | 'valid';

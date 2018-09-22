@@ -12,8 +12,9 @@ export class ProfileCardComponent implements OnInit {
     @Input('name') name;
     @Input('location') location;
     @Input('connections') connections;
-    @Input('imgUrl') imgUrl;
+    @Input('imgUrl') imgUrl: string;
     @Input('overlay') overlay = false;
+    betterImage: string;
 
     @ViewChild('cardMain') cardMain: ElementRef<HTMLElement>;
 

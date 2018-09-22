@@ -18,7 +18,10 @@
         </div>
         <div class="row text-center">
             <div class="col-7 mx-auto">
-                <img *ngIf="profile?.imgUrl" class="rounded-circle img-fluid" [src]="profile?.imgUrl" role="figure" alt="profile photo">
+                <picture *ngIf="profile?.imgUrl">
+                    <source [srcset]="profile?.imgUrl.webp">
+                    <img [src]="profile?.imgUrl.else" role="figure" alt="profile photo" class="rounded-circle img-fluid">
+                </picture>
             </div>
         </div>
     </mat-card-title>

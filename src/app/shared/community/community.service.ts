@@ -10,6 +10,7 @@ import {
 } from './community-interfaces';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { AngularFirestore, AngularFirestoreCollection, DocumentSnapshot, AngularFirestoreDocument } from 'angularfire2/firestore';
+import { AngularFireStorage } from 'angularfire2/storage';
 import { DocumentReference, DocumentData } from '@firebase/firestore-types';
 import { AlertService, Alerts } from '../alerts/alert.service';
 import { Chat, IChat } from './chat';
@@ -27,6 +28,7 @@ export class CommunityService {
     private _skills = new BehaviorSubject<ICommunitySkills[]>([]);
     private _showWeb = new Subject<boolean>();
     private _members = new BehaviorSubject<IUser[]>([]);
+    public memberCount: number;
     // private _messages = new Subject<IMessage[]>();
     private _messageRef = new BehaviorSubject<DocumentReference>(null);
 
@@ -36,7 +38,7 @@ export class CommunityService {
     private _searchSkills = new BehaviorSubject<string[]>([]);
 
     // construct database
-    constructor(private db: AngularFirestore, private alertService: AlertService) {
+    constructor(private db: AngularFirestore, private alertService: AlertService, private fireStorage: AngularFireStorage) {
         this._communityCollection = db.collection('community');
     }
 
@@ -141,13 +143,26 @@ export class CommunityService {
             else
                 throw new Error('Unable to fetch community');
         }).then(comData => {
+            this.memberCount = comData.members;
             if (img)
-                return comData.img.get().then(imgSnap => {
-                    if (imgSnap.exists)
-                        return imgSnap.data() as IImg;
-                    else return <IImg>{
-                        else: placeholderUrl
-                    };
+                return this.fireStorage.storage.refFromURL(comData.img as string).getDownloadURL()
+                    .then((url: string) => {
+                        return url;
+                        // return usrData;
+                    }, error => {
+                        return placeholderUrl;
+                    }).then(elseUrl => {
+                        if (elseUrl) {
+                            const getUrl = (comData.img as string).split('.');
+                            getUrl.pop();
+                            getUrl.push('webp');
+                            const webpUrl = getUrl.join('.');
+                            return this.fireStorage.storage.refFromURL(webpUrl).getDownloadURL().then((url: string) => {
+                                return { else: elseUrl, webp: url };
+                            }, error => {
+                                return { else: placeholderUrl };
+                            });
+                        }
                 }).then(imgData => {
                     return comData.location.get().then(locationSnap => {
                         if (locationSnap.exists)
@@ -271,17 +286,36 @@ export class CommunityService {
         pass: [],
         skill: [],
         paym: null,
-        img: placeholderUrl
+        img: placeholderUrl as string | IImg
     }) {
         return this.db.collection('users').doc(id).ref.get().then(m => {
             if (m.exists) {
                 const memberData: IUser = <any>m.data();
-                if (!memberData.imgUrl)
-                    memberData.imgUrl = this.db.collection('images').doc('placehiolder').ref;
-                return (memberData.imgUrl as DocumentReference).get().then(img => {
-                    if (img.exists)
-                        usrData.img = img.data()['else'] as string;
-                    return usrData;
+                return Promise.resolve().then(() => {
+                    if (!memberData.imgUrl) {
+                        usrData.img = { else: placeholderUrl };
+                        return usrData;
+                    } else return this.fireStorage.storage.refFromURL(memberData.imgUrl as string).getDownloadURL()
+                        .then((url: string) => {
+                            return url;
+                            // return usrData;
+                        }, error => {
+                            return null;
+                        }).then(elseUrl => {
+                            if (elseUrl) {
+                                const getUrl = (memberData.imgUrl as string).split('.');
+                                getUrl.pop();
+                                getUrl.push('webp');
+                                const webpUrl = getUrl.join('.');
+                                return this.fireStorage.storage.refFromURL(webpUrl).getDownloadURL().then(url => {
+                                    usrData.img = {else: elseUrl, webp: url};
+                                    return usrData;
+                                }, error => {
+                                    usrData.img = { else: elseUrl };
+                                    return usrData;
+                                });
+                            }
+                        });
                 }).then(newData => {
                     return <IUser>{
                         connections: memberData.connections,

@@ -15,7 +15,10 @@
             <div class="f-auto">
                 <mat-list>
                     <mat-list-item *ngFor="let chat of filteredChats | async" class="cursor-pointer" (click)="tabChat(chat)">
-                        <img matListAvatar [src]="chat.user?.imgUrl" alt="profile img">
+                        <picture>
+                            <source [srcset]="chat.user?.imgUrl.else">
+                            <img matListAvatar [src]="chat.user?.imgUrl.webp" alt="profile img">
+                        </picture>
                         <h3 matLine>
                             <mat-chip-list class="chat-chip">
                                 <mat-chip *ngIf="chat.newMessage" color="primary" selected="true">1</mat-chip>

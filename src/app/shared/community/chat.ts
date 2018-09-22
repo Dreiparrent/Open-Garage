@@ -55,7 +55,7 @@ export class Chat implements IChat {
     // Chat Interface
     public user: IUser;
     public cUserIndex: number;
-    public readonly users: DocumentReference[];
+    public users: DocumentReference[];
     public readonly userData: IUser[] = [];
     public readonly subject: string;
     get messages() {
@@ -99,10 +99,13 @@ export class Chat implements IChat {
         if (data.users) {
             this.users = data.users;
             this.sortUsers();
-        } else {
-            this.users = _comService.getMembers('fake').map(mem => mem.ref);
-            this.sortUsers(_comService.getMembers('fake'));
-        }
+        } else
+            _comService.members.subscribe(membs => {
+                if (membs.length === _comService.memberCount) {
+                    this.users = membs.map(mem => mem.ref);
+                    this.sortUsers(_comService.getMembers('fake'));
+                }
+            });
     }
     private sortUsers(comMembers?: IUser[]) {
         this.users.forEach((userRef, i) => {

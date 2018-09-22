@@ -1,7 +1,6 @@
 <h2 mat-dialog-title>{{profile.name}}</h2>
 <mat-dialog-content>
     <form [formGroup]="uFormGroup" (ngSubmit)="submitRegister(uFormGroup.value)">
-        <h3>Image</h3>
         <fieldset>
             <div class="row">
                 <mat-form-field class="col-sm-12 col-md-6">
@@ -85,6 +84,10 @@
                     </mat-error>
                 </mat-form-field>
             </div>
+        </fieldset>
+        <h4>Image</h4>
+        <fieldset class="text-center">
+            <button class="btn btn-primary" (click)="openPhoto()">Change Profile Poto</button>
         </fieldset>
     </form>    
 </mat-dialog-content>

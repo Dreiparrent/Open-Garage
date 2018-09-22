@@ -1,12 +1,18 @@
 import * as functions from 'firebase-functions';
+const gcs = require('@google-cloud/storage');
+import * as os from 'os';
+// import { Storage } from '@google-cloud/storage';
+import * as imagemin from 'imagemin';
+import * as webp from 'imagemin-webp';
 import * as admin from 'firebase-admin';
+import * as path from 'path';
 admin.initializeApp();
-import { DocumentReference, GeoPoint } from '@google-cloud/firestore';
-// import { FieldValue } from 'firebase-admin';
+// import { DocumentReference, GeoPoint } from '@google-cloud/firestore';
+// import { firestore } from 'firebase';
+// declare var DocumentReference: firestore.DocumentReference;
 // var FieldValue = require('firebase-admin').firestore.FieldValue;
 
-
-/* ** INTERFACES ** */
+//#region Interfaces
 interface ITags {
     passions: string[];
     skills: string[];
@@ -21,21 +27,21 @@ interface IProfile<T> {
 }
 interface ILocation {
     location: string;
-    nav: GeoPoint;
+    nav: FirebaseFirestore.GeoPoint;
 }
 
 // Community Interface
 interface ICommunity {
     desc: string;
-    img: DocumentReference;
-    location: DocumentReference;
+    img: FirebaseFirestore.DocumentReference;
+    location: FirebaseFirestore.DocumentReference;
     members: number;
     name: string;
     join?: string;
 }
 interface ICommunityMembers {
-    founder: DocumentReference;
-    members: DocumentReference[];
+    founder: FirebaseFirestore.DocumentReference;
+    members: FirebaseFirestore.DocumentReference[];
 }
 interface IMessage {
     text: string;
@@ -46,7 +52,7 @@ interface IMessage {
 interface IChat {
     last: string;
     subject: string;
-    users?: DocumentReference[];
+    users?: FirebaseFirestore.DocumentReference[];
     newChat?: boolean;
     newMessage?: IMessage;
     count: number;
@@ -54,19 +60,29 @@ interface IChat {
     timestamp: any;
 }
 interface IUserMessage {
-    ref?: DocumentReference;
+    ref?: FirebaseFirestore.DocumentReference;
     timestamp: any;
     newMessage?: string;
 }
+//#endregion
+
 // export const helloWorld = functions.https.onRequest((request, response) => {
 //  response.send("Hello from Firebase!");
 // });
 
-/* ** PROFILE ** */
+//#region Profile
+export const createProfileGuard = functions.firestore.document('users/{userID}').onWrite((change, context): Promise<any> => {
+    if (change.before.exists) {
+        if (change.after.data()["new"] && !change.before.data()["new"])
+            return change.before.ref.set(change.before.data()).then(() => console.log('user overwrite prevented'));
+        // return null;
+    }
+    return null;
+});
 export const updateProfile = functions.firestore.document('users/{userId}/userData/profile').onUpdate((change, context): Promise<any> => {
     // if (typeof change.before.data()['location'] === 'object')
-    //     return null;
-    const prevVal: IProfile<DocumentReference> = <any>change.before.data();
+    //     return null;    
+    const prevVal: IProfile<FirebaseFirestore.DocumentReference> = <any>change.before.data();
     const newVal: IProfile<ILocation> = <any>change.after.data();
     const uid = context.params.userId;
     const newName = newVal.fName + ' ' + newVal.lName;
@@ -88,10 +104,9 @@ export const updateProfile = functions.firestore.document('users/{userId}/userDa
         }
     }
 
-
     return change.after.ref.set(newVal, { merge: true }).then(result => {
         return admin.firestore().collection('users').doc(uid).get().then(userSnap => {
-            if (userSnap.exists)
+            if (userSnap.exists && change.before.exists)
                 newUser = userSnap.data()['new'];
             return userSnap.ref;
         });
@@ -122,9 +137,9 @@ export const updateProfile = functions.firestore.document('users/{userId}/userDa
             }, { merge: true });
         });
 });
-
-/* ** TAGS ** */
-export const addTag = (user: string, update: { ref: DocumentReference }, tag: string, isSkill = false): Promise<any> => {
+//#endregion
+//#region Tags
+export const addTag = (user: string, update: { ref: FirebaseFirestore.DocumentReference }, tag: string, isSkill = false): Promise<any> => {
     const collection = isSkill ? 'skills' : 'passions';
     return admin.firestore().collection(collection).doc(tag).get().then(tagSnap => {
         let userCount = 0;
@@ -210,7 +225,8 @@ export const updateTags = functions.firestore.document('users/{userId}/userData/
         console.info(tagType.join(', '), uid);
     });
 });
-
+//#endregion
+//#region Community
 export const joinCommunity = functions.firestore.document('community/{communityId}').onUpdate((change, context): Promise<any> => {
     const prevVal: ICommunity = <any>change.before.data();
     const newVal: ICommunity = <any>change.after.data();
@@ -280,7 +296,8 @@ export const joinCommunity = functions.firestore.document('community/{communityI
         else return null;
     })
 });
-
+//#endregion
+//#region Chat
 export const startChat = functions.firestore.document('message/users/chats/{chat}').onCreate((create, context): Promise<any> => {
     // const prevVal: ICommunity = <any>change.before.data();
     const newVal: IChat = <any>create.data();
@@ -352,3 +369,48 @@ export const newMessage = functions.firestore.document('message/{parent}/chats/{
         return null;
     } else return null;
 });
+//#endregion
+//#region Storage
+export const imageUpload = functions.storage.object().onFinalize((object, context) => {
+    const filePath = object.name.split('/');
+    const contentType = object.contentType;
+    const fileName = path.basename(object.name);
+    const extName = path.extname(object.name);
+    const tmpPath = path.join(os.tmpdir(), fileName);
+    const bucket = new gcs.Storage().bucket(object.bucket)
+    // const bucket = gcs.bucket(object.bucket);
+    
+    console.log('object', object);
+    console.log('context', context);
+    if (object.contentType === 'image/webp') {
+        console.log('already converted');
+        return null;
+    } if (!object.contentType.startsWith('image/')) {
+        console.log('Not an Image');
+        return null;
+    }
+    if (filePath[1] === 'user') {
+        const uid = filePath[2];
+        return bucket.file(object.name).download({ destination: tmpPath }).then(() => {
+            console.log('Image Downloaded to', tmpPath)
+            return imagemin([tmpPath], '/tmp', {
+                plugins: [
+                    webp({ quality: 75 })
+                ]
+            }).then(res => {
+                
+                console.log(res);
+                console.log(filePath);
+                console.log(fileName);
+                console.log(extName);
+                const uploadPath = path.join(path.dirname(object.name), path.basename(res[0].path))
+                // return null;
+                return bucket.upload(res[0].path, { destination: uploadPath }).then(() => {
+                    const imgUrl = 'gs://' + object.bucket + '/' + object.name;
+                    return admin.firestore().collection('users').doc(uid).set({ imgUrl: imgUrl }, { merge: true });
+                });
+            })
+        });
+    } else return null;
+});
+//#endregion

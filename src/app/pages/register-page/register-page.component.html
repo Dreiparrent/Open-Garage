@@ -66,9 +66,12 @@
                         </mat-error>
                     </mat-form-field>
                     <mat-form-field class="col-md-12">
-                        <input matInput type="text" placeholder="Location" formControlName="location" [errorStateMatcher]="matcher">
+                        <input #locationInput matInput type="text" placeholder="Location" formControlName="location" [errorStateMatcher]="matcher">
                         <mat-error *ngIf="getError('location', 'required')">
                             Location is <strong>required</strong>
+                        </mat-error>
+                        <mat-error *ngIf="getError('location', 'invalid')">
+                            Location is <strong>invalid</strong>
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -154,6 +157,21 @@
                             <mat-error *ngIf="getError('about', 'required')">
                                 About is <strong>required</strong>
                             </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="col-md-12">
+                        <mat-select placement="bottom" formControlName="photo" [popover]="popovers.photo" popoverTitle="Profile Photo"
+                            container="body" triggers="mouseenter:mouseleave" placeholder="Profile Photo" [errorStateMatcher]="matcher" (selectionChange)="photoSelect($event.value)">
+                            <mat-option [value]="true">
+                                I will choose a photo now.
+                            </mat-option>
+                            <mat-option [value]="false">
+                                I need some time. Please remind me often.
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="getError('photo', 'required')">
+                            Chosing a photo is
+                            <strong>required</strong>
+                        </mat-error>
                     </mat-form-field>
                 </div>
             </fieldset>

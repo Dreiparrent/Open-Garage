@@ -5,21 +5,19 @@ import { CommunitiesPagesRoutingModule } from './communities-pages-routing.modul
 import { CommunitiesPageComponent } from './communities-page.component';
 import { Community404Component } from './community-404/community-404.component';
 import { MaterialImports } from '../../shared/imports/material-imports.module';
-import { AgmCoreModule } from '@agm/core';
 import { AgmSnazzyInfoWindowModule } from '@agm/snazzy-info-window';
 import { CommunitiesService } from '../../shared/community/communities.service';
 import { SharedModule } from '../../shared/shared.module';
 import { CommunitiesMapComponent } from './communities-map/communities-map.component';
 import { CommunitiesSearchComponent } from './communities-search/communities-search.component';
+import { AgmCoreModule } from '../../../../node_modules/@agm/core';
 
 @NgModule({
     imports: [
         CommonModule,
         CommunitiesPagesRoutingModule,
         MaterialImports,
-        AgmCoreModule.forRoot({
-            apiKey: 'AIzaSyARGMZgt5yZG663ImbWcvs3Qu0-kSRS-o8'
-        }),
+        AgmCoreModule,
         AgmSnazzyInfoWindowModule,
         SharedModule
     ],

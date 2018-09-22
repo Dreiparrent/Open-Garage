@@ -33,6 +33,9 @@ import { ExploreCardComponent } from './cards/explore-card/explore-card.componen
 import { AppearDirective } from './directives/appear.directive';
 import { NewChatDialogComponent } from './cards/new-chat-dialog/new-chat-dialog.component';
 import { ChatComponent } from './community/chat/chat.component';
+import { LocationHelpDialogComponent } from './cards/location-help-dialog/location-help-dialog.component';
+import { ImageDialogComponent } from './cards/image-dialog/image-dialog.component';
+import { CreateCommunityDialogComponent } from './cards/create-community-dialog/create-community-dialog.component';
 
 @NgModule({
     exports: [
@@ -84,13 +87,19 @@ import { ChatComponent } from './community/chat/chat.component';
         UserDialogComponent,
         ExploreCardComponent,
         NewChatDialogComponent,
-        ChatComponent
+        ChatComponent,
+        LocationHelpDialogComponent,
+        ImageDialogComponent,
+        CreateCommunityDialogComponent
     ],
     entryComponents: [
         YourProfileDialogComponent,
         UpdateProfileDialogComponent,
         UserDialogComponent,
-        NewChatDialogComponent
+        ImageDialogComponent,
+        NewChatDialogComponent,
+        LocationHelpDialogComponent,
+        CreateCommunityDialogComponent
     ],
     providers: [
         CommunityGuardService,

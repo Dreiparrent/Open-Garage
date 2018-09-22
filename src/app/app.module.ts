@@ -33,6 +33,7 @@ import { SwUpdateService } from './sw-update.service';
 import { CommunitiesComponent } from './layouts/communities/communities.component';
 import { AlertService } from './shared/alerts/alert.service';
 import { CommunitiesService } from './shared/community/communities.service';
+import { AgmCoreModule } from '../../node_modules/@agm/core';
 
 @NgModule({
     declarations: [
@@ -41,7 +42,7 @@ import { CommunitiesService } from './shared/community/communities.service';
         LoginComponent,
         RegisterComponent,
         CommunitySidenavComponent,
-        CommunitiesComponent,
+        CommunitiesComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -54,7 +55,11 @@ import { CommunitiesService } from './shared/community/communities.service';
         AngularFireModule.initializeApp(environment.firebase),
         AngularFireAuthModule,
         AngularFirestoreModule,
-        AngularFireStorageModule
+        AngularFireStorageModule,
+        AgmCoreModule.forRoot({
+            apiKey: environment.firebase.apiKey,
+            libraries: ['places']
+        }),
     ],
     providers: [
         AuthService,

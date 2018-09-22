@@ -108,7 +108,7 @@ export class HomePageComponent implements OnInit {
         {
             name: 'Baxter Cochennet',
             imgUrl: '/assets/img/photos/baxter.jpg',
-            skpa: 'Fly Fishing',
+            skpa: '',
             com: 'Test Community',
             type: 1,
             state: 'inactive-true'
@@ -116,7 +116,7 @@ export class HomePageComponent implements OnInit {
         {
             name: 'Andrei Parrent',
             imgUrl: '/assets/img/photos/andrei.jpg',
-            skpa: 'Web Design',
+            skpa: 'Fly Fishing',
             com: 'Test Community',
             type: 0,
             state: 'inactive-false'
@@ -124,7 +124,7 @@ export class HomePageComponent implements OnInit {
         {
             name: 'Baxter Cochennet',
             imgUrl: '/assets/img/photos/placeholder.gif',
-            skpa: 'Finance',
+            skpa: 'Web Design',
             com: 'Test Community',
             type: 0,
             state: 'inactive-true'
@@ -132,7 +132,7 @@ export class HomePageComponent implements OnInit {
         {
             name: 'Andrei Parrent',
             imgUrl: '/assets/img/photos/placeholder.gif',
-            skpa: '',
+            skpa: 'Finance',
             com: '',
             type: -1,
             state: 'inactive-false'

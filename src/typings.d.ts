@@ -60,13 +60,13 @@ interface StepsSettings {
     transitionEffectSpeed?: number;
 
     /* Events */
-    onInit?: (event, currentIndex) => void | boolean;
-    onStepChanging?: (event, currentIndex, newIndex) => boolean;
-    onStepChanged?: (event, currentIndex, priorIndex) => void;
+    onInit?: (event, currentIndex: number) => void | boolean;
+    onStepChanging?: (event, currentIndex: number, newIndex: number) => boolean;
+    onStepChanged?: (event, currentIndex: number, priorIndex: number) => void;
     onCanceled?: (event) => void | boolean;
-    onFinishing?: (event, currentIndex) => void | boolean;
-    onFinished?: (event, currentIndex) => void | boolean;
-    onContentLoaded?: (event, currentIndex) => void;
+    onFinishing?: (event, currentIndex: number) => void | boolean;
+    onFinished?: (event, currentIndex: number) => void | boolean;
+    onContentLoaded?: (event, currentIndex: number) => void;
 
     /* Labels */
     labels?: {

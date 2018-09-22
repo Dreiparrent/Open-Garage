@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { YourProfileDialogComponent } from '../your-profile-dialog/your-profile-dialog.component';
-import { IUser, IUserData } from '../../community/community-interfaces';
+import { IUser, IUserData, placeholderUrl } from '../../community/community-interfaces';
 import { AuthService, IYourProfile, IUpdateProfile } from '../../auth/auth.service';
 import { UpdateProfileDialogComponent } from '../update-profile-dialog/update-profile-dialog.component';
 import { NavigationService } from '../../navigation/navigation-service';
@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { AlertService, Alerts } from '../../alerts/alert.service';
+import { ImageDialogComponent } from '../image-dialog/image-dialog.component';
 
 @Component({
     selector: 'app-your-profile-card',
@@ -17,7 +18,7 @@ import { AlertService, Alerts } from '../../alerts/alert.service';
 })
 export class YourProfileCardComponent implements OnInit {
 
-    profile: IUser;
+    profile: IUser = null;
     isProvide: boolean;
     updateProg = 100;
     updateBuf = 0;
@@ -27,7 +28,6 @@ export class YourProfileCardComponent implements OnInit {
         private dialog: MatDialog,
         private authService: AuthService,
         private navService: NavigationService,
-        private location: Location,
         private alertService: AlertService
     ) { }
 
@@ -36,7 +36,18 @@ export class YourProfileCardComponent implements OnInit {
             if (navSub) {
                 this.isProvide = navSub.isProvide;
                 this.profile = navSub.user;
+                if (this.profile.imgUrl === placeholderUrl)
+                    this.openPhoto();
             }
+        });
+    }
+
+    openPhoto() {
+        Promise.resolve(null).then(() => {
+            const dialogRef = this.dialog.open(ImageDialogComponent, { data: { profile: this.profile, need: true } });
+            dialogRef.afterClosed().subscribe(result => {
+                console.log(result);
+            });
         });
     }
 

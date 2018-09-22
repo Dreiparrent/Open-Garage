@@ -1,0 +1,19 @@
+<span [ngSwitch]="data.need">
+<h2 *ngSwitchCase="true" mat-dialog-title class="mb-2">
+    You Need a Photo!
+</h2>
+<h2 *ngSwitchDefault mat-dialog-title class="mb-2">
+    Update Photo
+</h2>
+</span>
+<mat-dialog-content>
+    <h3>Open garage believes in putting a face behind the name</h3>
+    <p class="w-100 text-center">
+        <input id="uploader" type="file" accept="image/*" class="d-none" (change)="imageChange($event)"/>
+        <button class="btn btn-primary text-center" (click)="uploadImage()">Upload Now</button>
+    </p>
+    <mat-progress-bar *ngIf="showProgress" mode="determinate" [value]="progress"></mat-progress-bar>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

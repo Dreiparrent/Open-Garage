@@ -42,7 +42,7 @@ export interface IUser {
     passions?: string[];
     location: string;
     connections: number;
-    imgUrl?: DocumentReference | string;
+    imgUrl?: string | IImg;
     ref?: DocumentReference;
     userClick?: boolean;
 }
@@ -66,7 +66,7 @@ export class IUser<T> {
 */
 export interface IfbComData extends DocumentData {
     desc: string;
-    img: DocumentReference;
+    img: string | IImg;
     location: DocumentReference;
     members: number;
     name: string;
@@ -78,8 +78,8 @@ export interface ICommunitySkills {
     [skill: string]: IUser[];
 }
 export interface IImg {
-    jpf: string;
-    webp: string;
+    jpf?: string;
+    webp?: string;
     else: string;
 }
 export interface ICommunityData {
@@ -96,7 +96,7 @@ export interface INavigation {
 export interface ICommunity {
     name: string;
     desc: string;
-    img: IImg | DocumentReference;
+    img: IImg;
     location?: string;
     nav?: firestore.GeoPoint;
     members: number;
