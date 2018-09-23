@@ -56,9 +56,9 @@ export class AlertService {
         });
     }
 
-    addAlert(alert: Alerts.comJoinSuccess | Alerts.communityError |
-        Alerts.login | Alerts.loginForFull | Alerts.loginToAccess | Alerts.logout | Alerts.noCommunity |
-        Alerts.noPhoto | Alerts.userError | Alerts.googleError | Alerts.imageUploadError): IAlert;
+    addAlert(alert: Alerts.comJoinSuccess | Alerts.communityError | Alerts.login | Alerts.loginForFull |
+        Alerts.loginToAccess | Alerts.logout | Alerts.noCommunity | Alerts.noPhoto | Alerts.userError |
+        Alerts.googleError | Alerts.imageUploadError | Alerts.createCommunity): IAlert;
     addAlert(alert: Alerts.locationError | Alerts.incomplete, isRegister?: boolean): IAlert;
     addAlert(alert: Alerts.newMessage, message: Chat): IAlert;
     addAlert(alert: Alerts.messageError, message: Chat | any): IAlert;
@@ -144,7 +144,8 @@ export enum Alerts {
     comJoinSuccess,
     locationError,
     googleError,
-    imageUploadError
+    imageUploadError,
+    createCommunity
 }
 const enumAlerts: IAlert[] = [
     {
@@ -249,6 +250,10 @@ const enumAlerts: IAlert[] = [
     {
         msg: 'Failed to upload file',
         type: 'warning'
+    },
+    {
+        msg: 'Community is initializing...',
+        type: 'success'
     }
 ];
 

@@ -3,7 +3,59 @@
 </h2>
 <mat-dialog-content>
     <h3>Use this to create a community</h3>
+    <form [formGroup]="comFormGroup" (ngSubmit)="submit()">
+        <fieldset>
+            <div class="row">
+                <mat-form-field class="col-md-12">
+                    <input matInput type="text" placeholder="Community Name" 
+                        formControlName="name" [errorStateMatcher]="matcher">
+                    <mat-error *ngIf="getError('name','required')">
+                        Name is
+                        <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-md-12">
+                    <input matInput type="text" placeholder="link" formControlName="link" [errorStateMatcher]="matcher" 
+                    (input)="getUrl($event.target.value)">
+                    <span matPrefix>/community/</span>
+                    <mat-error *ngIf="getError('link','required')">
+                        Link is
+                        <strong>required</strong>
+                    </mat-error>
+                    <mat-error *ngIf="getError('link','minlength')">
+                        Link should be more 3 characters
+                    </mat-error>
+                    <mat-error *ngIf="getError('link','valid')">
+                        Link is already taken
+                    </mat-error>
+                    <mat-error *ngIf="getError('link','urlValid')">
+                        Link is not a url
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-md-12">
+                    <input matInput type="text" placeholder="Description" 
+                        formControlName="desc" [errorStateMatcher]="matcher">
+                    <mat-error *ngIf="getError('desc','required')">
+                        Description is
+                        <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-md-12">
+                    <input #locationInput matInput type="text" placeholder="Community Location" 
+                    formControlName="location" [errorStateMatcher]="matcher" (input)="locationValid($event.target.value)">
+                    <mat-error *ngIf="getError('location','required')">
+                        Location is
+                        <strong>required</strong>
+                    </mat-error>
+                    <mat-error *ngIf="getError('location','valid')">
+                        location is invalid
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </fieldset>
+    </form>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button mat-dialog-close>Close</button>
+    <button [disabled]="!comFormGroup.valid" mat-button [mat-dialog-close]="submit()">Submit</button>
 </mat-dialog-actions>

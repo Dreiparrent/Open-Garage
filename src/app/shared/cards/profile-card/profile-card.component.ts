@@ -1,6 +1,7 @@
 import { Component, Input, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { MatCard } from '@angular/material';
 import { CommunityService } from '../../community/community.service';
+import { IImg } from '../../community/community-interfaces';
 
 @Component({
     selector: 'app-profile-card',
@@ -12,7 +13,7 @@ export class ProfileCardComponent implements OnInit {
     @Input('name') name;
     @Input('location') location;
     @Input('connections') connections;
-    @Input('imgUrl') imgUrl: string;
+    @Input('imgUrl') imgUrl: IImg;
     @Input('overlay') overlay = false;
     betterImage: string;
 

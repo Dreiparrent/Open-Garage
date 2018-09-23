@@ -30,6 +30,23 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
             return null;
         };
     }
+    static urlValid() {
+        let urlInput: FormControl;
+        const urlValid = { urlValid: true };
+        const regExp = RegExp(/^([A-Za-z]+((-|_)?([A-Za-z0-9]))+)*$/);
+        return function checkUrl(control: FormControl): { [key: string]: any } {
+            if (!control)
+                return null;
+            if (!urlInput)
+                urlInput = control;
+            console.log(regExp.test(urlInput.value));
+            if (!urlInput.value)
+                return null;
+            if (!regExp.test(urlInput.value))
+                return urlValid;
+            return null;
+        };
+    }
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
         const isSubmitted = form && form.submitted;
         return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));

@@ -31,9 +31,22 @@ interface ILocation {
 }
 
 // Community Interface
+interface ICommunityRegister {
+    new: boolean;
+    name: string;
+    link: string;
+    location: {
+        name: string,
+        nav: FirebaseFirestore.GeoPoint
+    };
+    desc: string;
+    img?: any;
+    members: number;
+    founder: FirebaseFirestore.DocumentReference;
+}
 interface ICommunity {
     desc: string;
-    img: FirebaseFirestore.DocumentReference;
+    img: string;
     location: FirebaseFirestore.DocumentReference;
     members: number;
     name: string;
@@ -294,6 +307,52 @@ export const joinCommunity = functions.firestore.document('community/{communityI
         if (comData !== null)
             return comData.userRef.collection('communities').doc(communityId).set({ ref: comData.comRef.parent.parent });
         else return null;
+    })
+});
+export const createCommunity = functions.firestore.document('community/{communityId}').onWrite((change, context) => {
+    const newVal: ICommunityRegister = <any>change.after.data();
+    try {
+        if (!newVal.new)
+            return null;
+        if (!newVal.link)
+            return null;
+        if (newVal.link !== context.params.communityId)
+            return null;
+    } catch (error) {
+        return null;
+    }
+    console.log(newVal);
+    console.log(newVal.location);
+    return admin.firestore().collection('location').add({
+        location: newVal.location.name,
+        nav: newVal.location.nav,
+        ref: change.after.ref,
+        type: 1
+    }).then(ref => {
+        return ref.collection('community').doc(newVal.link).set({ ref: 'community/' + newVal.link }).then(() => {
+            return change.after.ref.set({
+                desc: newVal.desc,
+                members: 1,
+                name: newVal.name,
+                location: ref,
+                img: 'gs://open-garage-fb.appspot.com/img/placeholder.gif'
+            }).then(() => {
+                return change.after.ref.collection('communityData').doc('members').set({
+                    founder: newVal.founder,
+                    members: [newVal.founder]
+                }).then(() => {
+                    const messageRef = admin.firestore().collection('message/community/communityID').doc(newVal.link);
+                    return messageRef.set({
+                        messageCount: 0,
+                        recent: ''
+                    }).then(() => {
+                        console.log('Community Created', newVal.link);
+                        return change.after.ref.collection('communityData').doc('messages').set({ref: messageRef});
+                    })
+                })
+            });
+        })
+
     })
 });
 //#endregion

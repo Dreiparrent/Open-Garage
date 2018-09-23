@@ -106,7 +106,7 @@ export class AuthService {
         }, (error: any) => {
             console.error(error);
             if (error.message === 'The password is invalid or the user does not have a password.')
-                this.fireAuth.auth.fetchProvidersForEmail(email).then(providers => {
+                this.fireAuth.auth.fetchSignInMethodsForEmail(email).then(providers => {
                     if (providers.includes('google.com'))
                         this.gAuth();
                 });
@@ -263,6 +263,8 @@ export class AuthService {
             });
         return progress;
     }
+
+    // TODO: MAJOR FIX NEEDED
     updateProfileData(update: IUpdateProfile): Observable<number> {
         const progress = new Subject<number>();
         progress.next(0);
@@ -272,7 +274,7 @@ export class AuthService {
             progress.next(25);
             if (res) {
                 progress.next(30);
-                return this.fireAuth.auth.fetchProvidersForEmail('dreiparrent@gmail.com').then((providers: string[]) => {
+                return this.fireAuth.auth.fetchSignInMethodsForEmail(this.user.email).then((providers: string[]) => {
                     progress.next(40);
                     if (providers.includes('password'))
                         return this.user.updateEmail(update.email).then(val => {

@@ -36,6 +36,7 @@ import { ChatComponent } from './community/chat/chat.component';
 import { LocationHelpDialogComponent } from './cards/location-help-dialog/location-help-dialog.component';
 import { ImageDialogComponent } from './cards/image-dialog/image-dialog.component';
 import { CreateCommunityDialogComponent } from './cards/create-community-dialog/create-community-dialog.component';
+import { RegisterLocation } from '../pages/register-page/register-location';
 
 @NgModule({
     exports: [

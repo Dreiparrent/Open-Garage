@@ -14,7 +14,6 @@ import { AngularFireStorage } from 'angularfire2/storage';
 import { DocumentReference, DocumentData } from '@firebase/firestore-types';
 import { AlertService, Alerts } from '../alerts/alert.service';
 import { Chat, IChat } from './chat';
-import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class CommunityService {
@@ -42,7 +41,7 @@ export class CommunityService {
         this._communityCollection = db.collection('community');
     }
 
-    /* ** Initial Calls ** */
+//#region ** Initial Calls **
     resetCommunity() {
         this._communityData.next(blankData);
         // this. _communityName = new BehaviorSubject('');
@@ -80,9 +79,9 @@ export class CommunityService {
     get community(): ICommunityData {
         return this._communityData.getValue();
     }
+//#endregion
 
-
-    /* ** Initial gets  ** */
+//#region ** Initial gets  **
     // Community variables
     get name(): string {
         return this._communityName.getValue();
@@ -113,8 +112,9 @@ export class CommunityService {
     get skills(): ICommunitySkills[] {
         return this._skills.getValue();
     }
+//#endregion
 
-    /* ** Search parameters ** */
+//#region ** Search parameters **
     updateSearch(members: string[] = [], skills: string[] = [], searchValue: string = '', type: CommunitySearchType = -1) {
         this._searchMembers.next(members);
         this._searchSkills.next(skills);
@@ -133,8 +133,9 @@ export class CommunityService {
     get searchSkills(): BehaviorSubject<string[]> {
         return this._searchSkills;
     }
+//#endregion
 
-    /* ** Firebase ** */
+//#region ** Firebase **
     getCommunity(id?: string, img = false): Promise<ICommunity> {
         const currentID = id ? id : this._communityID.getValue();
         return this._communityCollection.doc(currentID).ref.get().then(comSnap => {
@@ -337,22 +338,36 @@ export class CommunityService {
     joinCommunity(authToken: string): Promise<boolean> {
         return this._communityCollection.doc(this.communityID).ref.update({
             join: authToken
-        }).then(result => {
-            return new Promise<boolean>((resolve, reject) => {
-                const unSub = this._communityCollection.doc(this.communityID).collection('communityData').doc('members').ref
-                    .onSnapshot(changeSnap => {
-                        const newMembers: DocumentReference[] = changeSnap.data()['members'];
-                        console.log('New Members', newMembers);
-                        const addedToken = newMembers.filter(member => member.id === authToken);
-                        console.log('New Members', addedToken);
-                        if (addedToken.length > 0)
-                            resolve(true);
-                        // else return false;
-                    });
-                setTimeout(() => {
-                    resolve(false);
-                }, 10000);
-            });
+        }).then(() => this.addCommunityToUser(authToken));
+    }
+    addCommunityToUser(authToken: string) {
+        return new Promise<boolean>((resolve, reject) => {
+            const unSub = this._communityCollection.doc(this.communityID).collection('communityData').doc('members').ref
+                .onSnapshot(changeSnap => {
+                    const newMembers: DocumentReference[] = changeSnap.data()['members'];
+                    console.log('New Members', newMembers);
+                    const addedToken = newMembers.filter(member => member.id === authToken);
+                    console.log('New Members', addedToken);
+                    if (addedToken.length > 0)
+                        resolve(true);
+                    // else return false;
+                });
+            setTimeout(() => {
+                resolve(false);
+            }, 10000);
+        });
+    }
+    getUrl(url: string): Promise<boolean> {
+        return this._communityCollection.doc(url).ref.get().then(doc => {
+            return doc.exists;
+        });
+    }
+    createCommunity(registerData: IRegisterCommunity): Promise<any> {
+        console.log(registerData);
+        return this._communityCollection.doc(registerData.link).set(registerData).then(() => {
+            setTimeout(() => {
+                return true;
+            }, 1000);
         });
     }
 
@@ -363,6 +378,7 @@ export class CommunityService {
     isSmall(): Observable<boolean> {
         return this._navSmall.asObservable();
     }
+//#endregion
 }
 // Names
 const blankData: ICommunityData = {
@@ -370,3 +386,16 @@ const blankData: ICommunityData = {
     members: [],
     messageRef: undefined
 };
+interface IRegisterCommunity {
+    new: boolean;
+    name: string;
+    link: string;
+    location: {
+        name: string,
+        nav: any
+    };
+    desc: string;
+    img?: any;
+    members: number;
+    founder: DocumentReference;
+}

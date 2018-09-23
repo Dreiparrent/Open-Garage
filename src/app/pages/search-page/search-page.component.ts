@@ -11,6 +11,8 @@ import { AuthService } from '../../shared/auth/auth.service';
 import { FormControl } from '@angular/forms';
 import { startWith, map } from 'rxjs/operators';
 import { CreateCommunityDialogComponent } from '../../shared/cards/create-community-dialog/create-community-dialog.component';
+import { environment } from '../../../environments/environment';
+import { CommunityService } from '../../shared/community/community.service';
 
 @Component({
     selector: 'app-search-page',
@@ -29,7 +31,7 @@ export class SearchPageComponent implements OnInit {
     filterResults;
     searchResults: Observable<any[]>;
     clickCounter = 0;
-    clickClear: NodeJS.Timer;
+    clickClear: any;
     // fResults: Observable
     options = [
         {
@@ -89,6 +91,7 @@ export class SearchPageComponent implements OnInit {
     */
 
     constructor(private comsService: CommunitiesService,
+        private comService: CommunityService,
         private alertService: AlertService,
         private authService: AuthService,
         private route: ActivatedRoute,
@@ -130,7 +133,8 @@ export class SearchPageComponent implements OnInit {
                 this.searchInput.nativeElement.value = search;
             }
         });
-        const watcher = navigator.geolocation.watchPosition(this.getPosition.bind(this), this.positionError.bind(this));
+        if (navigator.geolocation)
+            navigator.geolocation.watchPosition(this.getPosition.bind(this), this.positionError.bind(this));
         setTimeout(() => {
             if (this.location === undefined)
                 this.positionError({
@@ -184,7 +188,7 @@ export class SearchPageComponent implements OnInit {
     }
 
     createCommunity() {
-        if (this.clickCounter === 10)
+        if (this.clickCounter === environment.createComClick && this.authService.isAuth)
             this._createCommunity();
         this.clickCounter += 1;
         clearTimeout(this.clickClear);
@@ -194,7 +198,15 @@ export class SearchPageComponent implements OnInit {
     }
 
     private _createCommunity() {
-        const dialogRef = this.dialog.open(CreateCommunityDialogComponent, { data: 'test' }); 
+        const dialogRef = this.dialog.open(CreateCommunityDialogComponent, { data: 'test' });
+        dialogRef.afterClosed().subscribe(value => {
+            this.comService.createCommunity(value).then(() => {
+                this.router.navigate(['/community', value.link]).then(() => {
+                    this.comService.addCommunityToUser(this.authService.token);
+                    this.alertService.addAlert(Alerts.createCommunity);
+                });
+            });
+        });
     }
 
 }

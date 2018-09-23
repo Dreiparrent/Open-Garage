@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { FormControl, Validators, FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
 import { MyErrorStateMatcher } from './ragister-validator';
 import { MatChipInputEvent, MatChipList, MatChipListChange, MatSelect, MatOption } from '@angular/material';
@@ -11,6 +11,7 @@ import { AlertService, Alerts, IAlert } from '../../shared/alerts/alert.service'
 import { MapsAPILoader } from '@agm/core';
 import { } from '@types/googlemaps';
 import { RegisterLocation } from './register-location';
+import { environment } from '../../../environments/environment';
 // declare var google: any;
 /*
 import { } from '@types/googlemaps';
@@ -51,6 +52,7 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
 
     // Navigation
     location: RegisterLocation;
+    locChange = new EventEmitter<string>();
 //#region Init
     constructor(private fb: FormBuilder, private authService: AuthService,
         private alertService: AlertService, private mapsAPILoader: MapsAPILoader, private route: ActivatedRoute) {
@@ -156,11 +158,22 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
             },
             onInit: (event, currentIndex) => {
                 this.mapsAPILoader.load().then(() => {
-                    this.location = new RegisterLocation(this.alertService, this.locationInput.nativeElement);
+                    this.location = new RegisterLocation(this.alertService, this.locationInput.nativeElement, this.locChange);
                 }, err => {
                     console.error(err);
                     // this.handleLocationError('mapsError');
                     }).then(() => {
+                        this.location.valid.subscribe(valid => {
+                            console.log(valid);
+                            if (!valid)
+                                this.formChildren('location').setErrors({ invalid: true });
+                            else {
+                                this.formChildren('location').setErrors(null);
+                                this.formChildren('location').markAsDirty();
+                                this.formChildren('location').updateValueAndValidity();
+                                this.locationInput.nativeElement.focus();
+                            }
+                        });
                         if (navigator.geolocation)
                             this.location.getLocation().then(res => {
                                 if (res) {
@@ -175,7 +188,7 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
             onStepChanging: (event, currentIndex, newIndex) => {
                 if (currentIndex > newIndex)
                     return true;
-                if (newIndex < 4)
+                if (newIndex < 4 && !environment.production)
                     return true;
                 switch (newIndex) {
                     case 1:
@@ -265,7 +278,11 @@ export class RegisterPageComponent implements OnInit, AfterViewInit {
         return this.rFormGroup.get(FormChildren[id]);
     }
 
+    locationCheck(value: string) {
+        this.locChange.emit(value);
+    }
 //#region chips
+
     addChip(event: MatChipInputEvent, type: number): void {
         const input = event.input;
         const value = event.value;
