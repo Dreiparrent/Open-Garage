@@ -264,7 +264,6 @@ export class AuthService {
         return progress;
     }
 
-    // TODO: MAJOR FIX NEEDED
     updateProfileData(update: IUpdateProfile): Observable<number> {
         const progress = new Subject<number>();
         progress.next(0);

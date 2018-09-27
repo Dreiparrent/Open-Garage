@@ -21,9 +21,13 @@ aside {
     left: 0;
     padding-left: 0;
 }
+aside {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
 @include media-breakpoint-up(sm) {
     aside {
-        top: 0;
         margin-left: 6px;
     }
 }

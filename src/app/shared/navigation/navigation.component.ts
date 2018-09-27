@@ -10,6 +10,9 @@ import { Observable, Subscription, of, BehaviorSubject, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ChatService } from '../community/chat.service';
 import { environment } from '../../../environments/environment';
+import { MatDialog } from '@angular/material';
+import { MobileProfileDialogComponent } from '../cards/mobile-profile-dialog/mobile-profile-dialog.component';
+import { MobileMessagesDialogComponent } from '../cards/mobile-messages-dialog/mobile-messages-dialog.component';
 
 @Component({
   selector: 'app-nav',
@@ -41,7 +44,7 @@ export class NavigationComponent implements OnInit {
     navSubscribe: Subscription;
     comSubscribe: Subscription;
 
-    constructor(private navService: NavigationService, private authService: AuthService, ) {
+    constructor(private navService: NavigationService, private authService: AuthService, private dialog: MatDialog) {
         this.navService.navProfile.subscribe(prof => {
             if (prof) {
                 this.navLinks = authLinks;
@@ -64,6 +67,19 @@ export class NavigationComponent implements OnInit {
 
     trackByIndex(index: number, value: number) {
         return index;
+    }
+
+    openProfile() {
+        const dialogRef = this.dialog.open(MobileProfileDialogComponent, {
+            data: this.authService.currentUser,
+            hasBackdrop: true,
+            disableClose: false });
+    }
+    openMessages() {
+        const dialogRef = this.dialog.open(MobileMessagesDialogComponent, {
+            width: '100%',
+            height: '100%'
+        });
     }
 }
 interface INavLinks {

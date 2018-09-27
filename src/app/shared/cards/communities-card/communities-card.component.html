@@ -1,17 +1,13 @@
 <mat-card class="pt-0">
+    <!--
     <picture>
         <source [srcset]="community.img.jpf">
         <source [srcset]="image.webp">
         <img id="card-img" mat-card-image [src]="image.else" alt="Community background">
     </picture>
+    -->
+    <img id="card-img" mat-card-image [src]="community.img.else">
     <mat-card-title>
-        <!--
-        <div class="row text-center">
-            <div class="col-6 mx-auto">
-                <img class="rounded-circle img-fluid" [src]="imgUrl" role="figure" alt="profile photo">
-            </div>
-        </div>
-        -->
         <div class="row text-center">
             <div class="col-11 mx-auto">
                 <h3>{{ community.name }}</h3>

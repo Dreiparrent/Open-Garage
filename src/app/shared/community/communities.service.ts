@@ -116,8 +116,8 @@ export class CommunitiesService {
         console.log(search);
         this.fullSearch = fullSearch;
         this._isSearch = true;
-        this._startAt.next(search);
-        this._endAt.next(search + '\uf8ff');
+        this._startAt.next(search.toUpperCase());
+        this._endAt.next(search.toLowerCase() + '\uf8ff');
         return search;
     }
     private _search(search: [string, string]): Promise<ISearch<ICommunity | IUser>[]> {

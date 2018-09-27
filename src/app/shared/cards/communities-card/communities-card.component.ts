@@ -9,7 +9,6 @@ import { ICommunity, IImg } from '../../community/community-interfaces';
 export class CommunitiesCardComponent implements OnInit {
 
     @Input('community') community: ICommunity;
-    @Input('image') image: IImg;
     constructor() {
     }
 

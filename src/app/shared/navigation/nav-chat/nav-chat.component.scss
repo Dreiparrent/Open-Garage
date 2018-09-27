@@ -8,15 +8,13 @@
 }
 .mat-list {
     overflow-y: hidden;
-    width: 50vw;
+    width: 100%;
 };
 .hide-lg {
     display: initial !important;
 }
-@include media-breakpoint-up(sm) {
-    .mat-list {
-        width: 45vw;
-    }
+.mat-tab-group {
+    height: 100%;
 }
 @include media-breakpoint-up(md) {
     .mat-list {

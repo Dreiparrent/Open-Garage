@@ -1,4 +1,4 @@
-<div class="row h-100">
+<div id="main-search" class="row h-100">
     <section id="search" class="col-md-5 col-lg-4 col-xl-3 d-flex
         align-items-center justify-content-center">
         <div class="content h-75 col-12">
@@ -22,9 +22,12 @@
         </div>
     </section>
     <section id="results" class="col-md-7 col-lg-8 col-xl-9 bg-dark row pb-4">
+        <div id="spinner" *ngIf="searchInput.value && (searchResults | async)?.length < 1">
+            <mat-spinner></mat-spinner>
+        </div>
         <div *ngFor="let search of searchResults | async" class="col-12 col-xl-6 mx-auto pt-4 comCard">
             <ng-container *ngIf="search.community; else elseTemplate">
-                <app-communities-card [community]="search.data" [image]="search.data.img" class="cursor-pointer" (click)="comClick(search.data.link)"></app-communities-card>
+                <app-communities-card [community]="search.data" class="cursor-pointer" (click)="comClick(search.data.link)"></app-communities-card>
             </ng-container>
             <ng-template #elseTemplate>
                 <app-profile-card [name]="search.data.name" [location]="search.data.location" [connections]="search.data.connections" [imgUrl]="search.data.imgUrl"

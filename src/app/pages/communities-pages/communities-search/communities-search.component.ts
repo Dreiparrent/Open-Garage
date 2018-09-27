@@ -10,17 +10,17 @@ import { CommunitiesService } from '../../../shared/community/communities.servic
     templateUrl: './communities-search.component.html',
     styleUrls: ['./communities-search.component.scss'],
     animations: [
-        trigger('aAccordion', [
-            state('showing', style({ left: '0' })),
-            state('hidden', style({ left: '-100%' })),
-            transition('showing => hidden', animate('200ms ease-out')),
-            transition('hidden => showing', animate('200ms ease-in'))
-        ]),
         trigger('aArrow', [
             state('showing', style({ transform: 'rotate(0deg)' })),
             state('hidden', style({ transform: 'rotate(180deg)' })),
-            transition('shoing => hidden', animate('1.0s 200ms ease-out')),
-            transition('hidden => shoing', animate('1.0s 200ms ease-in'))
+            transition('showing => hidden', animate('500ms 1.0s ease-out')),
+            transition('hidden => showing', animate('500ms 1.0s ease-in'))
+        ]),
+        trigger('aAccordion', [
+            state('showing', style({ left: '0', zIndex: '101' })),
+            state('hidden', style({ left: '-98%', zIndex: '99' })),
+            transition('showing => hidden', animate('200ms ease-out')),
+            transition('hidden => showing', animate('200ms ease-in'))
         ])
     ]
 })

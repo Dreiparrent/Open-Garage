@@ -37,6 +37,8 @@ import { LocationHelpDialogComponent } from './cards/location-help-dialog/locati
 import { ImageDialogComponent } from './cards/image-dialog/image-dialog.component';
 import { CreateCommunityDialogComponent } from './cards/create-community-dialog/create-community-dialog.component';
 import { RegisterLocation } from '../pages/register-page/register-location';
+import { MobileProfileDialogComponent } from './cards/mobile-profile-dialog/mobile-profile-dialog.component';
+import { MobileMessagesDialogComponent } from './cards/mobile-messages-dialog/mobile-messages-dialog.component';
 
 @NgModule({
     exports: [
@@ -91,7 +93,9 @@ import { RegisterLocation } from '../pages/register-page/register-location';
         ChatComponent,
         LocationHelpDialogComponent,
         ImageDialogComponent,
-        CreateCommunityDialogComponent
+        CreateCommunityDialogComponent,
+        MobileProfileDialogComponent,
+        MobileMessagesDialogComponent
     ],
     entryComponents: [
         YourProfileDialogComponent,
@@ -100,7 +104,9 @@ import { RegisterLocation } from '../pages/register-page/register-location';
         ImageDialogComponent,
         NewChatDialogComponent,
         LocationHelpDialogComponent,
-        CreateCommunityDialogComponent
+        CreateCommunityDialogComponent,
+        MobileProfileDialogComponent,
+        MobileMessagesDialogComponent
     ],
     providers: [
         CommunityGuardService,

@@ -16,7 +16,8 @@ import {
     MatAutocompleteModule,
     MatTooltipModule,
     MatDialogModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatProgressSpinnerModule
 } from '@angular/material';
 
 import 'hammerjs';
@@ -40,7 +41,8 @@ import 'hammerjs';
         MatAutocompleteModule,
         MatTooltipModule,
         MatDialogModule,
-        MatProgressBarModule
+        MatProgressBarModule,
+        MatProgressSpinnerModule
     ],
     exports: [
         MatSidenavModule,
@@ -59,7 +61,8 @@ import 'hammerjs';
         MatAutocompleteModule,
         MatTooltipModule,
         MatDialogModule,
-        MatProgressBarModule
+        MatProgressBarModule,
+        MatProgressSpinnerModule
     ]
 })
 

@@ -1,17 +1,35 @@
+#main-search {
+    overflow-y: scroll;
+}
 #search {
     height: 40vh;
 }
 .comCard {
     margin-left: 15px !important;
 }
+#results {
+    min-height: 60vh;
+    // height: 40vh;
+}
+#spinner {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
 @media screen and (min-width: "768px") {
+    #main-search {
+        overflow-y: none;
+    }
     #search {
         height: 100vh;
     }
     #results {
         height: 100vh;
         overflow-y: scroll;
+        margin: 0;
         // overflow-y: hidden;
     }
     .comCard {
