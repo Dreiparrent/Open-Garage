@@ -5,14 +5,8 @@ import { RegisterComponent } from './layouts/register/register.component';
 import { MainComponent } from './layouts/main/main.component';
 import { CommunitiesComponent } from './layouts/communities/communities.component';
 
-import { AuthGuard } from './shared/auth/auth-guard.service';
-
-import { HOME_ROUTES } from './shared/routes/home.routes';
 import { SEARCH_ROUTES } from './shared/routes/search.routes';
-import { LOGIN_ROUTES } from './shared/routes/login.routes';
-import { REGISTER_ROUTES } from './shared/routes/register.routes';
 import { COMMUNITY_ROUTES } from './shared/routes/community.routes';
-import { COMMUNITIES_ROUTES } from './shared/routes/communities.routes';
 
 const appRoutes: Routes = [
     {
@@ -20,12 +14,29 @@ const appRoutes: Routes = [
         redirectTo: 'home',
         pathMatch: 'full',
     },
-    { path: '', component: MainComponent, data: { title: 'Home', side: false }, children: HOME_ROUTES},
-    { path: '', component: MainComponent, data: { title: 'Search', side: false }, children: SEARCH_ROUTES },
-    { path: '', component: LoginComponent, data: { title: 'Login', side: false }, children: LOGIN_ROUTES },
-    { path: '', component: RegisterComponent, data: { title: 'Login', side: false }, children: REGISTER_ROUTES },
-    { path: '', component: MainComponent, data: { title: 'Community', side: true }, children: COMMUNITY_ROUTES },
-    { path: '', component: CommunitiesComponent, data: { title: 'Communities', side: false}, children: COMMUNITIES_ROUTES }
+    {
+        path: 'home', component: MainComponent, data: { title: 'Home', side: false },
+        loadChildren: './pages/home-page/home-pages.module#HomePagesModule'
+    },
+    {
+        path: 'login', component: LoginComponent, data: { title: 'Login', side: false },
+        loadChildren: './pages/login-page/login-pages.module#LoginPagesModule' },
+    {
+        path: 'register', component: RegisterComponent, data: { title: 'Register', side: false },
+        loadChildren: './pages/register-page/register-pages.module#RegisterPagesModule'
+    },
+    {
+        path: 'community', pathMatch: 'full', component: CommunitiesComponent, data: { title: 'Communities', side: false },
+        loadChildren: './pages/communities-pages/communities-pages.module#CommunitiesPagesModule'
+    },
+    {
+        path: '', component: MainComponent, data: { title: 'Community', side: true },
+        children: COMMUNITY_ROUTES
+    },
+    {
+        path: '', component: MainComponent, data: { title: 'Search', side: false },
+        children: SEARCH_ROUTES
+    },
 ];
 
 @NgModule({

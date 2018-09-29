@@ -16,6 +16,15 @@
 .mat-tab-group {
     height: 100%;
 }
+.mat-list {
+    width: 100% !important;
+}
+
+@include media-breakpoint-down(md) {
+    .mat-progress-bar {
+        width: 100%;
+    }
+}
 @include media-breakpoint-up(md) {
     .mat-list {
         width: 35vw;

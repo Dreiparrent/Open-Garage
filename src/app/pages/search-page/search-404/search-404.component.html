@@ -1,0 +1,36 @@
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-1">Uh oh!</h1>
+        <h2>The page you are looking for cannot be found.</h2>
+    </div>
+</div>
+<section class="row-fluid">
+    <div class="col-12 text-center">
+        <h1 class="display-4">Try searching for the page</h1>
+    </div>
+</section>
+<section class="row-fluid">
+    <form class="col-11 mx-auto justify-content-center community-search">
+        <mat-form-field class="col-12 mx-auto">
+            <input #searchInput matInput placeholder="Search" [formControl]="searchControl" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" class="mat-elevation-z0 search-theme-dark">
+                <mat-option *ngFor="let option of searchResults | async" [value]="option.data.name">
+                    <!-- <mat-icon *ngIf="option.type === 0">person_outline</mat-icon>
+                                        <mat-icon *ngIf="option.type === 1">grade</mat-icon> -->
+                    <span>{{ option.data.name }}</span>
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+    </form>
+</section>
+<section class="row-fluid h-100 col-md-12 mx-auto row pb-4">
+    <div *ngFor="let search of searchResults | async" class="col-12 col-xl-4 mx-auto pt-4 comCard">
+        <ng-container *ngIf="search.community; else elseTemplate">
+            <app-communities-card [community]="search.data" class="cursor-pointer" (click)="comClick(search.data.link)"></app-communities-card>
+        </ng-container>
+        <ng-template #elseTemplate>
+            <app-profile-card [name]="search.data.name" [location]="search.data.location" [connections]="search.data.connections"
+                [imgUrl]="search.data.imgUrl" class="cursor-pointer" (click)="userClick(search.data)"></app-profile-card>
+        </ng-template>
+    </div>
+</section>

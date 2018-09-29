@@ -20,6 +20,11 @@
 .hide-lg {
     display: initial !important;
 }
+@include media-breakpoint-down(md) {
+    .mat-list {
+        width: 100%;
+    }
+}
 @include media-breakpoint-up(lg) {
     .hide-lg {
         display: none !important;

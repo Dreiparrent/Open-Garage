@@ -51,6 +51,7 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
                     if (chat) {
                         chat.listen();
                         this.currentChat = chat;
+                        chat.loadMore();
                     }
                 });
         });

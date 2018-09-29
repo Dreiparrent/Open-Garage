@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { IUser, IUserData } from '../../community/community-interfaces';
+import { IUser, IUserData, IImg } from '../../community/community-interfaces';
 import { CommunityService } from '../../community/community.service';
 import { AuthService } from '../../auth/auth.service';
 
@@ -40,9 +40,12 @@ export class UserDialogComponent implements OnInit {
         }
     }
 
+    imgUrl: IImg;
+
     constructor(public dialogRef: MatDialogRef<UserDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public profile: IUser, private comService: CommunityService,
         private authService: AuthService) {
+        this.imgUrl = profile.imgUrl as IImg;
         this.authService.sharedCommunity(this.profile.ref).then(isShared => {
             if (isShared)
                 this.userType = 1;

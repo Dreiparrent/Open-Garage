@@ -9,6 +9,7 @@ import { SearchPagesRoutingModule } from './search-pages-routing.module';
 import { SearchPageComponent } from './search-page.component';
 import { CommunitiesService } from '../../shared/community/communities.service';
 import { MaterialImports } from '../../shared/imports/material-imports.module';
+import { Search404Component } from './search-404/search-404.component';
 
 @NgModule({
     imports: [
@@ -18,7 +19,8 @@ import { MaterialImports } from '../../shared/imports/material-imports.module';
         MaterialImports
     ],
     declarations: [
-        SearchPageComponent
+        SearchPageComponent,
+        Search404Component
     ],
     providers: [
         CommunitiesService

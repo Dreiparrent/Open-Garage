@@ -1,7 +1,10 @@
 <h2 mat-dialog-title class="mb-2">
     <div class="row text-center">
         <div class="col-5 mx-auto">
-            <img class="rounded-circle img-fluid" [src]="profile.imgUrl" role="figure" alt="profile photo">
+            <picture>
+                <source [srcset]="imgUrl.else">
+                <img class="rounded-circle img-fluid" [src]="imgUrl.webp" role="figure" alt="profile photo">
+            </picture>
         </div>
     </div>
 </h2>

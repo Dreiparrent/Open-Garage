@@ -9,12 +9,12 @@ export class CommunityGuardService implements CanActivate {
     }
 
     canActivate(route: ActivatedRouteSnapshot) {
-        return this.comService.getCommunity(route.params['id']).then(val => true, error => {
+        return this.comService.getUrl(route.params['id']).then(val => val, error => {
             console.log(error);
             return false;
         }).then(exists => {
             if (!exists)
-                this.router.navigate(['/community/404'], {
+                this.router.navigate(['/search/404'], {
                     queryParams: {
                         search: route.params['id']
                     }

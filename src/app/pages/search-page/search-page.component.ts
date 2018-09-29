@@ -49,46 +49,6 @@ export class SearchPageComponent implements OnInit {
     ];
 
     @ViewChild('searchInput') searchInput: ElementRef<MatInput>;
-    /*
-    communities: ICommunity[] = [
-        {
-            name: 'Test Community',
-            desc: 'a short description about the community and such',
-            img: {
-                webp: '../../../assets/img/photos/eclipse.webp',
-                jpf: '../../../assets/img/photos/eclipse.jpf',
-                else: '../../../assets/img/photos/eclipse.jpg'
-            },
-            location: 'Denver',
-            members: 8,
-            link: 'testlink'
-        },
-        {
-            name: 'Test Community',
-            desc: 'a short description about the community and such',
-            img: {
-                webp: '../../../assets/img/photos/eclipse.webp',
-                jpf: '../../../assets/img/photos/eclipse.jpf',
-                else: '../../../assets/img/photos/eclipse.jpg'
-            },
-            location: 'Denver',
-            members: 8,
-            link: 'testlink'
-        },
-        {
-            name: 'Test Community',
-            desc: 'a short description about the community and such',
-            img: {
-                webp: '../../../assets/img/photos/eclipse.webp',
-                jpf: '../../../assets/img/photos/eclipse.jpf',
-                else: '../../../assets/img/photos/eclipse.jpg'
-            },
-            location: 'Denver',
-            members: 8,
-            link: 'testlink'
-        }
-    ];
-    */
 
     constructor(private comsService: CommunitiesService,
         private comService: CommunityService,
@@ -111,12 +71,6 @@ export class SearchPageComponent implements OnInit {
     }
 
     ngOnInit() {
-        /*
-        this.fResults = this.fControl.valueChanges.pipe(
-            startWith(''),
-            map(val => this.)
-        )
-        */
         this.searchControl = new FormControl();
         this.searchControl.valueChanges.pipe(
             startWith(''),
@@ -126,6 +80,7 @@ export class SearchPageComponent implements OnInit {
         this.searchResults.subscribe(res => {
             console.log(res);
         });
+        console.log(this.route.snapshot.params);
         this.route.queryParams.subscribe(params => {
             if (params['search']) {
                 const search = params['search'];

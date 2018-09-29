@@ -10,7 +10,7 @@ import { take, map } from 'rxjs/operators';
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent {
 
     // tslint:disable-next-line:no-input-rename
     @Input('currentChat') currentChat: Chat;
@@ -34,9 +34,6 @@ export class ChatComponent implements OnInit {
     }
 
     constructor() { }
-
-    ngOnInit() {
-    }
 
     nameClick(name: string) {
         this.userClick.next(name);
