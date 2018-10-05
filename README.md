@@ -2,7 +2,7 @@
 
 This project is the public repository for Opengarage.
 
-Open Garage is hosted on a Firebase Server and is found at parrentphotography.com/opengarage. 
+Open Garage is hosted on a Firebase Server and is found at [parrentphotography.com/opengarage]().
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.5.
 
