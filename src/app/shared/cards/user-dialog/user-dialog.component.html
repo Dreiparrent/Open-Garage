@@ -1,3 +1,5 @@
+<app-user-dialog-card [profile]="profile" (close)="close()" (connect)="connect()"></app-user-dialog-card>
+<!--
 <h2 mat-dialog-title class="mb-2">
     <div class="row text-center">
         <div class="col-5 mx-auto">
@@ -39,14 +41,12 @@
         <div class="col-6">
             <a>
                 <mat-icon placement="bottom" tooltip="Location" container="body" class="align-middle cursor-pointer">my_location</mat-icon>
-                <!--<i-globe placement="bottom" ngbTooltip="Location" class="align-bottom cursor-pointer"></i-globe>-->
                 <span class="h-100 align-text-top"> {{profile.location}}</span>
             </a>
         </div>
         <div class="col-6">
             <a>
                 <mat-icon placement="bottom" tooltip="Connections" container="body" class="align-middle cursor-pointer">wifi_tethering</mat-icon>
-                <!-- <i-radio placement="bottom" ngbTooltip="Connections" class="align-bottom cursor-pointer"></i-radio>-->
                 <span class="h-100 align-text-top">{{profile.connections}}</span>
             </a>
         </div>
@@ -57,5 +57,5 @@
     <div placement="bottom" [tooltip]="connectTip">
         <button mat-button [disabled]="userType !== 1" [mat-dialog-close]="connectUser()">Connect</button>
     </div>
-    <!-- <button mat-button [disabled]="false" placement="bottom" [tooltip]="connectTip" container="body" [mat-dialog-close]="connectUser()">Connect</button>     -->
 </mat-dialog-actions>
+-->

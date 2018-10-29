@@ -1,14 +1,15 @@
-<app-community-jumbotron></app-community-jumbotron>
-<section class="container-fluid">
+<app-community-jumbotron class="w-100 jj" (height)="setHeight($event)"></app-community-jumbotron>
+<section #mainSection class="container-fluid w-100 community p-0" style="z-index: 99">
+    <mat-progress-bar [value]="progress"></mat-progress-bar>
     <div class="row justify-content-center">
         <div class="col-12 col-md-11">
             <div class="row">
                 <div class="col-8">
                     <h2>{{ communityName }}</h2>
                 </div>
-                <div class="col-4 text-right align-center">
-                    <button *ngIf="isAuth && !isMember" mat-raised-button color="primary" (click)="joinCommunity()">Join Community</button>
-                    <mat-slide-toggle *ngIf="isAuth && isMember" color="primary">Show Web</mat-slide-toggle>
+                <div *ngIf="isAuth" class="col-4 text-right align-center">
+                    <button *ngIf="!isMember && progress === 100" mat-raised-button color="primary" (click)="joinCommunity()">Join Community</button>
+                    <mat-slide-toggle *ngIf="isMember" color="primary">Show Web</mat-slide-toggle>
                 </div>
             </div>
             <hr>
@@ -18,7 +19,7 @@
         <app-community-card [slider]="true">
             <app-skills-slider #skillsSlider></app-skills-slider>
         </app-community-card>
-        <app-community-card>
+        <app-community-card *ngIf="searchType === null">
             <h5 class="card-title col-12">
                 Community Skills
                 <small *ngIf="searchSkills" (click)="clearSearch()" matTooltip="Clear search?" matTooltipPosition="right" class="cursor-pointer text-muted">
@@ -27,6 +28,9 @@
             </h5>
             <app-community-skills class="w-100" (communitySkills)="skillsSlider.sortSkills($event)"></app-community-skills>
         </app-community-card>
+        <app-community-search class="row col-11 col-md-10">
+            
+        </app-community-search>
         <app-community-card>
             <h5 class="card-text col-8">
                 Community Members
@@ -51,7 +55,13 @@
                     </mat-slide-toggle>
                 </div>
             </div>
-            <app-community-members #members (showWebs)="toggleShowWebs($event)"></app-community-members>
+            <app-community-members #members class="w-100" (showWebs)="toggleShowWebs($event)"></app-community-members>
+        </app-community-card>
+        <app-community-card *ngIf="searchType !== null" class="row col-12 mx-auto">
+            <div *ngFor="let profile of profiles" class="col-12 col-md-6 col-lg-4 col-xl-3 py-1">
+                <app-user-dialog-card [profile]="profile" (close)="close()" (connect)="connect()"></app-user-dialog-card>
+            </div>
+            <!-- <app-profile-card></app-profile-card> -->
         </app-community-card>
         <app-community-card>
             <h5 class="card-title col-12">Message Board</h5>

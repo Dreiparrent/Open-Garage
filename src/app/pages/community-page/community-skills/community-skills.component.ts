@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
 import { CommunityService } from '../../../shared/community/community.service';
-import { ICommunitySkills, IUser } from '../../../shared/community/community-interfaces';
+import { ICommunitySkills, IUser, CommunitySearchType } from '../../../shared/community/community-interfaces';
 import { NgxCarousel, NgxCarouselStore } from 'ngx-carousel';
 import { Subscription } from 'rxjs';
 

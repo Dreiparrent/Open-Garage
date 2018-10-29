@@ -27,14 +27,17 @@ export class CommunityService {
     private _skills = new BehaviorSubject<ICommunitySkills[]>([]);
     private _showWeb = new Subject<boolean>();
     private _members = new BehaviorSubject<IUser[]>([]);
+    private _comImg = new BehaviorSubject<IImg>(null);
     public memberCount: number;
     // private _messages = new Subject<IMessage[]>();
     private _messageRef = new BehaviorSubject<DocumentReference>(null);
 
-    private _searchValue = new BehaviorSubject<string>('');
-    private _searchType = new BehaviorSubject<number>(-1);
+    private _searchValue = new BehaviorSubject('');
+    private _searchType = new BehaviorSubject(-1);
     private _searchMembers = new BehaviorSubject<string[]>([]);
     private _searchSkills = new BehaviorSubject<string[]>([]);
+    private _clickMembers = new BehaviorSubject<IUser[]>([]);
+    private _communityProgress = new BehaviorSubject(0);
 
     // construct database
     constructor(private db: AngularFirestore, private alertService: AlertService, private fireStorage: AngularFireStorage) {
@@ -60,7 +63,7 @@ export class CommunityService {
     // Setters for init
     set communityID(id: string) {
         this._communityID.next(id);
-        this.getCommunityData(id); // Calls set comData then set community
+        this.getCommunityData(id, true); // Calls set comData then set community
     }
     get communityID(): string {
         return this._communityID.getValue();
@@ -78,6 +81,12 @@ export class CommunityService {
     }
     get community(): ICommunityData {
         return this._communityData.getValue();
+    }
+    get comImg(): Observable<IImg> {
+        return this._comImg.asObservable();
+    }
+    get communityProgress() {
+        return this._communityProgress.getValue();
     }
 //#endregion
 
@@ -116,7 +125,12 @@ export class CommunityService {
 
 //#region ** Search parameters **
     updateSearch(members: string[] = [], skills: string[] = [], searchValue: string = '', type: CommunitySearchType = -1) {
-        this._searchMembers.next(members);
+        // this._searchMembers.next(members);
+        const users = this._members.getValue().filter(m => m.skills.includes(skills[0]) || members.includes(m.name));
+        this._clickMembers.next(users);
+        if (members.length < 1 && skills.length > 0)
+            this._searchMembers.next(users.map(u => u.name));
+        else this._searchMembers.next(members);
         this._searchSkills.next(skills);
         this._searchType.next(type);
         this._searchValue.next(searchValue);
@@ -133,21 +147,29 @@ export class CommunityService {
     get searchSkills(): BehaviorSubject<string[]> {
         return this._searchSkills;
     }
+    get clickMember(): BehaviorSubject<IUser[]> {
+        return this._clickMembers;
+    }
 //#endregion
 
 //#region ** Firebase **
-    getCommunity(id?: string, img = false): Promise<ICommunity> {
+    getCommunity(id?: string, img = false, progress = false): Promise<ICommunity> {
         const currentID = id ? id : this._communityID.getValue();
+        // this._communityProgress.next(5);
         return this._communityCollection.doc(currentID).ref.get().then(comSnap => {
             if (comSnap.exists)
                 return comSnap.data() as IfbComData;
             else
                 throw new Error('Unable to fetch community');
         }).then(comData => {
+            if (progress)
+                this._communityProgress.next(20);
             this.memberCount = comData.members;
             if (img)
                 return this.fireStorage.storage.refFromURL(comData.img as string).getDownloadURL()
                     .then((url: string) => {
+                        if (progress)
+                            this._communityProgress.next(25);
                         return url;
                         // return usrData;
                     }, error => {
@@ -164,19 +186,21 @@ export class CommunityService {
                                 return { else: placeholderUrl };
                             });
                         }
-                }).then(imgData => {
-                    return comData.location.get().then(locationSnap => {
-                        if (locationSnap.exists)
-                            return <ICommunity>{
-                                desc: comData.desc,
-                                img: imgData,
-                                link: currentID,
-                                location: locationSnap.data()['location'],
-                                nav: locationSnap.data()['nav'],
-                                members: comData.members,
-                                name: comData.name
-                            };
-                        else throw new Error('Unable to fetch community location');
+                    }).then(imgData => {
+                        this._comImg.next(imgData);
+                        return comData.location.get().then(locationSnap => {
+                            // this._communityProgress.next(40);
+                            if (locationSnap.exists)
+                                return <ICommunity>{
+                                    desc: comData.desc,
+                                    img: imgData,
+                                    link: currentID,
+                                    location: locationSnap.data()['location'],
+                                    nav: locationSnap.data()['nav'],
+                                    members: comData.members,
+                                    name: comData.name
+                                };
+                            else throw new Error('Unable to fetch community location');
                     });
                 });
             return <ICommunity>{
@@ -192,18 +216,22 @@ export class CommunityService {
         });
     }
     // Called by initial setters
-    getCommunityData(id?: string) {
+    getCommunityData(id?: string, img = false) {
         const currentID = id ? id : this._communityID.getValue();
-        this.getCommunity(currentID).then(val => {
+        this.getCommunity(currentID, img, true).then(val => {
+            this._communityProgress.next(50);
             return this._communityCollection.doc(currentID).collection('communityData')
                 .doc('members').ref.get().then(memberSnap => {
-                if (memberSnap.exists)
-                    return this.setMembers(memberSnap.data());
-                else
-                    throw new Error('Community members not found');
-            }).then(users => {
+                    this._communityProgress.next(60);
+                    if (memberSnap.exists)
+                        return this.setMembers(memberSnap.data());
+                    else
+                        throw new Error('Community members not found');
+                }).then(users => {
+                    this._communityProgress.next(75);
                 return { usr: users, msg: this.db.collection('message/community/chats').doc(currentID).ref };
-            }).then(newData => {
+                }).then(newData => {
+                    this._communityProgress.next(85);
                 // this is temporary
                 const testMembers: IUser[] = [];
                 newData.usr.forEach(memb => testMembers.push(memb));
@@ -217,9 +245,9 @@ export class CommunityService {
                 };
             });
         }).then(comData => {
+            this._communityProgress.next(100);
             this.communityData = comData;
             this.community = comData;
-            console.log(comData);
         }).catch(error => {
             console.error('database error', error);
             throw new Error(error);
@@ -230,7 +258,6 @@ export class CommunityService {
 
     setMembers(membs: DocumentData, setMembers = true): Promise<IUser[]> {
         const users = <{ founder: DocumentReference, members: Array<DocumentReference> }>membs;
-        console.log(users);
         let members: IUser[];
         if (setMembers)
             members = this._members.getValue().slice();
@@ -249,6 +276,7 @@ export class CommunityService {
                     };
                 } else throw new Error('Cannot get user tags');
             }).then(usrData => {
+                // this._communityProgress.next(65);
                 if (!setMembers)
                     return this.getMember(member.id, usrData).then(newUserData => {
                         return member.collection('userData').doc('profile').get().then(profileSnap => {
@@ -269,7 +297,8 @@ export class CommunityService {
                         });
                     });
                 else return this.getMember(member.id, usrData);
-            }).then(user => {
+                }).then(user => {
+                    // this._communityProgress.next(70);
                 members.push(user);
                 if (setMembers)
                     this._members.next(members);

@@ -16,7 +16,7 @@ export class SkillsCardComponent {
     constructor(private comService: CommunityService) { }
 
     cardClick() {
-        this.comService.updateSearch(this.profiles.map(p => p.name), [this.skill], this.skill, CommunitySearchType.skillsSkills);
+        this.comService.updateSearch([], [this.skill], this.skill, CommunitySearchType.skillsSkills);
     }
     nameClick(profile) {
         this.comService.updateSearch([profile], [], profile, CommunitySearchType.skillsMembers);

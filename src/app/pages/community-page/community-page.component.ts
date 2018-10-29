@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { BreakpointObserver, Breakpoints, BreakpointState, MediaMatcher } from '@angular/cdk/layout';
 import { CommunityService } from '../../shared/community/community.service';
 import { ActivatedRoute } from '@angular/router';
@@ -21,7 +21,9 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
     // TODO: remove or update this
     comID: string;
     hovered = false;
-    isAuth = false;
+    get isAuth() {
+        return this.authService.isAuthenticated();
+    }
     isMember = false;
     currentChat: Chat;
 
@@ -39,6 +41,16 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
     searchMembers = false;
     searchSkills = false;
 
+    @ViewChild('mainSection') mainSection: ElementRef<HTMLElement>;
+
+    get profiles() {
+        return this.comService.clickMember.getValue();
+    }
+
+    get progress() {
+        return this.comService.communityProgress;
+    }
+
     constructor(private comService: CommunityService, private authService: AuthService,
         private route: ActivatedRoute, private alertService: AlertService) {
        this._membersSub = comService.members.subscribe(members => {
@@ -55,7 +67,6 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
                     }
                 });
         });
-        authService.isAuthenticated().subscribe(auth => this.isAuth = auth);
     }
 
     ngOnInit() {
@@ -121,6 +132,10 @@ export class CommunityPageComponent implements OnInit, OnDestroy {
                     this.alertService.addAlert(Alerts.comJoinSuccess);
             });
         else this.alertService.addAlert(Alerts.loginForFull);
+    }
+
+    setHeight(height: string) {
+        $('.community').css('margin-top', height);
     }
 
     ngOnDestroy(): void {

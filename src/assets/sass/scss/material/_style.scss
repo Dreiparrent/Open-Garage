@@ -232,3 +232,6 @@ $search-theme: mat-dark-theme($search-primary, $search-accent, $search-warn);
         padding: 0 !important;
     }
 }
+.mat-card {
+    box-shadow: none !important;
+}

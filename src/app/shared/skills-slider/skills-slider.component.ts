@@ -24,9 +24,11 @@ export class SkillsSliderComponent implements OnDestroy {
     mobileQuery: MediaQueryList;
     medQuery: MediaQueryList;
     largeQuery: MediaQueryList;
-    tmpSkills; skillsNumber = 3;
+    tmpSkills: ISkills;
+    skillsNumber = 3;
     skillsSub: Subscription;
     skillsSearched: string;
+    memberSkills = false;
     constructor(private changeDetectorRef: ChangeDetectorRef, private media: MediaMatcher, private comService: CommunityService) {
         this.createObservers();
     }
@@ -44,9 +46,24 @@ export class SkillsSliderComponent implements OnDestroy {
         if (this.skillsNumber !== this.getSkillsNumber())
             this.skillsNumber = this.getSkillsNumber();
         this.skillsSub = this.comService.searchType.subscribe(type => {
-            if (type !== CommunitySearchType.topSkills) {
-                this.skillsSearched = null;
-                this.hideSkills = true;
+            switch (type) {
+                case -1:
+                    this.skillsSearched = null;
+                    this.hideSkills = true;
+                    this.memberSkills = false;
+                    break;
+                case CommunitySearchType.topSkills:
+                    this.sortSkills(this.tmpSkills);
+                    this.memberSkills = false;
+                    break;
+                default:
+                    this.memberSkills = true;
+                    const newTopSkills = this.comService.searchSkills.getValue();
+                    const topFrequency: ISkills = {};
+                    newTopSkills.forEach(s => topFrequency[s] = 1);
+                    this.countTopSkills(topFrequency, newTopSkills);
+                    this.topSkills = newTopSkills;
+                    break;
             }
         });
     }
@@ -66,14 +83,14 @@ export class SkillsSliderComponent implements OnDestroy {
         this.countTopSkills(skills);
     }
 
-    countTopSkills(frequencyList: {}) {
+    countTopSkills(frequencyList: {}, topSkills = this.topSkills) {
         const freqArray = {};
         let totalSkills = 0;
-        this.topSkills.forEach(skill => {
+        topSkills.forEach(skill => {
             totalSkills += frequencyList[skill];
         });
-        const mLength = this.topSkills.length >= this.skillsNumber ? this.topSkills.length : this.skillsNumber;
-        this.topSkills.forEach(skill => {
+        const mLength = topSkills.length >= this.skillsNumber ? topSkills.length : this.skillsNumber;
+        topSkills.forEach(skill => {
             const width = (frequencyList[skill] / totalSkills) * (mLength / this.skillsNumber) * 100;
             freqArray[skill] = width > 15 ? width : 15;
         });

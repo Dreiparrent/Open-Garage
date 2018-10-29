@@ -1,0 +1,12 @@
+@import "node_modules/bootstrap/scss/bootstrap";
+.skillName {
+    height: auto;
+}
+.mat-list-item-content {
+    padding: 0 !important;
+}
+@include media-breakpoint-up(xl) {
+    .mat-list {
+        display: flex;
+    }
+}

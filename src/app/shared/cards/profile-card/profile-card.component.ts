@@ -2,6 +2,7 @@ import { Component, Input, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { MatCard } from '@angular/material';
 import { CommunityService } from '../../community/community.service';
 import { IImg } from '../../community/community-interfaces';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-profile-card',
@@ -14,8 +15,22 @@ export class ProfileCardComponent implements OnInit {
     @Input('location') location;
     @Input('connections') connections;
     @Input('imgUrl') imgUrl: IImg;
-    @Input('overlay') overlay = false;
+    private _overlay = false;
+    @Input('overlay')
+    set overlay(o: boolean) {
+        this._overlay = o;
+        if (o === false && this.$cardMain)
+            this.$cardMain.removeClass('card-overlay-click');
+            /*
+        else if (this.$cardMain)
+            this.$cardMain.addClass('card-overlay-click');
+            */
+    }
+    get overlay() {
+        return this._overlay;
+    }
     betterImage: string;
+    showFooter = environment.showProfileFooter;
 
     @ViewChild('cardMain') cardMain: ElementRef<HTMLElement>;
 

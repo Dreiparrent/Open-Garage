@@ -39,6 +39,7 @@ import { CreateCommunityDialogComponent } from './cards/create-community-dialog/
 import { RegisterLocation } from '../pages/register-page/register-location';
 import { MobileProfileDialogComponent } from './cards/mobile-profile-dialog/mobile-profile-dialog.component';
 import { MobileMessagesDialogComponent } from './cards/mobile-messages-dialog/mobile-messages-dialog.component';
+import { UserDialogCardComponent } from './cards/user-dialog-card/user-dialog-card.component';
 
 @NgModule({
     exports: [
@@ -59,7 +60,8 @@ import { MobileMessagesDialogComponent } from './cards/mobile-messages-dialog/mo
         ReactiveFormsModule,
         AlertsComponent,
         ExploreCardComponent,
-        ChatComponent
+        ChatComponent,
+        UserDialogCardComponent
     ],
     imports: [
         RouterModule,
@@ -95,7 +97,8 @@ import { MobileMessagesDialogComponent } from './cards/mobile-messages-dialog/mo
         ImageDialogComponent,
         CreateCommunityDialogComponent,
         MobileProfileDialogComponent,
-        MobileMessagesDialogComponent
+        MobileMessagesDialogComponent,
+        UserDialogCardComponent
     ],
     entryComponents: [
         YourProfileDialogComponent,

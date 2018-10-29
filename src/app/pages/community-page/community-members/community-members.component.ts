@@ -49,6 +49,10 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     communityMembers: IUser[] = [];
     topMembers: IUser[] = [];
     clickIndex = -1;
+    showOverlay = true;
+    get showSingle() {
+        return this.comService.searchType.getValue() === CommunitySearchType.skills;
+    }
 
     constructor(private dialog: MatDialog, private authService: AuthService,
         private comService: CommunityService, private db: AngularFirestore, private navService: NavigationService,
@@ -157,6 +161,8 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
     }
 
     cardClick(index: number, profile: IUser) {
+        this.comService.updateSearch([], profile.skills, profile.name, CommunitySearchType.members);
+        /*
         // console.log($(`#card-${index}`).children[0].children[0]);
         if (this.clickIndex === index) {
             const dialogRef = this.dialog.open(UserDialogComponent, {
@@ -187,27 +193,41 @@ export class CommunityMembersComponent implements OnInit, OnDestroy {
                 if (result)
                     this.chatService.startNewChat(profile);
                     */
+        /*
             });
         }
         this.clickIndex = index;
         // profile.userClick = true;
-
-        this.comService.updateSearch([profile.name], profile.skills, profile.name, CommunitySearchType.communityMember);
+        if (this.comService.searchType.getValue() !== CommunitySearchType.topSkills)
+            this.comService.updateSearch([profile.name], profile.skills, profile.name, CommunitySearchType.communityMember);
+        */
     }
 
     searchMembers(members: string[]) {
         if (members.length > 0) {
             this.communityMembers = [];
+            const sMembers = this.comService.clickMember.getValue();
+            sMembers.forEach(s => {
+                this.communityMembers = this.communityMembers.concat(this.tmpMembers.filter(m => {
+                    return m.name === s.name && m.skills === s.skills;
+                }));
+            });
+            // this.communityMembers = this.communityMembers.filter(m => sMembers)
+            // this.comService.clickMember.getValue().forEach(m => {
+            // })
+            /*
             members.forEach(member => {
                 this.communityMembers = this.communityMembers.concat(this.tmpMembers.filter(m => {
                     return m.name === member && this.communityMembers.filter(user => user.name === m.name).length < 1;
                 }));
             });
-            this.sortMembers();
+            this.showOverlay = true;
+            */
         } else {
             this.communityMembers = this.tmpMembers;
-            this.sortMembers();
+            this.showOverlay = false;
         }
+        this.sortMembers();
     }
 
     ngOnDestroy(): void {

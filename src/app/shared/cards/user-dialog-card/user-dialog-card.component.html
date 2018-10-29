@@ -1,0 +1,61 @@
+<mat-card class="pt-3">
+    <mat-card-title class="mb-2" *ngIf="actions">
+        <div class="row text-center">
+            <div class="col-5 mx-auto">
+                <picture>
+                    <source [srcset]="imgUrl.else">
+                    <img class="rounded-circle img-fluid" [src]="imgUrl.webp" role="figure" alt="profile photo">
+                </picture>
+            </div>
+        </div>
+    </mat-card-title>
+    <mat-card-content>
+        <div class="row text-center">
+            <div class="col-11 mx-auto">
+                <h3>{{profile.name}}</h3>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="col-11 mx-auto">
+                <p>{{about}}</p>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="col-11 mx-auto">
+                <h5>Skills</h5>
+                <mat-chip-list selectable>
+                    <mat-chip *ngFor="let skill of profile.skills" [color]="primary" 
+                    [selected]="selected == skill" (click)="skillSelect(skill)">{{skill}}</mat-chip>
+                </mat-chip-list>
+            </div>
+        </div>
+        <div class="row text-center pb-2">
+            <div class="col-11 mx-auto">
+                <h5>Passions</h5>
+                <mat-chip-list>
+                    <mat-chip *ngFor="let pass of profile.passions">{{pass}}</mat-chip>
+                </mat-chip-list>
+            </div>
+        </div>
+        <div class="row text-center mb-2" *ngIf="showProfileFooter">
+            <div class="col-6">
+                <a>
+                    <mat-icon placement="bottom" tooltip="Location" container="body" class="align-middle cursor-pointer">my_location</mat-icon>
+                    <!--<i-globe placement="bottom" ngbTooltip="Location" class="align-bottom cursor-pointer"></i-globe>-->
+                    <span class="h-100 align-text-top"> {{profile.location}}</span>
+                </a>
+            </div>
+            <div class="col-6">
+                <a>
+                    <mat-icon placement="bottom" tooltip="Connections" container="body" class="align-middle cursor-pointer">wifi_tethering</mat-icon>
+                    <!-- <i-radio placement="bottom" ngbTooltip="Connections" class="align-bottom cursor-pointer"></i-radio>-->
+                    <span class="h-100 align-text-top">{{profile.connections}}</span>
+                </a>
+            </div>
+        </div>
+    </mat-card-content>
+    <mat-card-actions *ngIf="actions">
+        <button mat-button (click)="onClose()">Close</button>
+        <button mat-button [disabled]="userType !== 1" [tooltip]="connectTip" (click)="onConnect()">Connect</button>
+    </mat-card-actions>
+</mat-card>

@@ -158,8 +158,8 @@ export const addTag = (user: string, update: { ref: FirebaseFirestore.DocumentRe
         let userCount = 0;
         if (tagSnap.exists)
             userCount = tagSnap.data()['userCount'];
-        return tagSnap.ref.set({ userCount: userCount + 1 }).then(presult => {
-            return tagSnap.ref.collection('users').doc(user).set(update).then(result => userCount < 1);
+        return tagSnap.ref.set({ userCount: userCount + 1, tag: tag.toLowerCase() }).then(presult => {
+            return tagSnap.ref.collection('users').doc(user).set(update).then(result => userCount < 2);
         });
     }).then(isNew => {
         if (isNew)

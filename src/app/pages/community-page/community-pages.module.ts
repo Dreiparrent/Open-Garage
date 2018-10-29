@@ -13,6 +13,7 @@ import { NgxCarouselModule } from 'ngx-carousel';
 import { CarouselHeightDirective } from '../../shared/directives/carousel-height.directive';
 import { MatchHeightDirective } from '../../shared/directives/match-height.directive';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { CommunitySearchComponent } from './community-search/community-search.component';
 
 @NgModule({
     imports: [
@@ -31,7 +32,8 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
         CommunityCardComponent,
         CommunityMembersComponent,
         CommunitySkillsComponent,
-        CarouselHeightDirective
+        CarouselHeightDirective,
+        CommunitySearchComponent
     ],
     providers: []
 })

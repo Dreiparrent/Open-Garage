@@ -1,5 +1,5 @@
 <h5 class="card-title" id="skillsTitle">
-    Top Skills
+    {{memberSkills ? 'Skills' : 'Top Skills'}}
     <small *ngIf="skillsSearched" matTooltip="Clear search?" matTooltipPosition="right" (click)="skillsClick(skillsSearched)" class="cursor-pointer text-muted">
         &gt; Search &gt; {{skillsSearched}} &#187; {{ getSkill(skillsSearched) }} of community members
     </small>

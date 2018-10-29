@@ -15,9 +15,8 @@ export class LocationHelpDialogComponent {
 
     constructor(public dialogRef: MatDialogRef<LocationHelpDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public isRegister = false) {
-        if (isRegister) {
+        if (isRegister)
             this.refuseText = 'our registration process requires gps coordinates to make sure you have the best experience possible.';
-        }
         console.log('is register', isRegister);
     }
 

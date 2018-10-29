@@ -146,7 +146,21 @@ export class CommunitiesService {
                                 else return userSnap.docs;
                             });
                     else return [];
-                }).then(userDocs => {
+                }).then(userDocs1 => {
+                    const tmpDocs: firestore.QueryDocumentSnapshot[] = [];
+                    return this.db.collection('skills').ref
+                        .orderBy('tag').limit(5).startAt(search[0]).endAt(search[1]).get().then(async tagsSnap => {
+                            const ref = [];
+                            const test: firestore.QueryDocumentSnapshot[][] = await Promise.all(
+                                tagsSnap.docs.map(async d => {
+                                    const testt = await d.ref.collection('users').get();
+                                    return testt.docs;
+                                }));
+                            return userDocs1.concat.apply(userDocs1, test);
+                        });
+
+                    })
+                .then(userDocs => {
                     userDocs.forEach(doc => {
                         if (!this.searchUsers.some(sUser => sUser.ref.id === doc.id))
                             this.comService.getMember(doc.id).then(user => {
@@ -156,6 +170,17 @@ export class CommunitiesService {
                     });
                 }).then(() => this.searchResults);
         else this.locationSearch();
+    }
+
+    async testF(tagsSnap): Promise<firestore.QueryDocumentSnapshot[]> {
+        const tmpDocs = [];
+        await tagsSnap.docs.forEach(async d => {
+            const i = await d.ref.collection('users').get();
+            const i_1 = i.docs;
+            console.log(i_1);
+            return tmpDocs.concat(i_1);
+        });
+        return tmpDocs;
     }
 
     getSearch() {

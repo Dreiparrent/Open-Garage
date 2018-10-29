@@ -61,9 +61,11 @@ export class UserDialogComponent implements OnInit {
         });
     }
 
-    connectUser() {
-        return true;
-        // console.log('not yet completed');
+    connect() {
+        this.dialogRef.close(true);
+    }
+    close() {
+        this.dialogRef.close();
     }
 
 }

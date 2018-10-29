@@ -1,14 +1,6 @@
-<section #jumbotron class="jumbotron text-center bg-dp text-white">
-    <form class="row justify-content-center community-search">
-        <mat-form-field class="col-md-11 text-white dark-theme">
-            <input #search matInput placeholder="Search" [formControl]="searchControl" [matAutocomplete]="auto">
-            <mat-autocomplete #auto="matAutocomplete" class="mat-elevation-z0 search-theme">
-                <mat-option *ngFor="let option of filteredOptions | async" [value]="option.name">
-                    <mat-icon *ngIf="option.type === 0">person_outline</mat-icon>
-                    <mat-icon *ngIf="option.type === 1">grade</mat-icon>
-                    <span>{{ option.name }}</span>
-                </mat-option>
-            </mat-autocomplete>
-        </mat-form-field>
-    </form>
-</section>
+<picture *ngIf="comImg" class="w-100 h-auto">
+    <source [srcset]="comImg.webp">
+    <source [srcset]="comImg.jpf">
+    <img id="com-img" [src]="comImg.else" class="w-100 h-auto" alt="home background">
+</picture>
+<div class="jumbotron text-center bg-dp text-white"></div>
